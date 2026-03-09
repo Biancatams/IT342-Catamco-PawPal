@@ -1,0 +1,42 @@
+.home-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #F8E4EB;
+}
+
+.home-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.welcome-card {
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+  padding: 48px 40px;
+  text-align: center;
+}
+
+.welcome-icon {
+  font-size: 56px;
+  margin-bottom: 16px;
+}
+
+.welcome-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #1F3327;
+  margin-bottom: 8px;
+}
+
+.welcome-role {
+  font-size: 14px;
+  color: #888;
+}
+
+.welcome-role strong {
+  color: #C76953;
+}
