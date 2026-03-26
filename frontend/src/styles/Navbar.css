@@ -1,79 +1,172 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700;1,800&family=DM+Sans:wght@400;500;600;700&display=swap');
+
 .navbar {
-  background-color: #1F3327;
-  padding: 16px 40px;
+  background: #1F3327;
+  height: 68px;
+  padding: 0 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 200;
 }
 
 .navbar-brand {
   display: flex;
   align-items: center;
-  gap: 8px;
-  text-decoration: none;
+  gap: 10px;
   background: none;
   border: none;
   cursor: pointer;
+  text-decoration: none;
 }
 
-.navbar-brand span {
-  color: white;
-  font-size: 20px;
+.navbar-logo-img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  border-radius: 6px;
+}
+
+/* Fallback paw emoji if no image */
+.navbar-paw { font-size: 22px; line-height: 1; }
+
+.navbar-brand-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
   font-weight: 800;
-}
-
-.navbar-logo {
-  font-size: 24px;
+  color: white;
+  letter-spacing: 0.2px;
 }
 
 .navbar-links {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 4px;
 }
 
+/* Base nav link - plain text when inactive */
 .navbar-link {
-  color: rgba(255,255,255,0.8);
+  color: rgba(255,255,255,0.75);
+  font-family: 'DM Sans', sans-serif;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;
   background: none;
   border: none;
   cursor: pointer;
-  transition: opacity 0.2s;
+  padding: 9px 22px;
+  border-radius: 6px;
+  transition: all 0.2s;
+  text-decoration: none;
+  display: inline-block;
 }
 
 .navbar-link:hover {
-  opacity: 0.7;
-}
-
-.navbar-btn-primary {
-  background-color: #C76953;
   color: white;
-  font-size: 14px;
-  font-weight: 700;
-  padding: 8px 20px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  transition: opacity 0.2s;
 }
 
-.navbar-btn-primary:hover {
-  opacity: 0.9;
+/* Active nav link - solid orange fill, same as Sign Up look */
+.navbar-link.active {
+  background: #C76953;
+  color: white;
+  font-weight: 600;
 }
 
+.navbar-link.active:hover {
+  background: #b85c47;
+}
+
+/* Outline button - plain outline when inactive */
 .navbar-btn-outline {
-  background: none;
-  color: white;
+  color: rgba(255,255,255,0.75);
+  font-family: 'DM Sans', sans-serif;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 500;
+  background: none;
+  border: 1.5px solid rgba(255,255,255,0.3);
   padding: 8px 20px;
-  border-radius: 8px;
-  border: 1px solid white;
+  border-radius: 6px;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: all 0.2s;
+  margin-left: 4px;
 }
 
 .navbar-btn-outline:hover {
-  opacity: 0.8;
+  color: white;
+  border-color: rgba(255,255,255,0.6);
+}
+
+/* Active outline button - solid orange fill */
+.navbar-btn-outline.active {
+  background: #C76953;
+  color: white;
+  border-color: #C76953;
+  font-weight: 600;
+}
+
+.navbar-btn-outline.active:hover {
+  background: #b85c47;
+  border-color: #b85c47;
+}
+
+/* Primary button - plain outline when inactive (not current page) */
+.navbar-btn-primary {
+  background: none;
+  color: rgba(255,255,255,0.75);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 20px;
+  border-radius: 6px;
+  border: 1.5px solid rgba(255,255,255,0.3);
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-left: 2px;
+}
+
+.navbar-btn-primary:hover {
+  color: white;
+  border-color: rgba(255,255,255,0.6);
+}
+
+/* Active primary button - solid orange fill */
+.navbar-btn-primary.active {
+  background: #C76953;
+  color: white;
+  border-color: #C76953;
+  font-weight: 600;
+}
+
+.navbar-btn-primary.active:hover {
+  background: #b85c47;
+  border-color: #b85c47;
+}
+
+/* User label (post-login navbar) */
+.navbar-user-label {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.5);
+  padding: 0 10px;
+  letter-spacing: 0.2px;
+}
+
+.navbar-user-label strong {
+  color: #ECC2B0;
+  font-weight: 700;
+}
+
+/* Divider dot between name and role */
+.navbar-user-label .dot {
+  margin: 0 4px;
+  opacity: 0.4;
+}
+
+@media (max-width: 768px) {
+  .navbar { padding: 0 20px; }
+  .navbar-brand-text { font-size: 18px; }
+  .navbar-link { padding: 8px 12px; }
+  .navbar-user-label { display: none; }
 }
