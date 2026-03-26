@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import { useGoogleLogin } from "@react-oauth/google";
 import pawLogo from "../pawlogo.png";
 import loginDog from "../loginregister dog.png";
 import "../styles/Navbar.css";
@@ -40,6 +41,30 @@ export default function Login() {
       setLoading(false);
     }
   };
+
+  const handleGoogleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        const res = await axios.post(
+          "http://localhost:8080/api/v1/auth/google-login",
+          { token: tokenResponse.access_token }
+        );
+        if (res.data.success) {
+          localStorage.setItem("token", res.data.data.accessToken);
+          localStorage.setItem("user", JSON.stringify(res.data.data.user));
+          navigate("/home");
+        } else {
+          setError(res.data.error?.message || "Google login failed.");
+        }
+      } catch (err) {
+        setError(
+          err.response?.data?.error?.message ||
+          "No account found. Please register first."
+        );
+      }
+    },
+    onError: () => setError("Google login failed. Please try again."),
+  });
 
   return (
     <div className="auth-page">
@@ -151,7 +176,7 @@ export default function Login() {
 
               <div className="auth-divider"><span>or</span></div>
 
-              <button className="google-btn" type="button">
+              <button className="google-btn" type="button" onClick={() => handleGoogleLogin()}>
                 <span className="google-icon"></span>
                 Continue with Google
               </button>

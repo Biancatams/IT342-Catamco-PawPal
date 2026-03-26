@@ -36,4 +36,24 @@ public class AuthController {
                         HttpStatus.OK : HttpStatus.UNAUTHORIZED)
                 .body(response);
     }
+
+    @PostMapping("/google-register")
+    public ResponseEntity<AuthResponse> googleRegister(
+            @Valid @RequestBody GoogleAuthRequest request) {
+        AuthResponse response = authService.googleRegister(request);
+        return ResponseEntity
+                .status(response.isSuccess() ?
+                        HttpStatus.CREATED : HttpStatus.BAD_REQUEST)
+                .body(response);
+    }
+
+    @PostMapping("/google-login")
+    public ResponseEntity<AuthResponse> googleLogin(
+            @Valid @RequestBody GoogleAuthRequest request) {
+        AuthResponse response = authService.googleLogin(request);
+        return ResponseEntity
+                .status(response.isSuccess() ?
+                        HttpStatus.OK : HttpStatus.UNAUTHORIZED)
+                .body(response);
+    }
 }
