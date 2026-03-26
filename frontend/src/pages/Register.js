@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
+import { useGoogleLogin } from "@react-oauth/google";
 import pawLogo from "../pawlogo.png";
 import loginDog from "../loginregister dog.png";
 import "../styles/Navbar.css";
@@ -55,6 +56,37 @@ export default function Register() {
       setLoading(false);
     }
   };
+
+  const handleGoogleRegister = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      if (!form.role) {
+        setError("Please select a role before continuing with Google.");
+        return;
+      }
+      try {
+        const res = await axios.post(
+          "http://localhost:8080/api/v1/auth/google-register",
+          { token: tokenResponse.access_token, role: form.role }
+        );
+        if (res.data.success) {
+          localStorage.setItem("token", res.data.data.accessToken);
+          localStorage.setItem("user", JSON.stringify(res.data.data.user));
+          navigate("/home");
+        } else {
+          setError(res.data.error?.message || "Google registration failed.");
+        }
+      } catch (err) {
+        console.log("FULL ERROR:", err);
+        console.log("RESPONSE:", err.response);
+        console.log("RESPONSE DATA:", err.response?.data);
+        setError(
+          err.response?.data?.error?.message ||
+          "Something went wrong with Google registration."
+        );
+      }
+    },
+    onError: () => setError("Google sign-up failed. Please try again."),
+  });
 
   return (
     <div className="auth-page">
@@ -218,7 +250,7 @@ export default function Register() {
 
               <div className="auth-divider"><span>or</span></div>
 
-              <button className="google-btn" type="button">
+              <button className="google-btn" type="button" onClick={() => handleGoogleRegister()}>
                 <span className="google-icon"></span>
                 Continue with Google
               </button>
