@@ -20,6 +20,16 @@ export default function Login() {
     setError("");
   };
 
+  const handleNavigateByRole = (user) => {
+    if (user.role === "PET_OWNER") {
+      navigate("/owner/dashboard");
+    } else if (user.role === "ADOPTER") {
+      navigate("/adopter/dashboard");
+    } else {
+      navigate("/home");
+    }
+  };
+
   const handleSubmit = async () => {
     if (!form.email || !form.password) {
       setError("Please enter your email and password.");
@@ -31,7 +41,7 @@ export default function Login() {
       if (res.data.success) {
         localStorage.setItem("token", res.data.data.accessToken);
         localStorage.setItem("user", JSON.stringify(res.data.data.user));
-        navigate("/home");
+        handleNavigateByRole(res.data.data.user);
       } else {
         setError(res.data.error?.message || "Login failed.");
       }
@@ -52,7 +62,7 @@ export default function Login() {
         if (res.data.success) {
           localStorage.setItem("token", res.data.data.accessToken);
           localStorage.setItem("user", JSON.stringify(res.data.data.user));
-          navigate("/home");
+          handleNavigateByRole(res.data.data.user);
         } else {
           setError(res.data.error?.message || "Google login failed.");
         }

@@ -1,0 +1,216 @@
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
+import axios from "axios";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import pawLogo from "../pawlogo.png";
+import "../styles/Navbar.css";
+import "../styles/PetDetail.css";
+import LogoutModal from "../components/LogoutModal";
+
+// Fix leaflet default marker icon broken in React
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
+  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
+  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
+});
+
+export default function PetDetail() {
+  const navigate = useNavigate();
+  const { petId } = useParams();
+  const location = useLocation();
+  const token = localStorage.getItem("token");
+  const petFromState = location.state?.pet || null;
+
+  const [pet, setPet] = useState(petFromState);
+  const [loading, setLoading] = useState(!petFromState);
+
+  useEffect(() => {
+    if (!petFromState) fetchPet();
+  }, []);
+
+  const fetchPet = async () => {
+    try {
+      const res = await axios.get(`http://localhost:8080/api/v1/pets/${petId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setPet(res.data.data);
+    } catch {}
+    finally { setLoading(false); }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/");
+  };
+
+  if (loading) return (
+    <div className="od-page">
+      <div className="od-loading" style={{ paddingTop: 120 }}>
+        <div className="od-spinner" />
+        <p>Loading pet details...</p>
+      </div>
+    </div>
+  );
+
+  if (!pet) return (
+    <div className="od-page">
+      <div className="od-empty" style={{ paddingTop: 120 }}>
+        <div className="od-empty-icon">🐾</div>
+        <h3>Pet not found</h3>
+        <button className="od-post-btn" onClick={() => navigate("/adopter/dashboard")}>
+          Back to Browse
+        </button>
+      </div>
+    </div>
+  );
+
+  const hasCoords = pet.latitude && pet.longitude;
+
+  return (
+    <div className="od-page">
+      <nav className="navbar">
+        <button className="navbar-brand" onClick={() => navigate("/")}>
+          <img src={pawLogo} alt="PawPal logo" className="navbar-logo-img" />
+          <span className="navbar-brand-text">PawPal</span>
+        </button>
+        <div className="navbar-links">
+          <button className="navbar-link" onClick={() => navigate("/adopter/dashboard")}>Browse</button>
+          <button className="navbar-link" onClick={() => navigate("/adopter/requests")}>My Requests</button>
+          <button className="navbar-link" onClick={() => navigate("/adopter/profile")}>Profile</button>
+          <button className="navbar-btn-outline" onClick={handleLogout}>Logout</button>
+        </div>
+      </nav>
+
+      <div className="od-body">
+        <button className="vr-back-btn" onClick={() => navigate("/adopter/dashboard")} style={{ marginBottom: 24 }}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="15 18 9 12 15 6" />
+          </svg>
+          Back to Browse
+        </button>
+
+        <div className="pd-layout">
+          {/* LEFT: Pet Image */}
+          <div className="pd-img-col">
+            <div className="pd-img-wrap">
+              {pet.imageUrl ? (
+                <img src={`http://localhost:8080${pet.imageUrl}`} alt={pet.name} className="pd-img" />
+              ) : (
+                <div className="pd-img-placeholder"><span>🐾</span></div>
+              )}
+              <span className="od-badge badge-available" style={{ position: "absolute", top: 16, right: 16 }}>
+                Available
+              </span>
+            </div>
+          </div>
+
+          {/* RIGHT: Pet Info */}
+          <div className="pd-info-col">
+            <div className="pd-card">
+              <h1 className="pd-name">{pet.name}</h1>
+              {pet.breed && <p className="pd-breed">{pet.breed}</p>}
+
+              <div className="pd-meta-row-wrap">
+                {pet.age && (
+                  <div className="pd-meta-chip">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    {pet.age}
+                  </div>
+                )}
+                <div className="pd-meta-chip">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                  </svg>
+                  {pet.type}
+                </div>
+                {pet.gender && (
+                  <div className="pd-meta-chip">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="8" r="4"/><path d="M12 12v8M8 20h8"/>
+                    </svg>
+                    {pet.gender.charAt(0) + pet.gender.slice(1).toLowerCase()}
+                  </div>
+                )}
+                {pet.location && (
+                  <div className="pd-meta-chip">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    {pet.location}
+                  </div>
+                )}
+              </div>
+
+              <div className="pd-divider" />
+
+              <div className="pd-section">
+                <h3 className="pd-section-title">About {pet.name}</h3>
+                <p className="pd-description">{pet.description || "No description provided."}</p>
+              </div>
+
+              <div className="pd-divider" />
+
+              {/* Location Map */}
+              <div className="pd-section">
+                <h3 className="pd-section-title">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 16, height: 16 }}>
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                  </svg>
+                  Location
+                </h3>
+                <p className="pd-location-label">{pet.location}</p>
+                <p className="pd-location-note">
+                  General area shown — exact address shared after adoption approval.
+                </p>
+
+                {hasCoords ? (
+                  <div className="pd-map-wrap">
+                    <MapContainer
+                      center={[pet.latitude, pet.longitude]}
+                      zoom={13}
+                      style={{ height: "260px", width: "100%", borderRadius: 12 }}
+                      scrollWheelZoom={false}
+                    >
+                      <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                      />
+                      <Marker position={[pet.latitude, pet.longitude]}>
+                        <Popup>{pet.name} is near this area</Popup>
+                      </Marker>
+                    </MapContainer>
+                  </div>
+                ) : (
+                  <div className="pd-map-placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    <p>Map not available for this listing</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="pd-divider" />
+
+              <button
+                className="pp-btn-submit"
+                onClick={() => navigate(`/adopter/request/${pet.id}`, { state: { pet } })}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+                Request Adoption
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

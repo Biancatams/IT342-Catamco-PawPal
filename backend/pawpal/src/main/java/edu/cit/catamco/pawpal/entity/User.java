@@ -24,6 +24,11 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    // ← NEW FIELDS
+    private String phoneNumber;
+    private String location;
+    private String profileImageUrl;
+
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
@@ -44,6 +49,9 @@ public class User {
     public String getEmail() { return email; }
     public String getPassword() { return password; }
     public Role getRole() { return role; }
+    public String getPhoneNumber() { return phoneNumber; }
+    public String getLocation() { return location; }
+    public String getProfileImageUrl() { return profileImageUrl; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 
     // Setters
@@ -52,6 +60,9 @@ public class User {
     public void setEmail(String email) { this.email = email; }
     public void setPassword(String password) { this.password = password; }
     public void setRole(Role role) { this.role = role; }
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+    public void setLocation(String location) { this.location = location; }
+    public void setProfileImageUrl(String profileImageUrl) { this.profileImageUrl = profileImageUrl; }
 
     // Builder
     public static Builder builder() { return new Builder(); }
@@ -62,18 +73,10 @@ public class User {
         private String password;
         private Role role;
 
-        public Builder fullName(String fullName) {
-            this.fullName = fullName; return this;
-        }
-        public Builder email(String email) {
-            this.email = email; return this;
-        }
-        public Builder password(String password) {
-            this.password = password; return this;
-        }
-        public Builder role(Role role) {
-            this.role = role; return this;
-        }
+        public Builder fullName(String fullName) { this.fullName = fullName; return this; }
+        public Builder email(String email) { this.email = email; return this; }
+        public Builder password(String password) { this.password = password; return this; }
+        public Builder role(Role role) { this.role = role; return this; }
         public User build() {
             User user = new User();
             user.fullName = this.fullName;
