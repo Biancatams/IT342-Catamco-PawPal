@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="green">#1F3327</color>
+    <color name="orange">#C76953</color>
+    <color name="cream">#FDF6F0</color>
+    <color name="peach">#ECC2B0</color>
+    <color name="white">#FFFFFF</color>
+    <color name="muted">#6b7280</color>
+    <color name="border">#e8e0d8</color>
+    <color name="text">#1a1a1a</color>
+    <color name="error_bg">#fff0f0</color>
+    <color name="error_text">#dc2626</color>
+</resources>
