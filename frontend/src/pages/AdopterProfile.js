@@ -6,11 +6,12 @@ import "../styles/Navbar.css";
 import "../styles/OwnerDashboard.css";
 import LogoutModal from "../components/LogoutModal";
 
-export default function OwnerProfile() {
+export default function AdopterProfile() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const token = localStorage.getItem("token");
-  const [pets, setPets] = useState([]);
+
+  const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [showLogout, setShowLogout] = useState(false);
@@ -28,14 +29,14 @@ export default function OwnerProfile() {
     user.profileImageUrl ? `http://localhost:8080${user.profileImageUrl}` : null
   );
 
-  useEffect(() => { fetchMyPets(); }, []);
+  useEffect(() => { fetchMyRequests(); }, []);
 
-  const fetchMyPets = async () => {
+  const fetchMyRequests = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/api/v1/pets/my", {
+      const res = await axios.get("http://localhost:8080/api/v1/adoption-requests/my", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setPets(res.data.data?.pets || []);
+      setRequests(res.data.data || []);
     } catch {}
     finally { setLoading(false); }
   };
@@ -59,10 +60,7 @@ export default function OwnerProfile() {
 
   const handleProfileImg = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setProfileImg(file);
-      setProfileImgPreview(URL.createObjectURL(file));
-    }
+    if (file) { setProfileImg(file); setProfileImgPreview(URL.createObjectURL(file)); }
   };
 
   const handleSave = async () => {
@@ -111,15 +109,11 @@ export default function OwnerProfile() {
   };
 
   const stats = {
-    available: pets.filter((p) => p.status === "AVAILABLE").length,
-    pending: pets.filter((p) => p.status === "PENDING").length,
-    adopted: pets.filter((p) => p.status === "ADOPTED").length,
+    total: requests.length,
+    pending: requests.filter((r) => r.status === "PENDING").length,
+    approved: requests.filter((r) => r.status === "APPROVED").length,
+    declined: requests.filter((r) => r.status === "DECLINED").length,
   };
-
-  const statusLabel = (s) =>
-    s === "AVAILABLE" ? "Available" : s === "PENDING" ? "Pending" : "Adopted";
-  const statusClass = (s) =>
-    s === "AVAILABLE" ? "badge-available" : s === "PENDING" ? "badge-pending" : "badge-adopted";
 
   const memberSince = user.createdAt
     ? new Date(user.createdAt).toLocaleDateString("en-US", { month: "long", year: "numeric" })
@@ -127,6 +121,11 @@ export default function OwnerProfile() {
 
   const initials = (user.fullName || "U")
     .split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+
+  const statusLabel = (s) =>
+    s === "PENDING" ? "Pending" : s === "APPROVED" ? "Approved" : "Declined";
+  const statusClass = (s) =>
+    s === "PENDING" ? "badge-pending" : s === "APPROVED" ? "badge-available" : "badge-adopted";
 
   return (
     <div className="od-page">
@@ -140,14 +139,17 @@ export default function OwnerProfile() {
           <span className="navbar-brand-text">PawPal</span>
         </button>
         <div className="navbar-links">
-          <button className="navbar-link" onClick={() => navigate("/owner/dashboard")}>Home</button>
-          <button className="navbar-link active" onClick={() => navigate("/owner/profile")}>Profile</button>
+          <button className="navbar-link" onClick={() => navigate("/adopter/dashboard")}>Browse</button>
+          <button className="navbar-link" onClick={() => navigate("/adopter/requests")}>My Requests</button>
+          <button className="navbar-link active" onClick={() => navigate("/adopter/profile")}>Profile</button>
           <button className="navbar-btn-outline" onClick={() => setShowLogout(true)}>Logout</button>
         </div>
       </nav>
 
       <div className="od-body">
         <div className="prof-layout">
+
+          {/* SIDEBAR */}
           <div className="prof-sidebar">
             <div className="prof-card">
               <div className="prof-card-header">
@@ -185,13 +187,7 @@ export default function OwnerProfile() {
                     </svg>
                   )}
                 </div>
-                <input
-                  ref={profileImgRef}
-                  type="file"
-                  accept="image/*"
-                  style={{ display: "none" }}
-                  onChange={handleProfileImg}
-                />
+                <input ref={profileImgRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleProfileImg} />
               </div>
 
               {editing ? (
@@ -226,7 +222,7 @@ export default function OwnerProfile() {
               ) : (
                 <>
                   <div className="prof-name">{user.fullName || "User"}</div>
-                  <div className="prof-role-tag">Pet Owner</div>
+                  <div className="prof-role-tag">Adopter</div>
 
                   <div className="prof-fields">
                     <div className="prof-field-item">
@@ -272,7 +268,7 @@ export default function OwnerProfile() {
                         </svg>
                         <div>
                           <div className="prof-field-label">ROLE</div>
-                          <div><span className="prof-owner-badge">Pet Owner</span></div>
+                          <div><span className="prof-adopter-badge">Adopter</span></div>
                         </div>
                       </div>
                     </div>
@@ -298,12 +294,12 @@ export default function OwnerProfile() {
             {/* Quick Stats */}
             <div className="prof-card prof-stats-card">
               <h3 className="prof-card-title">Quick Stats</h3>
-              <p className="prof-card-sub">Your pet listing overview</p>
+              <p className="prof-card-sub">Your adoption activity</p>
               <div className="prof-stat-item">
-                <div className="prof-stat-dot prof-dot-available" />
+                <div className="prof-stat-dot" style={{ background: "#6b7280" }} />
                 <div className="prof-stat-body">
-                  <div className="prof-stat-label">AVAILABLE</div>
-                  <div className="prof-stat-num">{stats.available}</div>
+                  <div className="prof-stat-label">TOTAL REQUESTS</div>
+                  <div className="prof-stat-num">{stats.total}</div>
                 </div>
               </div>
               <div className="prof-stat-item">
@@ -314,44 +310,50 @@ export default function OwnerProfile() {
                 </div>
               </div>
               <div className="prof-stat-item">
+                <div className="prof-stat-dot prof-dot-available" />
+                <div className="prof-stat-body">
+                  <div className="prof-stat-label">APPROVED</div>
+                  <div className="prof-stat-num">{stats.approved}</div>
+                </div>
+              </div>
+              <div className="prof-stat-item">
                 <div className="prof-stat-dot prof-dot-adopted" />
                 <div className="prof-stat-body">
-                  <div className="prof-stat-label">ADOPTED</div>
-                  <div className="prof-stat-num">{stats.adopted}</div>
+                  <div className="prof-stat-label">DECLINED</div>
+                  <div className="prof-stat-num">{stats.declined}</div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* MAIN */}
+          {/* MAIN: Recent Requests */}
           <div className="prof-main">
             <div className="prof-pets-card">
               <div className="prof-pets-header">
                 <div>
-                  <h2 className="prof-card-title">My Posted Pets</h2>
-                  <p className="prof-card-sub">Manage your pet listings</p>
+                  <h2 className="prof-card-title">My Adoption Requests</h2>
+                  <p className="prof-card-sub">Track your adoption applications</p>
                 </div>
-                <span className="prof-total-badge">{pets.length} Total</span>
+                <span className="prof-total-badge">{requests.length} Total</span>
               </div>
 
               {loading ? (
                 <div className="od-loading"><div className="od-spinner" /></div>
-              ) : pets.length === 0 ? (
+              ) : requests.length === 0 ? (
                 <div className="od-empty">
                   <div className="od-empty-icon">🐾</div>
-                  <p>No pets posted yet.</p>
-                  <button className="od-post-btn" onClick={() => navigate("/owner/post-pet")}>
-                    Post Your First Pet
+                  <p>No adoption requests yet.</p>
+                  <button className="od-post-btn" onClick={() => navigate("/adopter/dashboard")}>
+                    Browse Pets
                   </button>
                 </div>
               ) : (
                 <div className="prof-pets-grid">
-                  {pets.map((pet) => (
-                    <div key={pet.id} className="prof-pet-item"
-                      onClick={() => navigate(`/owner/requests/${pet.id}`, { state: { pet } })}>
+                  {requests.map((req) => (
+                    <div key={req.id} className="prof-pet-item" style={{ cursor: "default" }}>
                       <div className="prof-pet-thumb-wrap">
-                        {pet.imageUrl ? (
-                          <img src={`http://localhost:8080${pet.imageUrl}`} alt={pet.name} className="prof-pet-thumb" />
+                        {req.pet?.imageUrl ? (
+                          <img src={`http://localhost:8080${req.pet.imageUrl}`} alt={req.pet.name} className="prof-pet-thumb" />
                         ) : (
                           <div className="prof-pet-thumb-placeholder">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 24, height: 24, stroke: "#c4b5a5" }}>
@@ -361,19 +363,20 @@ export default function OwnerProfile() {
                         )}
                       </div>
                       <div className="prof-pet-item-info">
-                        <div className="prof-pet-item-name">{pet.name}</div>
-                        <div className="prof-pet-item-breed">{pet.breed || pet.type}</div>
+                        <div className="prof-pet-item-name">{req.pet?.name || "Pet"}</div>
+                        <div className="prof-pet-item-breed">{req.pet?.breed || req.pet?.age || ""}</div>
                         <div className="prof-pet-item-meta">
-                          <span className={`od-badge ${statusClass(pet.status)}`}
-                            style={{ position: "static", fontSize: 10, padding: "2px 8px" }}>
-                            {statusLabel(pet.status)}
+                          <span
+                            className={`od-badge ${statusClass(req.status)}`}
+                            style={{ position: "static", fontSize: 10, padding: "2px 8px" }}
+                          >
+                            {statusLabel(req.status)}
                           </span>
-                          {pet.age && <span className="prof-pet-item-age">{pet.age}</span>}
                         </div>
-                        {pet.createdAt && (
+                        {req.createdAt && (
                           <div className="prof-pet-item-date">
-                            {new Date(pet.createdAt).toLocaleDateString("en-US", {
-                              month: "short", day: "numeric", year: "numeric"
+                            {new Date(req.createdAt).toLocaleDateString("en-US", {
+                              month: "short", day: "numeric", year: "numeric",
                             })}
                           </div>
                         )}
@@ -384,6 +387,7 @@ export default function OwnerProfile() {
               )}
             </div>
           </div>
+
         </div>
       </div>
     </div>

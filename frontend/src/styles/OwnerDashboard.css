@@ -907,7 +907,7 @@
    ============================================================ */
 .prof-layout {
   display: grid;
-  grid-template-columns: 260px 1fr;
+  grid-template-columns: 320px 1fr;
   gap: 24px;
   align-items: start;
 }
@@ -1384,4 +1384,190 @@
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid var(--green);
+}
+
+.pp-traits-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pp-trait-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 100px;
+  border: 1.5px solid var(--border);
+  background: var(--cream);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.pp-trait-tag:hover {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.pp-trait-active {
+  background: var(--green);
+  color: white !important;
+  border-color: var(--green) !important;
+}
+
+/* ── HEALTH & CARE CARDS (form) ── */
+.pp-health-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.pp-health-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--cream);
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.pp-health-card:hover {
+  border-color: var(--orange);
+}
+
+.pp-health-active {
+  border-color: var(--orange) !important;
+  background: #fffaf7 !important;
+}
+
+.pp-health-check {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  border-radius: 50%;
+  background: white;
+  border: 1.5px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s;
+}
+
+.pp-health-active .pp-health-check {
+  background: var(--orange);
+  border-color: var(--orange);
+}
+
+.pp-health-active .pp-health-check svg {
+  stroke: white;
+}
+
+.pp-health-check svg {
+  width: 12px;
+  height: 12px;
+  stroke: var(--muted);
+}
+
+.pp-health-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.pp-health-sub {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* ── PERSONALITY TRAITS (detail view) ── */
+.pd-traits-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.pd-trait-tag {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 100px;
+  background: rgba(31, 51, 39, 0.08);
+  color: var(--green);
+  border: 1px solid rgba(31, 51, 39, 0.15);
+}
+
+/* ── HEALTH & CARE CARDS (detail view) ── */
+.pd-health-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.pd-health-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--cream);
+}
+
+.pd-health-icon {
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  border-radius: 50%;
+  background: rgba(199, 105, 83, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pd-health-icon svg {
+  width: 13px;
+  height: 13px;
+  stroke: var(--orange);
+}
+
+.pd-health-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.pd-health-sub {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+@media (max-width: 640px) {
+  .pp-health-grid { grid-template-columns: 1fr; }
+  .pd-health-grid { grid-template-columns: 1fr; }
+}
+
+.prof-field-icon-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.prof-field-icon-row > svg {
+  width: 15px;
+  height: 15px;
+  min-width: 15px;
+  stroke: var(--muted);
+  margin-top: 2px;
 }

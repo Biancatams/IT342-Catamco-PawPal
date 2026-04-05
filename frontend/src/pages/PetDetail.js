@@ -20,16 +20,15 @@ L.Icon.Default.mergeOptions({
 export default function PetDetail() {
   const navigate = useNavigate();
   const { petId } = useParams();
-  const location = useLocation();
   const token = localStorage.getItem("token");
-  const petFromState = location.state?.pet || null;
 
-  const [pet, setPet] = useState(petFromState);
-  const [loading, setLoading] = useState(!petFromState);
+  // Always fetch from API to guarantee we have coordinates + all fields
+  const [pet, setPet] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!petFromState) fetchPet();
-  }, []);
+    fetchPet();
+  }, [petId]);
 
   const fetchPet = async () => {
     try {
@@ -68,7 +67,9 @@ export default function PetDetail() {
     </div>
   );
 
-  const hasCoords = pet.latitude && pet.longitude;
+  const hasCoords = pet.latitude != null && pet.longitude != null;
+  const traits = pet.characteristics || [];
+  const hasHealth = pet.vaccinated || pet.neutered || pet.microchipped || pet.healthChecked;
 
   return (
     <div className="od-page">
@@ -149,10 +150,90 @@ export default function PetDetail() {
 
               <div className="pd-divider" />
 
+              {/* About */}
               <div className="pd-section">
                 <h3 className="pd-section-title">About {pet.name}</h3>
                 <p className="pd-description">{pet.description || "No description provided."}</p>
               </div>
+
+              {/* Personality Traits */}
+              {traits.length > 0 && (
+                <>
+                  <div className="pd-divider" />
+                  <div className="pd-section">
+                    <h3 className="pd-section-title">Personality Traits</h3>
+                    <div className="pd-traits-wrap">
+                      {traits.map((trait) => (
+                        <span key={trait} className="pd-trait-tag">{trait}</span>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              {/* Health & Care */}
+              {hasHealth && (
+                <>
+                  <div className="pd-divider" />
+                  <div className="pd-section">
+                    <h3 className="pd-section-title">Health &amp; Care</h3>
+                    <div className="pd-health-grid">
+                      {pet.vaccinated && (
+                        <div className="pd-health-card">
+                          <div className="pd-health-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                          </div>
+                          <div>
+                            <div className="pd-health-label">Vaccinated</div>
+                            <div className="pd-health-sub">Up to date on all shots</div>
+                          </div>
+                        </div>
+                      )}
+                      {pet.neutered && (
+                        <div className="pd-health-card">
+                          <div className="pd-health-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                          </div>
+                          <div>
+                            <div className="pd-health-label">Neutered</div>
+                            <div className="pd-health-sub">Spayed/neutered</div>
+                          </div>
+                        </div>
+                      )}
+                      {pet.microchipped && (
+                        <div className="pd-health-card">
+                          <div className="pd-health-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                          </div>
+                          <div>
+                            <div className="pd-health-label">Microchipped</div>
+                            <div className="pd-health-sub">Registered microchip</div>
+                          </div>
+                        </div>
+                      )}
+                      {pet.healthChecked && (
+                        <div className="pd-health-card">
+                          <div className="pd-health-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                              <polyline points="20 6 9 17 4 12"/>
+                            </svg>
+                          </div>
+                          <div>
+                            <div className="pd-health-label">Health Check</div>
+                            <div className="pd-health-sub">Recent vet examination</div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </>
+              )}
 
               <div className="pd-divider" />
 
