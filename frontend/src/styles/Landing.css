@@ -564,6 +564,7 @@
   .hero-actions { flex-direction: column; align-items: stretch; }
   .navbar { padding: 0 24px; }
 }
+
 .hero-dog-img {
   width: 100%;
   height: 100%;

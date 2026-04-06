@@ -98,12 +98,9 @@ export default function ViewRequests() {
           <span className="navbar-brand-text">PawPal</span>
         </button>
         <div className="navbar-links">
-          <button className="navbar-link" onClick={() => navigate("/owner/dashboard")}>
-            Home
-          </button>
-          <button className="navbar-btn-outline" onClick={() => setShowLogout(true)}> {/* ← CHANGED */}
-            Logout
-          </button>
+          <button className="navbar-link" onClick={() => navigate("/owner/dashboard")}>Home</button>
+          <button className="navbar-link" onClick={() => navigate("/owner/profile")}>Profile</button>
+          <button className="navbar-btn-outline" onClick={() => setShowLogout(true)}>Logout</button>
         </div>
       </nav>
 

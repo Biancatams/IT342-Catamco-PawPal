@@ -62,3 +62,272 @@
   color: white;
   border-color: #1F3327;
 }
+
+.prof-adopter-badge {
+  display: inline-block;
+  background: rgba(31, 51, 39, 0.1);
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 100px;
+  border: 1px solid rgba(31, 51, 39, 0.2);
+}
+
+/* ── MY REQUESTS LIST ── */
+.amr-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.amr-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.amr-card:hover {
+  border-color: var(--green);
+  box-shadow: 0 4px 20px rgba(31,51,39,0.07);
+}
+
+.amr-pet-img-wrap {
+  width: 130px;
+  min-width: 130px;
+  height: 160px;      
+  margin: 16px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  align-self: center;  
+}
+
+.amr-pet-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.amr-pet-no-img {
+  width: 100%;
+  height: 100%;
+  min-height: 140px;
+  background: linear-gradient(145deg, #f5e6d3, #edd5c0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+}
+
+.amr-info {
+  padding: 20px 24px;
+  flex: 1;
+}
+
+.amr-top-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.amr-pet-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--green);
+  margin-bottom: 2px;
+}
+
+.amr-pet-breed {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.amr-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.amr-meta-row svg {
+  width: 14px;
+  height: 14px;
+  stroke: var(--muted);
+  flex-shrink: 0;
+}
+
+.amr-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 12px 0;
+}
+
+.amr-status-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.amr-status-pending {
+  background: rgba(199, 105, 83, 0.08);
+  color: var(--orange);
+  border: 1px solid rgba(199, 105, 83, 0.2);
+}
+
+.amr-status-approved {
+  background: rgba(22, 163, 74, 0.08);
+  color: #15803d;
+  border: 1px solid rgba(22, 163, 74, 0.2);
+}
+
+.amr-status-declined {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.amr-date {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.amr-actions {
+  padding: 20px 20px 20px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  min-width: 120px;
+}
+
+/* ── REQUEST ADOPTION PAGE ── */
+.ra-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 28px;
+  align-items: start;
+}
+
+.ra-form-col { /* already pp-section */ }
+
+.ra-pet-summary {
+  position: sticky;
+  top: 24px;
+}
+
+.ra-pet-img-wrap {
+  width: 100%;
+  height: 220px;
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 14px;
+}
+
+.ra-pet-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ra-pet-no-img {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(145deg, #f5e6d3, #edd5c0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 56px;
+}
+
+.ra-pet-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--green);
+  margin-bottom: 4px;
+}
+
+.ra-pet-breed {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.ra-pet-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+/* ── SUCCESS CARD ── */
+.ra-success-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 56px 48px;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 8px 40px rgba(31,51,39,0.08);
+}
+
+.ra-success-icon {
+  font-size: 56px;
+  margin-bottom: 16px;
+}
+
+.ra-success-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--green);
+  margin-bottom: 14px;
+}
+
+.ra-success-msg {
+  font-size: 15px;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 32px;
+}
+
+.ra-success-msg strong { color: var(--text); }
+
+.ra-success-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .ra-layout { grid-template-columns: 1fr; }
+  .ra-pet-summary { position: static; }
+  .amr-card { grid-template-columns: 110px 1fr; }
+  .amr-actions { grid-column: 1 / -1; padding: 0 20px 20px; flex-direction: row; }
+}
+
+@media (max-width: 640px) {
+  .amr-card { grid-template-columns: 90px 1fr; }
+  .amr-pet-img-wrap { width: 90px; }
+}
+

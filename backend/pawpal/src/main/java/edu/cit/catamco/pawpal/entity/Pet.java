@@ -12,8 +12,8 @@ public class Pet {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "owner_id")
     private User owner;
 
     @Column(nullable = false)
@@ -46,10 +46,17 @@ public class Pet {
     @Column(nullable = false)
     private PetStatus status = PetStatus.AVAILABLE;
 
+    // Personality traits (e.g. "Friendly", "Playful", "House-trained")
     @ElementCollection
     @CollectionTable(name = "pet_characteristics", joinColumns = @JoinColumn(name = "pet_id"))
     @Column(name = "characteristic")
     private List<String> characteristics;
+
+    // Health & Care flags
+    private Boolean vaccinated = false;
+    private Boolean neutered = false;
+    private Boolean microchipped = false;
+    private Boolean healthChecked = false;
 
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -59,9 +66,9 @@ public class Pet {
         createdAt = LocalDateTime.now();
     }
 
-    public enum PetType { DOG, CAT, BIRD, OTHER }
+    public enum PetType { DOG, CAT, BIRD, RABBIT, OTHER }
     public enum Gender { MALE, FEMALE }
-    public enum PetStatus { AVAILABLE, ADOPTED }
+    public enum PetStatus { AVAILABLE, PENDING, ADOPTED }
 
     public Pet() {}
 
@@ -80,6 +87,10 @@ public class Pet {
     public String getImageUrl() { return imageUrl; }
     public PetStatus getStatus() { return status; }
     public List<String> getCharacteristics() { return characteristics; }
+    public Boolean getVaccinated() { return vaccinated; }
+    public Boolean getNeutered() { return neutered; }
+    public Boolean getMicrochipped() { return microchipped; }
+    public Boolean getHealthChecked() { return healthChecked; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 
     // Setters
@@ -96,4 +107,8 @@ public class Pet {
     public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
     public void setStatus(PetStatus status) { this.status = status; }
     public void setCharacteristics(List<String> characteristics) { this.characteristics = characteristics; }
+    public void setVaccinated(Boolean vaccinated) { this.vaccinated = vaccinated; }
+    public void setNeutered(Boolean neutered) { this.neutered = neutered; }
+    public void setMicrochipped(Boolean microchipped) { this.microchipped = microchipped; }
+    public void setHealthChecked(Boolean healthChecked) { this.healthChecked = healthChecked; }
 }

@@ -12,6 +12,10 @@ import OwnerProfile from "./pages/OwnerProfile";
 import AdopterDashboard from "./pages/AdopterDashboard";
 import PetDetail from "./pages/PetDetail";
 import EditPet from "./pages/EditPet";
+import AdopterProfile from "./pages/AdopterProfile";
+import AdopterMyRequests from "./pages/AdopterMyRequests";
+import RequestAdoption from "./pages/RequestAdoption";
+import RequestAccepted from "./pages/RequestAccepted";
 
 
 function App() {
@@ -25,6 +29,10 @@ function App() {
         <Route path="/owner/post-pet" element={<PostPet />} />
         <Route path="/owner/requests/:petId" element={<ViewRequests />} />
         <Route path="/owner/profile" element={<OwnerProfile />} />
+        <Route path="/adopter/profile" element={<AdopterProfile />} />
+        <Route path="/adopter/requests" element={<AdopterMyRequests />} />
+        <Route path="/adopter/request/:petId" element={<RequestAdoption />} />
+        <Route path="/adopter/request-accepted" element={<RequestAccepted />} />
         <Route path="/adopter/dashboard" element={
           <ProtectedRoute>
             <AdopterDashboard />

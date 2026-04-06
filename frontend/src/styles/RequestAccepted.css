@@ -1,0 +1,374 @@
+/* ── REQUEST ACCEPTED / DETAIL PAGE ── */
+/* Uses the existing PawPal design tokens from OwnerDashboard.css */
+
+.rac-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+/* ── LEFT: Pet Card ── */
+.rac-pet-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  position: sticky;
+  top: 24px;
+}
+
+.rac-pet-img-wrap {
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+}
+
+.rac-pet-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.rac-pet-no-img {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(145deg, #f5e6d3, #edd5c0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rac-pet-info { padding: 20px; }
+
+.rac-pet-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.rac-pet-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--green);
+}
+
+.rac-pet-breed {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.rac-pet-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rac-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.rac-meta-row svg {
+  width: 14px;
+  height: 14px;
+  stroke: var(--muted);
+  flex-shrink: 0;
+}
+
+/* ── RIGHT: Main Column ── */
+.rac-main-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ── Congrats / Hero Card ── */
+.rac-congrats-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px 32px 32px;
+  text-align: center;
+}
+
+.rac-check-circle {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+
+.rac-congrats-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 30px;
+  font-weight: 900;
+  color: var(--green);
+  margin-bottom: 6px;
+}
+
+.rac-congrats-sub {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  /* color set inline per status */
+}
+
+.rac-congrats-msg {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.7;
+  max-width: 480px;
+  margin: 0 auto 28px;
+}
+
+/* Info/steps box */
+.rac-next-steps {
+  border-radius: 10px;
+  padding: 16px 20px;
+  text-align: left;
+  /* background + border set inline per status */
+}
+
+.rac-next-steps-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  /* color set inline per status */
+}
+
+.rac-steps-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rac-steps-list li {
+  font-size: 13px;
+  color: var(--muted);
+  padding-left: 14px;
+  position: relative;
+  line-height: 1.55;
+}
+
+.rac-steps-list li::before {
+  content: "·";
+  position: absolute;
+  left: 0;
+  color: var(--bullet-color, var(--orange));
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+/* ── Owner Contact Card ── */
+.rac-owner-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px 32px;
+}
+
+.rac-owner-card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--green);
+  margin-bottom: 20px;
+}
+
+.rac-owner-identity {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.rac-owner-avatar {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  border-radius: 50%;
+  background: rgba(31,51,39,0.08);
+  border: 1.5px solid rgba(31,51,39,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rac-owner-avatar svg {
+  width: 22px;
+  height: 22px;
+  stroke: var(--green);
+}
+
+.rac-owner-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+
+.rac-owner-role {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.rac-contact-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--cream);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+
+.rac-contact-icon {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border-radius: 8px;
+  background: white;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rac-contact-icon svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--muted);
+}
+
+.rac-contact-info { flex: 1; }
+
+.rac-contact-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.rac-contact-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.rac-copy-btn {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.rac-copy-btn:hover {
+  border-color: var(--green);
+}
+
+.rac-copy-btn svg { width: 14px; height: 14px; }
+
+/* Back to Browse btn (inside owner card) */
+.rac-back-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--orange);
+  color: white;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 13px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.2s;
+}
+
+.rac-back-btn:hover { background: var(--orange-hover); }
+.rac-back-btn svg { width: 16px; height: 16px; }
+
+/* ── Reminders Card ── */
+.rac-reminders-card {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px 28px;
+}
+
+.rac-reminders-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--green);
+  margin-bottom: 14px;
+}
+
+.rac-reminders-title svg {
+  width: 16px;
+  height: 16px;
+  stroke: var(--green);
+}
+
+.rac-reminders-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rac-reminders-list li {
+  font-size: 13px;
+  color: var(--muted);
+  padding-left: 14px;
+  position: relative;
+  line-height: 1.55;
+}
+
+.rac-reminders-list li::before {
+  content: "·";
+  position: absolute;
+  left: 0;
+  color: var(--green);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .rac-layout { grid-template-columns: 1fr; }
+  .rac-pet-card { position: static; }
+}

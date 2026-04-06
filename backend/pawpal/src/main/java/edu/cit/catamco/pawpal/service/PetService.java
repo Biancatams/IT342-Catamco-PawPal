@@ -7,10 +7,9 @@ import edu.cit.catamco.pawpal.entity.User;
 import edu.cit.catamco.pawpal.repository.AdoptionRequestRepository;
 import edu.cit.catamco.pawpal.repository.PetRepository;
 import edu.cit.catamco.pawpal.repository.UserRepository;
+import edu.cit.catamco.pawpal.entity.AdoptionRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import edu.cit.catamco.pawpal.repository.AdoptionRequestRepository;
-import edu.cit.catamco.pawpal.entity.AdoptionRequest;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -24,10 +23,10 @@ public class PetService {
     private final UserRepository userRepository;
     private final AdoptionRequestRepository adoptionRequestRepository;
 
-    // Folder where uploaded images will be saved
     private final String uploadDir = "uploads/pets/";
 
-    public PetService(PetRepository petRepository, UserRepository userRepository, AdoptionRequestRepository adoptionRequestRepository) {
+    public PetService(PetRepository petRepository, UserRepository userRepository,
+                      AdoptionRequestRepository adoptionRequestRepository) {
         this.petRepository = petRepository;
         this.userRepository = userRepository;
         this.adoptionRequestRepository = adoptionRequestRepository;
@@ -36,46 +35,19 @@ public class PetService {
     // ── Post a Pet ──────────────────────────────────────────────────────────
     public AuthResponse createPet(String email, PetRequest request, MultipartFile image) {
         User owner = userRepository.findByEmail(email).orElse(null);
-        if (owner == null) {
-            return errorResponse("USER-001", "User not found.");
-        }
-
-        if (owner.getRole() != User.Role.PET_OWNER) {
+        if (owner == null) return errorResponse("USER-001", "User not found.");
+        if (owner.getRole() != User.Role.PET_OWNER)
             return errorResponse("AUTH-003", "Only Pet Owners can post pets.");
-        }
 
-        // Save image
-        String imageUrl = null;
-        if (image != null && !image.isEmpty()) {
-            try {
-                Path uploadPath = Paths.get(uploadDir);
-                if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
-                String filename = UUID.randomUUID() + "_" + image.getOriginalFilename();
-                Path filePath = uploadPath.resolve(filename);
-                Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-                imageUrl = "/uploads/pets/" + filename;
-            } catch (IOException e) {
-                return errorResponse("FILE-001", "Failed to upload image.");
-            }
-        }
+        String imageUrl = saveImage(image);
+        if (imageUrl == null && image != null && !image.isEmpty())
+            return errorResponse("FILE-001", "Failed to upload image.");
 
         Pet pet = new Pet();
+        applyRequest(pet, request);
         pet.setOwner(owner);
-        pet.setName(request.getName());
-        pet.setType(Pet.PetType.valueOf(request.getType().toUpperCase()));
-        pet.setBreed(request.getBreed());
-        pet.setAge(request.getAge());
-        if (request.getGender() != null && !request.getGender().isBlank()) {
-            pet.setGender(Pet.Gender.valueOf(request.getGender().toUpperCase()));
-        }
-        pet.setDescription(request.getDescription());
-        pet.setLocation(request.getLocation());
-        pet.setLatitude(request.getLatitude());
-        pet.setLongitude(request.getLongitude());
-        pet.setCharacteristics(request.getCharacteristics());
         pet.setImageUrl(imageUrl);
         pet.setStatus(Pet.PetStatus.AVAILABLE);
-
         petRepository.save(pet);
 
         return AuthResponse.builder()
@@ -105,9 +77,7 @@ public class PetService {
     // ── Get Pet by ID ────────────────────────────────────────────────────────
     public AuthResponse getPetById(Long id) {
         Pet pet = petRepository.findById(id).orElse(null);
-        if (pet == null) {
-            return errorResponse("DB-001", "Pet not found.");
-        }
+        if (pet == null) return errorResponse("DB-001", "Pet not found.");
         return AuthResponse.builder()
                 .success(true)
                 .data(toPetDetail(pet))
@@ -119,7 +89,6 @@ public class PetService {
     public AuthResponse getMyPets(String email) {
         User owner = userRepository.findByEmail(email).orElse(null);
         if (owner == null) return errorResponse("USER-001", "User not found.");
-
         List<Pet> pets = petRepository.findByOwner(owner);
         List<Map<String, Object>> petList = pets.stream().map(this::toPetSummary).toList();
         return AuthResponse.builder()
@@ -131,14 +100,10 @@ public class PetService {
 
     // ── Delete Pet ───────────────────────────────────────────────────────────
     public AuthResponse deletePet(String email, Long id) {
-        User owner = userRepository.findByEmail(email).orElse(null);
         Pet pet = petRepository.findById(id).orElse(null);
-
         if (pet == null) return errorResponse("DB-001", "Pet not found.");
-        if (!pet.getOwner().getEmail().equals(email)) {
+        if (!pet.getOwner().getEmail().equals(email))
             return errorResponse("AUTH-003", "You can only delete your own pets.");
-        }
-
         petRepository.delete(pet);
         return AuthResponse.builder()
                 .success(true)
@@ -147,73 +112,35 @@ public class PetService {
                 .build();
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
-    private Map<String, Object> toPetSummary(Pet pet) {
-        Map<String, Object> map = new LinkedHashMap<>();
-        map.put("id", pet.getId());
-        map.put("name", pet.getName());
-        map.put("type", pet.getType());
-        map.put("breed", pet.getBreed() != null ? pet.getBreed() : "");
-        map.put("age", pet.getAge());
-        map.put("gender", pet.getGender() != null ? pet.getGender() : "");
-        map.put("location", pet.getLocation());
-        map.put("imageUrl", pet.getImageUrl() != null ? pet.getImageUrl() : "");
-        map.put("status", pet.getStatus());
-        map.put("description", pet.getDescription() != null ? pet.getDescription() : "");
-        map.put("owner", Map.of(
-                "id", pet.getOwner().getId(),
-                "fullName", pet.getOwner().getFullName()
-        ));
-        // ← COUNT PENDING REQUESTS
-        long pendingCount = adoptionRequestRepository
-                .findByPetAndStatus(pet, AdoptionRequest.RequestStatus.PENDING)
-                .size();
-        map.put("requestCount", pendingCount);
-        map.put("createdAt", pet.getCreatedAt().toString());
-        return map;
-    }
+    // ── Update Pet ───────────────────────────────────────────────────────────
+    public AuthResponse updatePet(String email, Long id, PetRequest request, MultipartFile image) {
+        User owner = userRepository.findByEmail(email).orElse(null);
+        if (owner == null) return errorResponse("USER-001", "User not found.");
+        Pet pet = petRepository.findById(id).orElse(null);
+        if (pet == null) return errorResponse("DB-001", "Pet not found.");
+        if (!pet.getOwner().getEmail().equals(email))
+            return errorResponse("AUTH-003", "You can only edit your own pets.");
 
-    private Map<String, Object> toPetDetail(Pet pet) {
-        Map<String, Object> map = new LinkedHashMap<>(toPetSummary(pet));
-        map.put("description", pet.getDescription() != null ? pet.getDescription() : "");
-        map.put("latitude", pet.getLatitude());
-        map.put("longitude", pet.getLongitude());
-        map.put("characteristics", pet.getCharacteristics() != null ? pet.getCharacteristics() : List.of());
-        return map;
-    }
+        if (image != null && !image.isEmpty()) {
+            String imageUrl = saveImage(image);
+            if (imageUrl == null) return errorResponse("FILE-001", "Failed to upload image.");
+            pet.setImageUrl(imageUrl);
+        }
 
-    private AuthResponse errorResponse(String code, String message) {
+        applyRequest(pet, request);
+        petRepository.save(pet);
+
         return AuthResponse.builder()
-                .success(false)
-                .error(Map.of("code", code, "message", message))
+                .success(true)
+                .data(toPetDetail(pet))
                 .timestamp(LocalDateTime.now().toString())
                 .build();
     }
 
-    public AuthResponse updatePet(String email, Long id, PetRequest request, MultipartFile image) {
-        User owner = userRepository.findByEmail(email).orElse(null);
-        if (owner == null) return errorResponse("USER-001", "User not found.");
+    // ── Helpers ───────────────────────────────────────────────────────────────
 
-        Pet pet = petRepository.findById(id).orElse(null);
-        if (pet == null) return errorResponse("DB-001", "Pet not found.");
-
-        if (!pet.getOwner().getEmail().equals(email))
-            return errorResponse("AUTH-003", "You can only edit your own pets.");
-
-        // Update image only if new one provided
-        if (image != null && !image.isEmpty()) {
-            try {
-                Path uploadPath = Paths.get(uploadDir);
-                if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
-                String filename = UUID.randomUUID() + "_" + image.getOriginalFilename();
-                Path filePath = uploadPath.resolve(filename);
-                Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-                pet.setImageUrl("/uploads/pets/" + filename);
-            } catch (IOException e) {
-                return errorResponse("FILE-001", "Failed to upload image.");
-            }
-        }
-
+    /** Apply all PetRequest fields onto a Pet entity (used by create + update). */
+    private void applyRequest(Pet pet, PetRequest request) {
         pet.setName(request.getName());
         pet.setType(Pet.PetType.valueOf(request.getType().toUpperCase()));
         pet.setBreed(request.getBreed());
@@ -227,11 +154,64 @@ public class PetService {
         if (request.getLongitude() != null) pet.setLongitude(request.getLongitude());
         if (request.getCharacteristics() != null) pet.setCharacteristics(request.getCharacteristics());
 
-        petRepository.save(pet);
+        // Health flags — default false if not provided
+        pet.setVaccinated(Boolean.TRUE.equals(request.getVaccinated()));
+        pet.setNeutered(Boolean.TRUE.equals(request.getNeutered()));
+        pet.setMicrochipped(Boolean.TRUE.equals(request.getMicrochipped()));
+        pet.setHealthChecked(Boolean.TRUE.equals(request.getHealthChecked()));
+    }
 
+    private String saveImage(MultipartFile image) {
+        if (image == null || image.isEmpty()) return null;
+        try {
+            Path uploadPath = Paths.get(uploadDir);
+            if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
+            String filename = UUID.randomUUID() + "_" + image.getOriginalFilename();
+            Files.copy(image.getInputStream(), uploadPath.resolve(filename),
+                    StandardCopyOption.REPLACE_EXISTING);
+            return "/uploads/pets/" + filename;
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    private Map<String, Object> toPetSummary(Pet pet) {
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("id", pet.getId());
+        map.put("name", pet.getName());
+        map.put("type", pet.getType());
+        map.put("breed", pet.getBreed() != null ? pet.getBreed() : "");
+        map.put("age", pet.getAge());
+        map.put("gender", pet.getGender() != null ? pet.getGender() : "");
+        map.put("location", pet.getLocation());
+        map.put("imageUrl", pet.getImageUrl() != null ? pet.getImageUrl() : "");
+        map.put("status", pet.getStatus());
+        map.put("description", pet.getDescription() != null ? pet.getDescription() : "");
+        map.put("owner", Map.of("id", pet.getOwner().getId(), "fullName", pet.getOwner().getFullName()));
+        long pendingCount = adoptionRequestRepository
+                .findByPetAndStatus(pet, AdoptionRequest.RequestStatus.PENDING).size();
+        map.put("requestCount", pendingCount);
+        map.put("createdAt", pet.getCreatedAt().toString());
+        return map;
+    }
+
+    private Map<String, Object> toPetDetail(Pet pet) {
+        Map<String, Object> map = new LinkedHashMap<>(toPetSummary(pet));
+        map.put("latitude", pet.getLatitude());
+        map.put("longitude", pet.getLongitude());
+        map.put("characteristics", pet.getCharacteristics() != null ? pet.getCharacteristics() : List.of());
+        // Health & Care
+        map.put("vaccinated", Boolean.TRUE.equals(pet.getVaccinated()));
+        map.put("neutered", Boolean.TRUE.equals(pet.getNeutered()));
+        map.put("microchipped", Boolean.TRUE.equals(pet.getMicrochipped()));
+        map.put("healthChecked", Boolean.TRUE.equals(pet.getHealthChecked()));
+        return map;
+    }
+
+    private AuthResponse errorResponse(String code, String message) {
         return AuthResponse.builder()
-                .success(true)
-                .data(toPetDetail(pet))
+                .success(false)
+                .error(Map.of("code", code, "message", message))
                 .timestamp(LocalDateTime.now().toString())
                 .build();
     }

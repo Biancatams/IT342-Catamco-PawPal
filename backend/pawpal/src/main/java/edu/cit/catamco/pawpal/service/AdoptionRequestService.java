@@ -102,6 +102,14 @@ public class AdoptionRequestService {
                     "age", r.getPet().getAge(),
                     "imageUrl", r.getPet().getImageUrl() != null ? r.getPet().getImageUrl() : ""
             ));
+
+            User owner = r.getPet().getOwner();
+            map.put("owner", Map.of(
+                    "fullName", owner.getFullName(),
+                    "email", owner.getEmail(),
+                    "phoneNumber", owner.getPhoneNumber() != null ? owner.getPhoneNumber() : "",
+                    "profileImageUrl", owner.getProfileImageUrl() != null ? owner.getProfileImageUrl() : ""
+            ));
             map.put("status", r.getStatus());
             map.put("createdAt", r.getCreatedAt().toString());
             return map;

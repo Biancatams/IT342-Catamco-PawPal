@@ -15,6 +15,12 @@ public class PetRequest {
     private Double longitude;
     private List<String> characteristics;
 
+    // Health & Care
+    private Boolean vaccinated;
+    private Boolean neutered;
+    private Boolean microchipped;
+    private Boolean healthChecked;
+
     public String getName() { return name; }
     public String getType() { return type; }
     public String getBreed() { return breed; }
@@ -25,6 +31,10 @@ public class PetRequest {
     public Double getLatitude() { return latitude; }
     public Double getLongitude() { return longitude; }
     public List<String> getCharacteristics() { return characteristics; }
+    public Boolean getVaccinated() { return vaccinated; }
+    public Boolean getNeutered() { return neutered; }
+    public Boolean getMicrochipped() { return microchipped; }
+    public Boolean getHealthChecked() { return healthChecked; }
 
     public void setName(String name) { this.name = name; }
     public void setType(String type) { this.type = type; }
@@ -36,4 +46,8 @@ public class PetRequest {
     public void setLatitude(Double latitude) { this.latitude = latitude; }
     public void setLongitude(Double longitude) { this.longitude = longitude; }
     public void setCharacteristics(List<String> characteristics) { this.characteristics = characteristics; }
+    public void setVaccinated(Boolean vaccinated) { this.vaccinated = vaccinated; }
+    public void setNeutered(Boolean neutered) { this.neutered = neutered; }
+    public void setMicrochipped(Boolean microchipped) { this.microchipped = microchipped; }
+    public void setHealthChecked(Boolean healthChecked) { this.healthChecked = healthChecked; }
 }
