@@ -1,34 +1,25 @@
 package edu.cit.catamco.pawpal.dto;
 
 public class AuthResponse {
-    private boolean success;
-    private Object data;
-    private Object error;
-    private String timestamp;
 
-    public AuthResponse() {}
+    private final boolean success;
+    private final Object data;
+    private final Object error;
+    private final String timestamp;
 
-    public AuthResponse(boolean success, Object data,
-                        Object error, String timestamp) {
-        this.success = success;
-        this.data = data;
-        this.error = error;
-        this.timestamp = timestamp;
+    // Private constructor — forces use of Builder
+    private AuthResponse(Builder builder) {
+        this.success   = builder.success;
+        this.data      = builder.data;
+        this.error     = builder.error;
+        this.timestamp = builder.timestamp;
     }
 
-    // Getters
-    public boolean isSuccess() { return success; }
-    public Object getData() { return data; }
-    public Object getError() { return error; }
-    public String getTimestamp() { return timestamp; }
+    public boolean isSuccess()    { return success; }
+    public Object getData()       { return data; }
+    public Object getError()      { return error; }
+    public String getTimestamp()  { return timestamp; }
 
-    // Setters
-    public void setSuccess(boolean success) { this.success = success; }
-    public void setData(Object data) { this.data = data; }
-    public void setError(Object error) { this.error = error; }
-    public void setTimestamp(String timestamp) { this.timestamp = timestamp; }
-
-    // Builder
     public static Builder builder() { return new Builder(); }
 
     public static class Builder {
@@ -37,20 +28,30 @@ public class AuthResponse {
         private Object error;
         private String timestamp;
 
+        private Builder() {}
+
         public Builder success(boolean success) {
-            this.success = success; return this;
+            this.success = success;
+            return this;
         }
+
         public Builder data(Object data) {
-            this.data = data; return this;
+            this.data = data;
+            return this;
         }
+
         public Builder error(Object error) {
-            this.error = error; return this;
+            this.error = error;
+            return this;
         }
+
         public Builder timestamp(String timestamp) {
-            this.timestamp = timestamp; return this;
+            this.timestamp = timestamp;
+            return this;
         }
+
         public AuthResponse build() {
-            return new AuthResponse(success, data, error, timestamp);
+            return new AuthResponse(this);
         }
     }
 }
