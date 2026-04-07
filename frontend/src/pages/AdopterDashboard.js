@@ -7,47 +7,92 @@ import "../styles/OwnerDashboard.css";
 import "../styles/AdopterDashboard.css";
 import LogoutModal from "../components/LogoutModal";
 
+
+const filterByAvailability = (pets) =>
+  pets.filter((p) => p.status === "AVAILABLE");
+
+const filterByType = (pets, type) =>
+  type === "ALL" ? pets : pets.filter((p) => p.type === type);
+
+const filterBySearch = (pets, search) => {
+  if (!search.trim()) return pets;
+  const q = search.toLowerCase();
+  return pets.filter(
+    (p) =>
+      p.name?.toLowerCase().includes(q) ||
+      p.breed?.toLowerCase().includes(q) ||
+      p.location?.toLowerCase().includes(q)
+  );
+};
+
+// Compose all strategies — each filters the result of the previous
+const filterPets = (pets, type, search) => {
+  let result = filterByAvailability(pets);
+  result = filterByType(result, type);
+  result = filterBySearch(result, search);
+  return result;
+};
+
+// ── Component ────────────────────────────────────────────────────────────────
+
 export default function AdopterDashboard() {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user") || "{}");
   const token = localStorage.getItem("token");
   const [pets, setPets] = useState([]);
+  const [myRequests, setMyRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("ALL");
+  const [showLogout, setShowLogout] = useState(false);
 
-  useEffect(() => { fetchPets(); }, []);
+  useEffect(() => { fetchAll(); }, []);
 
-  const fetchPets = async () => {
+  const fetchAll = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/api/v1/pets", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setPets(res.data.data?.pets || []);
+      const [petsRes, reqRes] = await Promise.all([
+        axios.get("http://localhost:8080/api/v1/pets", {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        axios.get("http://localhost:8080/api/v1/adoption-requests/my", {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      ]);
+      setPets(petsRes.data.data?.pets || []);
+      setMyRequests(reqRes.data.data || []);
     } catch (err) {
-      console.error("Failed to load pets", err);
+      console.error("Failed to load data", err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleLogout = () => {
+  const requestByPetId = myRequests.reduce((acc, r) => {
+    if (r.pet?.id) acc[r.pet.id] = r;
+    return acc;
+  }, {});
+
+  const hasPendingRequest = myRequests.some((r) => r.status === "PENDING");
+
+  const confirmLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/");
   };
 
-  const filtered = pets.filter((p) => {
-    const matchesType = filterType === "ALL" || p.type === filterType;
-    const matchesSearch =
-      p.name?.toLowerCase().includes(search.toLowerCase()) ||
-      p.breed?.toLowerCase().includes(search.toLowerCase()) ||
-      p.location?.toLowerCase().includes(search.toLowerCase());
-    return matchesType && matchesSearch && p.status === "AVAILABLE";
-  });
+  // Strategy pattern applied here — clean, composable, readable
+  const filtered = filterPets(pets, filterType, search);
+
+  const statusConfig = {
+    PENDING:  { label: "Pending",  badgeCls: "badge-pending" },
+    APPROVED: { label: "Approved", badgeCls: "badge-available" },
+    DECLINED: { label: "Declined", badgeCls: "badge-adopted" },
+  };
 
   return (
     <div className="od-page">
+      {showLogout && <LogoutModal onConfirm={confirmLogout} onCancel={() => setShowLogout(false)} />}
+
       <nav className="navbar">
         <button className="navbar-brand" onClick={() => navigate("/")}>
           <img src={pawLogo} alt="PawPal logo" className="navbar-logo-img" />
@@ -57,7 +102,7 @@ export default function AdopterDashboard() {
           <button className="navbar-link active" onClick={() => navigate("/adopter/dashboard")}>Browse</button>
           <button className="navbar-link" onClick={() => navigate("/adopter/requests")}>My Requests</button>
           <button className="navbar-link" onClick={() => navigate("/adopter/profile")}>Profile</button>
-          <button className="navbar-btn-outline" onClick={handleLogout}>Logout</button>
+          <button className="navbar-btn-outline" onClick={() => setShowLogout(true)}>Logout</button>
         </div>
       </nav>
 
@@ -71,7 +116,20 @@ export default function AdopterDashboard() {
           </div>
         </div>
 
-        {/* Search + Filter */}
+        {hasPendingRequest && (
+          <div style={{
+            display: "flex", alignItems: "center", gap: 10,
+            background: "rgba(199,105,83,0.08)", border: "1px solid rgba(199,105,83,0.25)",
+            borderRadius: 12, padding: "12px 16px", marginBottom: 20,
+            color: "#9a4a35", fontSize: 14, fontWeight: 500,
+          }}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 18, height: 18, flexShrink: 0 }}>
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            You have a pending adoption request. You can only submit one request at a time — please wait for a response before applying for another pet.
+          </div>
+        )}
+
         <div className="ad-search-row">
           <div className="ad-search-wrap">
             <svg className="ad-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -97,7 +155,6 @@ export default function AdopterDashboard() {
           </div>
         </div>
 
-        {/* Grid */}
         {loading ? (
           <div className="od-loading">
             <div className="od-spinner" />
@@ -111,52 +168,115 @@ export default function AdopterDashboard() {
           </div>
         ) : (
           <div className="od-grid">
-            {filtered.map((pet) => (
-              <div key={pet.id} className="od-pet-card" onClick={() => navigate(`/adopter/pet/${pet.id}`, { state: { pet } })}>
-                <div className="od-pet-img-wrap">
-                  {pet.imageUrl ? (
-                    <img src={`http://localhost:8080${pet.imageUrl}`} alt={pet.name} className="od-pet-img" />
-                  ) : (
-                    <div className="od-pet-no-img"><span>🐾</span></div>
-                  )}
-                  <span className="od-badge badge-available">Available</span>
-                </div>
-                <div className="od-pet-body">
-                  <h3 className="od-pet-name">{pet.name}</h3>
-                  {pet.breed && <p className="od-pet-breed">{pet.breed}</p>}
-                  <div className="od-pet-meta">
-                    {pet.age && (
-                      <div className="od-meta-row">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-                        </svg>
-                        <span>{pet.age}</span>
-                      </div>
+            {filtered.map((pet) => {
+              const existingReq = requestByPetId[pet.id];
+              const reqStatus = existingReq?.status;
+              const cfg = reqStatus ? statusConfig[reqStatus] : null;
+
+              const isThisPetPending = reqStatus === "PENDING";
+              const isBlockedByOtherPending = !reqStatus && hasPendingRequest;
+              const isApproved = reqStatus === "APPROVED";
+              const isDeclined = reqStatus === "DECLINED";
+
+              return (
+                <div
+                  key={pet.id}
+                  className="od-pet-card"
+                  onClick={() => navigate(`/adopter/pet/${pet.id}`, {
+                    state: { pet, existingStatus: reqStatus || null }
+                  })}
+                  style={{ opacity: isBlockedByOtherPending ? 0.65 : 1 }}
+                >
+                  <div className="od-pet-img-wrap">
+                    {pet.imageUrl ? (
+                      <img src={`http://localhost:8080${pet.imageUrl}`} alt={pet.name} className="od-pet-img" />
+                    ) : (
+                      <div className="od-pet-no-img"><span>🐾</span></div>
                     )}
-                    <div className="od-meta-row">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                      </svg>
-                      <span>{pet.type}</span>
-                    </div>
-                    {pet.location && (
-                      <div className="od-meta-row">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-                        </svg>
-                        <span>{pet.location}</span>
-                      </div>
+                    {cfg ? (
+                      <span className={`od-badge ${cfg.badgeCls}`} style={{ position: "absolute", top: 10, right: 10 }}>
+                        {cfg.label}
+                      </span>
+                    ) : (
+                      <span className="od-badge badge-available">Available</span>
                     )}
                   </div>
-                  <button className="od-btn-view" style={{ marginTop: 4 }}>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                    </svg>
-                    Adopt Me
-                  </button>
+                  <div className="od-pet-body">
+                    <h3 className="od-pet-name">{pet.name}</h3>
+                    {pet.breed && <p className="od-pet-breed">{pet.breed}</p>}
+                    <div className="od-pet-meta">
+                      {pet.age && (
+                        <div className="od-meta-row">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                          </svg>
+                          <span>{pet.age}</span>
+                        </div>
+                      )}
+                      <div className="od-meta-row">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                        </svg>
+                        <span>{pet.type}</span>
+                      </div>
+                      {pet.location && (
+                        <div className="od-meta-row">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                          </svg>
+                          <span>{pet.location}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {isThisPetPending ? (
+                      <button className="od-btn-edit" style={{ marginTop: 4, cursor: "default", opacity: 0.85 }}
+                        onClick={(e) => { e.stopPropagation(); navigate("/adopter/requests"); }}>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                        Request Pending
+                      </button>
+                    ) : isApproved ? (
+                      <button className="od-btn-view" style={{ marginTop: 4, background: "var(--green)" }}
+                        onClick={(e) => { e.stopPropagation(); navigate("/adopter/request-accepted", {
+                          state: { pet, owner: existingReq?.owner, status: "APPROVED" }
+                        }); }}>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        Approved — View Details
+                      </button>
+                    ) : isDeclined ? (
+                      <button className="od-btn-edit" style={{ marginTop: 4, opacity: 0.75 }}
+                        onClick={(e) => { e.stopPropagation(); navigate(`/adopter/pet/${pet.id}`, {
+                          state: { pet, existingStatus: "DECLINED" }
+                        }); }}>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                        Request Declined
+                      </button>
+                    ) : isBlockedByOtherPending ? (
+                      <button className="od-btn-view" style={{ marginTop: 4, background: "#ccc", cursor: "not-allowed" }}
+                        onClick={(e) => e.stopPropagation()} disabled>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+                        </svg>
+                        Unavailable
+                      </button>
+                    ) : (
+                      <button className="od-btn-view" style={{ marginTop: 4 }}>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                        </svg>
+                        Adopt Me
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
