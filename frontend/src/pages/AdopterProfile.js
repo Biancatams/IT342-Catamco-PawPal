@@ -8,7 +8,7 @@ import LogoutModal from "../components/LogoutModal";
 
 export default function AdopterProfile() {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user") || "{}"));
   const token = localStorage.getItem("token");
 
   const [requests, setRequests] = useState([]);
@@ -92,6 +92,7 @@ export default function AdopterProfile() {
         profileImageUrl: res.data.data.profileImageUrl,
       };
       localStorage.setItem("user", JSON.stringify(updated));
+      setUser(updated);
       setSaveMsg("Profile updated!");
       setEditing(false);
       setProfileImg(null);
@@ -149,7 +150,6 @@ export default function AdopterProfile() {
       <div className="od-body">
         <div className="prof-layout">
 
-          {/* SIDEBAR */}
           <div className="prof-sidebar">
             <div className="prof-card">
               <div className="prof-card-header">
@@ -236,7 +236,6 @@ export default function AdopterProfile() {
                         </div>
                       </div>
                     </div>
-
                     <div className="prof-field-item">
                       <div className="prof-field-icon-row">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -248,7 +247,6 @@ export default function AdopterProfile() {
                         </div>
                       </div>
                     </div>
-
                     <div className="prof-field-item">
                       <div className="prof-field-icon-row">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -260,7 +258,6 @@ export default function AdopterProfile() {
                         </div>
                       </div>
                     </div>
-
                     <div className="prof-field-item">
                       <div className="prof-field-icon-row">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -272,7 +269,6 @@ export default function AdopterProfile() {
                         </div>
                       </div>
                     </div>
-
                     <div className="prof-field-item">
                       <div className="prof-field-icon-row">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -291,7 +287,6 @@ export default function AdopterProfile() {
               )}
             </div>
 
-            {/* Quick Stats */}
             <div className="prof-card prof-stats-card">
               <h3 className="prof-card-title">Quick Stats</h3>
               <p className="prof-card-sub">Your adoption activity</p>
@@ -326,7 +321,6 @@ export default function AdopterProfile() {
             </div>
           </div>
 
-          {/* MAIN: Recent Requests */}
           <div className="prof-main">
             <div className="prof-pets-card">
               <div className="prof-pets-header">
@@ -343,9 +337,7 @@ export default function AdopterProfile() {
                 <div className="od-empty">
                   <div className="od-empty-icon">🐾</div>
                   <p>No adoption requests yet.</p>
-                  <button className="od-post-btn" onClick={() => navigate("/adopter/dashboard")}>
-                    Browse Pets
-                  </button>
+                  <button className="od-post-btn" onClick={() => navigate("/adopter/dashboard")}>Browse Pets</button>
                 </div>
               ) : (
                 <div className="prof-pets-grid">
@@ -366,18 +358,13 @@ export default function AdopterProfile() {
                         <div className="prof-pet-item-name">{req.pet?.name || "Pet"}</div>
                         <div className="prof-pet-item-breed">{req.pet?.breed || req.pet?.age || ""}</div>
                         <div className="prof-pet-item-meta">
-                          <span
-                            className={`od-badge ${statusClass(req.status)}`}
-                            style={{ position: "static", fontSize: 10, padding: "2px 8px" }}
-                          >
+                          <span className={`od-badge ${statusClass(req.status)}`} style={{ position: "static", fontSize: 10, padding: "2px 8px" }}>
                             {statusLabel(req.status)}
                           </span>
                         </div>
                         {req.createdAt && (
                           <div className="prof-pet-item-date">
-                            {new Date(req.createdAt).toLocaleDateString("en-US", {
-                              month: "short", day: "numeric", year: "numeric",
-                            })}
+                            {new Date(req.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                           </div>
                         )}
                       </div>

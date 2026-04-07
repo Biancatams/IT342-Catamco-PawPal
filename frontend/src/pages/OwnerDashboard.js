@@ -71,6 +71,8 @@ export default function OwnerDashboard() {
   const statusClass = (s) =>
     s === "AVAILABLE" ? "badge-available" : s === "PENDING" ? "badge-pending" : "badge-adopted";
 
+  const firstName = user.fullName?.split(" ")[0] || "there";
+
   return (
     <div className="od-page">
 
@@ -128,7 +130,9 @@ export default function OwnerDashboard() {
         <div className="od-header">
           <div>
             <h1 className="od-title">My Posted Pets</h1>
-            <p className="od-subtitle">Manage your pet listings and adoption requests</p>
+            <p className="od-subtitle">
+              Hello, {firstName} — manage your pet listings and adoption requests.
+            </p>
           </div>
           <button className="od-post-btn" onClick={() => navigate("/owner/post-pet")}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

@@ -31,6 +31,9 @@ public class AdoptionRequest {
     @Column(columnDefinition = "TEXT")
     private String noteToOwner;
 
+    @Column(columnDefinition = "TEXT")
+    private String declineReason;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private RequestStatus status = RequestStatus.PENDING;
@@ -52,6 +55,7 @@ public class AdoptionRequest {
     public String getContactInfo() { return contactInfo; }
     public String getReason() { return reason; }
     public String getNoteToOwner() { return noteToOwner; }
+    public String getDeclineReason() { return declineReason; }
     public RequestStatus getStatus() { return status; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 
@@ -61,5 +65,6 @@ public class AdoptionRequest {
     public void setContactInfo(String contactInfo) { this.contactInfo = contactInfo; }
     public void setReason(String reason) { this.reason = reason; }
     public void setNoteToOwner(String noteToOwner) { this.noteToOwner = noteToOwner; }
+    public void setDeclineReason(String declineReason) { this.declineReason = declineReason; }
     public void setStatus(RequestStatus status) { this.status = status; }
 }

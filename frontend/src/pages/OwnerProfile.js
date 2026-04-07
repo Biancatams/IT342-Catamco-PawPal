@@ -8,7 +8,7 @@ import LogoutModal from "../components/LogoutModal";
 
 export default function OwnerProfile() {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user") || "{}"));
   const token = localStorage.getItem("token");
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -94,6 +94,7 @@ export default function OwnerProfile() {
         profileImageUrl: res.data.data.profileImageUrl,
       };
       localStorage.setItem("user", JSON.stringify(updated));
+      setUser(updated);
       setSaveMsg("Profile updated!");
       setEditing(false);
       setProfileImg(null);
@@ -185,13 +186,7 @@ export default function OwnerProfile() {
                     </svg>
                   )}
                 </div>
-                <input
-                  ref={profileImgRef}
-                  type="file"
-                  accept="image/*"
-                  style={{ display: "none" }}
-                  onChange={handleProfileImg}
-                />
+                <input ref={profileImgRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleProfileImg} />
               </div>
 
               {editing ? (
@@ -240,7 +235,6 @@ export default function OwnerProfile() {
                         </div>
                       </div>
                     </div>
-
                     <div className="prof-field-item">
                       <div className="prof-field-icon-row">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -252,7 +246,6 @@ export default function OwnerProfile() {
                         </div>
                       </div>
                     </div>
-
                     <div className="prof-field-item">
                       <div className="prof-field-icon-row">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -264,7 +257,6 @@ export default function OwnerProfile() {
                         </div>
                       </div>
                     </div>
-
                     <div className="prof-field-item">
                       <div className="prof-field-icon-row">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -276,7 +268,6 @@ export default function OwnerProfile() {
                         </div>
                       </div>
                     </div>
-
                     <div className="prof-field-item">
                       <div className="prof-field-icon-row">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -295,7 +286,6 @@ export default function OwnerProfile() {
               )}
             </div>
 
-            {/* Quick Stats */}
             <div className="prof-card prof-stats-card">
               <h3 className="prof-card-title">Quick Stats</h3>
               <p className="prof-card-sub">Your pet listing overview</p>
@@ -323,7 +313,6 @@ export default function OwnerProfile() {
             </div>
           </div>
 
-          {/* MAIN */}
           <div className="prof-main">
             <div className="prof-pets-card">
               <div className="prof-pets-header">
@@ -340,9 +329,7 @@ export default function OwnerProfile() {
                 <div className="od-empty">
                   <div className="od-empty-icon">🐾</div>
                   <p>No pets posted yet.</p>
-                  <button className="od-post-btn" onClick={() => navigate("/owner/post-pet")}>
-                    Post Your First Pet
-                  </button>
+                  <button className="od-post-btn" onClick={() => navigate("/owner/post-pet")}>Post Your First Pet</button>
                 </div>
               ) : (
                 <div className="prof-pets-grid">
@@ -364,17 +351,14 @@ export default function OwnerProfile() {
                         <div className="prof-pet-item-name">{pet.name}</div>
                         <div className="prof-pet-item-breed">{pet.breed || pet.type}</div>
                         <div className="prof-pet-item-meta">
-                          <span className={`od-badge ${statusClass(pet.status)}`}
-                            style={{ position: "static", fontSize: 10, padding: "2px 8px" }}>
+                          <span className={`od-badge ${statusClass(pet.status)}`} style={{ position: "static", fontSize: 10, padding: "2px 8px" }}>
                             {statusLabel(pet.status)}
                           </span>
                           {pet.age && <span className="prof-pet-item-age">{pet.age}</span>}
                         </div>
                         {pet.createdAt && (
                           <div className="prof-pet-item-date">
-                            {new Date(pet.createdAt).toLocaleDateString("en-US", {
-                              month: "short", day: "numeric", year: "numeric"
-                            })}
+                            {new Date(pet.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                           </div>
                         )}
                       </div>

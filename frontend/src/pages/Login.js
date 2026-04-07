@@ -30,6 +30,14 @@ export default function Login() {
     }
   };
 
+  const fetchAndSaveFullUser = async (token) => {
+    const meRes = await axios.get("http://localhost:8080/api/v1/users/me", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    localStorage.setItem("user", JSON.stringify(meRes.data.data));
+    return meRes.data.data;
+  };
+
   const handleSubmit = async () => {
     if (!form.email || !form.password) {
       setError("Please enter your email and password.");
@@ -39,9 +47,10 @@ export default function Login() {
     try {
       const res = await axios.post("http://localhost:8080/api/v1/auth/login", form);
       if (res.data.success) {
-        localStorage.setItem("token", res.data.data.accessToken);
-        localStorage.setItem("user", JSON.stringify(res.data.data.user));
-        handleNavigateByRole(res.data.data.user);
+        const token = res.data.data.accessToken;
+        localStorage.setItem("token", token);
+        const fullUser = await fetchAndSaveFullUser(token);
+        handleNavigateByRole(fullUser);
       } else {
         setError(res.data.error?.message || "Login failed.");
       }
@@ -60,9 +69,10 @@ export default function Login() {
           { token: tokenResponse.access_token }
         );
         if (res.data.success) {
-          localStorage.setItem("token", res.data.data.accessToken);
-          localStorage.setItem("user", JSON.stringify(res.data.data.user));
-          handleNavigateByRole(res.data.data.user);
+          const token = res.data.data.accessToken;
+          localStorage.setItem("token", token);
+          const fullUser = await fetchAndSaveFullUser(token);
+          handleNavigateByRole(fullUser);
         } else {
           setError(res.data.error?.message || "Google login failed.");
         }
