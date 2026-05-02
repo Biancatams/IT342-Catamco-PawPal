@@ -17,7 +17,7 @@
         tools:targetApi="31">
 
         <activity
-            android:name=".LandingActivity"
+            android:name=".features.auth.LandingActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,14 +25,14 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".RegisterActivity" />
-        <activity android:name=".DashboardActivity" />
-        <activity android:name=".GoogleAuthActivity" />
+        <activity android:name=".features.auth.LoginActivity" />
+        <activity android:name=".features.auth.RegisterActivity" />
+        <activity android:name=".features.auth.DashboardActivity" />
+        <activity android:name=".features.auth.GoogleAuthActivity" />
 
-        <activity android:name=".AdopterDashboardActivity" />
-        <activity android:name=".OwnerDashboardActivity" />
-        <activity android:name=".AdminDashboardActivity" />
+        <activity android:name=".features.adoption.AdopterDashboardActivity" />
+        <activity android:name=".features.pets.OwnerDashboardActivity" />
+        <activity android:name=".features.admin.AdminDashboardActivity" />
 
     </application>
 
