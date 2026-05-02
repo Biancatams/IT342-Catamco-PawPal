@@ -1,8 +1,8 @@
-package edu.cit.catamco.pawpal.service;
+package edu.cit.catamco.pawpal.features.auth;
 
 import edu.cit.catamco.pawpal.dto.*;
-import edu.cit.catamco.pawpal.entity.User;
-import edu.cit.catamco.pawpal.repository.UserRepository;
+import edu.cit.catamco.pawpal.features.auth.User;
+import edu.cit.catamco.pawpal.features.auth.UserRepository;
 import edu.cit.catamco.pawpal.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;

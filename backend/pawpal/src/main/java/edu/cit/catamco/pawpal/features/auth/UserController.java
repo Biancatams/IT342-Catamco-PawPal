@@ -1,7 +1,7 @@
-package edu.cit.catamco.pawpal.controller;
+package edu.cit.catamco.pawpal.features.auth;
 
 import edu.cit.catamco.pawpal.dto.AuthResponse;
-import edu.cit.catamco.pawpal.service.UserService;
+import edu.cit.catamco.pawpal.features.auth.UserService;
 import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;

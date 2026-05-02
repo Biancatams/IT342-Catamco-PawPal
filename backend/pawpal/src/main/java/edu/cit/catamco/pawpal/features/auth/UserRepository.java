@@ -1,6 +1,6 @@
-package edu.cit.catamco.pawpal.repository;
+package edu.cit.catamco.pawpal.features.auth;
 
-import edu.cit.catamco.pawpal.entity.User;
+import edu.cit.catamco.pawpal.features.auth.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 

@@ -1,7 +1,7 @@
-package edu.cit.catamco.pawpal.controller;
+package edu.cit.catamco.pawpal.features.adoption;
 
 import edu.cit.catamco.pawpal.dto.AuthResponse;
-import edu.cit.catamco.pawpal.facade.AdoptionFacade;
+import edu.cit.catamco.pawpal.features.adoption.AdoptionFacade;
 import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;

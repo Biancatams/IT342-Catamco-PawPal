@@ -1,7 +1,7 @@
-package edu.cit.catamco.pawpal.service;
+package edu.cit.catamco.pawpal.features.auth;
 
-import edu.cit.catamco.pawpal.entity.User;
-import edu.cit.catamco.pawpal.repository.UserRepository;
+import edu.cit.catamco.pawpal.features.auth.User;
+import edu.cit.catamco.pawpal.features.auth.UserRepository;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 

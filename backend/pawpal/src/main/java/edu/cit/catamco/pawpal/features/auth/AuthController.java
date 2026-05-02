@@ -1,7 +1,7 @@
-package edu.cit.catamco.pawpal.controller;
+package edu.cit.catamco.pawpal.features.auth;
 
 import edu.cit.catamco.pawpal.dto.*;
-import edu.cit.catamco.pawpal.service.AuthService;
+import edu.cit.catamco.pawpal.features.auth.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;

@@ -1,8 +1,8 @@
-package edu.cit.catamco.pawpal.repository;
+package edu.cit.catamco.pawpal.features.adoption;
 
-import edu.cit.catamco.pawpal.entity.AdoptionRequest;
-import edu.cit.catamco.pawpal.entity.Pet;
-import edu.cit.catamco.pawpal.entity.User;
+import edu.cit.catamco.pawpal.features.adoption.AdoptionRequest;
+import edu.cit.catamco.pawpal.features.pets.Pet;
+import edu.cit.catamco.pawpal.features.auth.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 

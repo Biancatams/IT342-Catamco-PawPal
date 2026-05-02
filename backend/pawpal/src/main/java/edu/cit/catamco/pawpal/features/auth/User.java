@@ -1,5 +1,4 @@
-package edu.cit.catamco.pawpal.entity;
-
+package edu.cit.catamco.pawpal.features.auth;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 

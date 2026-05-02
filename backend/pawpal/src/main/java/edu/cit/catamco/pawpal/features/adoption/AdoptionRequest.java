@@ -1,5 +1,6 @@
-package edu.cit.catamco.pawpal.entity;
-
+package edu.cit.catamco.pawpal.features.adoption;
+import edu.cit.catamco.pawpal.features.pets.Pet;
+import edu.cit.catamco.pawpal.features.auth.User;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 

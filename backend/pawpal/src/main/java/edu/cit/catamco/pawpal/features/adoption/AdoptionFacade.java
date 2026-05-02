@@ -1,4 +1,4 @@
-package edu.cit.catamco.pawpal.facade;
+package edu.cit.catamco.pawpal.features.adoption;
 
 import edu.cit.catamco.pawpal.dto.AuthResponse;
 import java.util.Map;

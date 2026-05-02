@@ -1,8 +1,8 @@
-package edu.cit.catamco.pawpal.controller;
+package edu.cit.catamco.pawpal.features.pets;
 
 import edu.cit.catamco.pawpal.dto.AuthResponse;
 import edu.cit.catamco.pawpal.dto.PetRequest;
-import edu.cit.catamco.pawpal.service.PetService;
+import edu.cit.catamco.pawpal.features.pets.PetService;
 import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;

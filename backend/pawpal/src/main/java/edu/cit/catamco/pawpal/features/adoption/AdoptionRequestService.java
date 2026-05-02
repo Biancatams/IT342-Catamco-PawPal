@@ -1,14 +1,14 @@
-package edu.cit.catamco.pawpal.service;
+package edu.cit.catamco.pawpal.features.adoption;
 
 import edu.cit.catamco.pawpal.dto.AuthResponse;
-import edu.cit.catamco.pawpal.entity.AdoptionRequest;
-import edu.cit.catamco.pawpal.entity.Pet;
-import edu.cit.catamco.pawpal.entity.User;
-import edu.cit.catamco.pawpal.facade.AdoptionFacade;
-import edu.cit.catamco.pawpal.observer.AdoptionEventListener;
-import edu.cit.catamco.pawpal.repository.AdoptionRequestRepository;
-import edu.cit.catamco.pawpal.repository.PetRepository;
-import edu.cit.catamco.pawpal.repository.UserRepository;
+import edu.cit.catamco.pawpal.features.adoption.AdoptionRequest;
+import edu.cit.catamco.pawpal.features.pets.Pet;
+import edu.cit.catamco.pawpal.features.auth.User;
+import edu.cit.catamco.pawpal.features.adoption.AdoptionFacade;
+import edu.cit.catamco.pawpal.features.adoption.AdoptionEventListener;
+import edu.cit.catamco.pawpal.features.adoption.AdoptionRequestRepository;
+import edu.cit.catamco.pawpal.features.pets.PetRepository;
+import edu.cit.catamco.pawpal.features.auth.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

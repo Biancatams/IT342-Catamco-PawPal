@@ -1,9 +1,9 @@
-package edu.cit.catamco.pawpal.observer;
+package edu.cit.catamco.pawpal.features.adoption;
 
-import edu.cit.catamco.pawpal.entity.AdoptionRequest;
-import edu.cit.catamco.pawpal.entity.Pet;
-import edu.cit.catamco.pawpal.repository.AdoptionRequestRepository;
-import edu.cit.catamco.pawpal.repository.PetRepository;
+import edu.cit.catamco.pawpal.features.adoption.AdoptionRequest;
+import edu.cit.catamco.pawpal.features.pets.Pet;
+import edu.cit.catamco.pawpal.features.adoption.AdoptionRequestRepository;
+import edu.cit.catamco.pawpal.features.pets.PetRepository;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
