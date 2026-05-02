@@ -1,9 +1,9 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import pawLogo from "../pawlogo.png";
-import homeDog from "../homedog.png";
-import "../styles/Navbar.css";
-import "../styles/Landing.css";
+import pawLogo from "../../pawlogo.png";
+import homeDog from "../../homedog.png";
+import "../../shared/styles/Navbar.css";
+import "./Landing.css";
 
 export default function Landing() {
   const navigate = useNavigate();

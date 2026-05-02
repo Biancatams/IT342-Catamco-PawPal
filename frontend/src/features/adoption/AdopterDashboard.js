@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import pawLogo from "../pawlogo.png";
-import "../styles/Navbar.css";
-import "../styles/OwnerDashboard.css";
-import "../styles/AdopterDashboard.css";
-import LogoutModal from "../components/LogoutModal";
+import pawLogo from "../../pawlogo.png";
+import "../../shared/styles/Navbar.css";
+import "../../shared/styles/OwnerDashboard.css";
+import "./AdopterDashboard.css";
+import LogoutModal from "../../shared/components/LogoutModal";
 
 
 const filterByAvailability = (pets) =>

@@ -1,9 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import pawLogo from "../pawlogo.png";
-import homeDog from "../homedog.png";
-import "../styles/Navbar.css";
-import "../styles/Home.css";
+import pawLogo from "../../pawlogo.png";
+import homeDog from "../../homedog.png";
+import "../../shared/styles/Navbar.css";
+import "./Home.css";
 
 export default function Home() {
   const navigate = useNavigate();

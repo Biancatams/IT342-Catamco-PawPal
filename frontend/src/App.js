@@ -1,22 +1,22 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Landing from "./pages/Landing";
-import Register from "./pages/Register";
-import Login from "./pages/Login";
-import Home from "./pages/Home";
+import Landing from "./features/auth/Landing";
+import Register from "./features/auth/Register";
+import Login from "./features/auth/Login";
+import Home from "./features/auth/Home";
 import ProtectedRoute from "./ProtectedRoute";
-import OwnerDashboard from "./pages/OwnerDashboard";
-import PostPet from "./pages/PostPet";
-import ViewRequests from "./pages/ViewRequests";
-import OwnerProfile from "./pages/OwnerProfile";
-import AdopterDashboard from "./pages/AdopterDashboard";
-import PetDetail from "./pages/PetDetail";
-import EditPet from "./pages/EditPet";
-import AdopterProfile from "./pages/AdopterProfile";
-import AdopterMyRequests from "./pages/AdopterMyRequests";
-import RequestAdoption from "./pages/RequestAdoption";
-import RequestAccepted from "./pages/RequestAccepted";
-import AdminDashboard from "./pages/AdminDashboard";
+import OwnerDashboard from "./features/pets/OwnerDashboard";
+import PostPet from "./features/pets/PostPet";
+import ViewRequests from "./features/adoption/ViewRequests";
+import OwnerProfile from "./features/pets/OwnerProfile";
+import AdopterDashboard from "./features/adoption/AdopterDashboard";
+import PetDetail from "./features/pets/PetDetail";
+import EditPet from "./features/pets/EditPet";
+import AdopterProfile from "./features/adoption/AdopterProfile";
+import AdopterMyRequests from "./features/adoption/AdopterMyRequests";
+import RequestAdoption from "./features/adoption/RequestAdoption";
+import RequestAccepted from "./features/adoption/RequestAccepted";
+import AdminDashboard from "./features/admin/AdminDashboard";
 
 function App() {
   return (

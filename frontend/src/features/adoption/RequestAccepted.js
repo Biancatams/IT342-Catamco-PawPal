@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import pawLogo from "../pawlogo.png";
-import "../styles/Navbar.css";
-import "../styles/OwnerDashboard.css";
-import "../styles/RequestAccepted.css";
-import LogoutModal from "../components/LogoutModal";
+import pawLogo from "../../pawlogo.png";
+import "../../shared/styles/Navbar.css";
+import "../../shared/styles/OwnerDashboard.css";
+import "./RequestAccepted.css";
+import LogoutModal from "../../shared/components/LogoutModal";
 
 /* ── Per-status configuration ─────────────────────────────── */
 const STATUS = {

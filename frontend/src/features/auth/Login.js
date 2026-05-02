@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { useGoogleLogin } from "@react-oauth/google";
-import pawLogo from "../pawlogo.png";
-import loginDog from "../loginregister dog.png";
-import "../styles/Navbar.css";
-import "../styles/Auth.css";
+import pawLogo from "../../pawlogo.png";
+import loginDog from "../../loginregister dog.png";
+import "../../shared/styles/Navbar.css";
+import "./Auth.css";
 
 export default function Login() {
   const navigate = useNavigate();

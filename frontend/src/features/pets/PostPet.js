@@ -1,10 +1,10 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import pawLogo from "../pawlogo.png";
-import "../styles/Navbar.css";
-import "../styles/OwnerDashboard.css";
-import LogoutModal from "../components/LogoutModal";
+import pawLogo from "../../pawlogo.png";
+import "../../shared/styles/Navbar.css";
+import "./OwnerDashboard.css";
+import LogoutModal from "../../shared/components/LogoutModal";
 
 const PERSONALITY_TRAITS = [
   "Friendly", "Energetic", "Playful", "Good with Kids", "Good with Dogs",

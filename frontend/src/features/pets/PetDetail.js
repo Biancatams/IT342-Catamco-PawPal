@@ -4,10 +4,10 @@ import axios from "axios";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import pawLogo from "../pawlogo.png";
-import "../styles/Navbar.css";
-import "../styles/PetDetail.css";
-import LogoutModal from "../components/LogoutModal";
+import pawLogo from "../../pawlogo.png";
+import "../../shared/styles/Navbar.css";
+import "./PetDetail.css";
+import LogoutModal from "../../shared/components/LogoutModal";
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
