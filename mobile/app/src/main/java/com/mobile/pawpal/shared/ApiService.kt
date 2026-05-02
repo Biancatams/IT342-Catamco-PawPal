@@ -1,4 +1,4 @@
-package com.mobile.pawpal
+package com.mobile.pawpal.shared
 
 import retrofit2.Response
 import retrofit2.http.Body

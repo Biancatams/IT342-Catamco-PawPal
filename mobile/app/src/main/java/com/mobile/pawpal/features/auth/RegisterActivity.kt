@@ -1,4 +1,4 @@
-package com.mobile.pawpal
+package com.mobile.pawpal.features.auth
 
 import android.content.Intent
 import android.os.Bundle
@@ -11,6 +11,9 @@ import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.mobile.pawpal.R
+import com.mobile.pawpal.shared.RegisterRequest
+import com.mobile.pawpal.shared.RetrofitClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

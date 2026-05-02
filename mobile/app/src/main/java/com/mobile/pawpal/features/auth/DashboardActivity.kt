@@ -1,8 +1,11 @@
-package com.mobile.pawpal
+package com.mobile.pawpal.features.auth
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.mobile.pawpal.features.admin.AdminDashboardActivity
+import com.mobile.pawpal.features.adoption.AdopterDashboardActivity
+import com.mobile.pawpal.features.pets.OwnerDashboardActivity
 
 class DashboardActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -1,8 +1,9 @@
-package com.mobile.pawpal
+package com.mobile.pawpal.features.auth
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.mobile.pawpal.R
 
 class LandingActivity : AppCompatActivity() {
 

@@ -1,4 +1,4 @@
-package com.mobile.pawpal
+package com.mobile.pawpal.shared
 
 data class LoginRequest(
     val email: String,
