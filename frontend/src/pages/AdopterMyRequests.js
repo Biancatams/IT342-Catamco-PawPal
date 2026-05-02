@@ -91,7 +91,6 @@ export default function AdopterMyRequests() {
           </div>
         </div>
 
-        {/* Stats */}
         <div className="od-stats" style={{ gridTemplateColumns: "repeat(4, 1fr)" }}>
           {statCards.map(({ key, label, iconCls, icon }) => (
             <div
@@ -123,7 +122,6 @@ export default function AdopterMyRequests() {
           ))}
         </div>
 
-        {/* Filter Tabs */}
         <div className="ad-filter-tabs" style={{ marginBottom: 24 }}>
           {["ALL", "PENDING", "APPROVED", "DECLINED"].map((t) => (
             <button
@@ -146,7 +144,6 @@ export default function AdopterMyRequests() {
           ))}
         </div>
 
-        {/* Content */}
         {loading ? (
           <div className="od-loading">
             <div className="od-spinner" />
@@ -169,8 +166,6 @@ export default function AdopterMyRequests() {
               const cfg = statusConfig[req.status] || statusConfig.PENDING;
               return (
                 <div key={req.id} className="amr-card">
-
-                  {/* Pet Image */}
                   <div className="amr-pet-img-wrap">
                     {req.pet?.imageUrl ? (
                       <img src={`http://localhost:8080${req.pet.imageUrl}`} alt={req.pet.name} className="amr-pet-img" />
@@ -183,7 +178,6 @@ export default function AdopterMyRequests() {
                     )}
                   </div>
 
-                  {/* Info */}
                   <div className="amr-info">
                     <div className="amr-top-row">
                       <div>
@@ -206,7 +200,6 @@ export default function AdopterMyRequests() {
 
                     <div className="amr-divider" />
 
-                    {/* Status Banner */}
                     <div
                       className="amr-status-banner"
                       style={{
@@ -214,7 +207,7 @@ export default function AdopterMyRequests() {
                         border: `1px solid ${cfg.bannerBorder}`,
                         color: cfg.bannerColor,
                         display: "flex",
-                        alignItems: "center",
+                        alignItems: "flex-start",
                         gap: 10,
                       }}
                     >
@@ -222,7 +215,7 @@ export default function AdopterMyRequests() {
                         width: 26, height: 26, borderRadius: "50%",
                         background: cfg.bannerBorder,
                         display: "flex", alignItems: "center", justifyContent: "center",
-                        flexShrink: 0,
+                        flexShrink: 0, marginTop: 1,
                       }}>
                         {req.status === "PENDING" && (
                           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 13, height: 13 }}>
@@ -240,11 +233,24 @@ export default function AdopterMyRequests() {
                           </svg>
                         )}
                       </span>
-                      <span style={{ fontSize: 13, fontWeight: 500, lineHeight: 1.5 }}>
+                      <div style={{ fontSize: 13, fontWeight: 500, lineHeight: 1.5 }}>
                         {req.status === "PENDING" && "Your request is under review by the pet owner."}
                         {req.status === "APPROVED" && "Your adoption request has been approved! Contact the owner."}
-                        {req.status === "DECLINED" && "Unfortunately, your adoption request was not approved this time."}
-                      </span>
+                        {req.status === "DECLINED" && (
+                          <>
+                            <span>Unfortunately, your adoption request was not approved this time.</span>
+                            {req.declineReason && (
+                              <div style={{
+                                marginTop: 6, padding: "7px 10px", borderRadius: 7,
+                                background: "rgba(220,38,38,0.07)", border: "1px solid rgba(220,38,38,0.15)",
+                                fontSize: 12, fontStyle: "italic", color: "#9b1c1c",
+                              }}>
+                                Owner's reason: "{req.declineReason}"
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
                     </div>
 
                     <div className="amr-date">
@@ -254,13 +260,12 @@ export default function AdopterMyRequests() {
                     </div>
                   </div>
 
-                  {/* Action Column */}
                   <div className="amr-actions">
                     {req.status === "APPROVED" && (
                       <button
                         className="od-btn-view"
                         onClick={() => navigate("/adopter/request-accepted", {
-                          state: { pet: req.pet, owner: req.owner, status: "APPROVED" }
+                          state: { pet: req.pet, owner: req.owner, status: "APPROVED", declineReason: null }
                         })}
                       >
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -272,7 +277,9 @@ export default function AdopterMyRequests() {
                     {req.status === "PENDING" && (
                       <button
                         className="od-btn-edit"
-                        onClick={() => navigate(`/adopter/pet/${req.pet?.id}`)}
+                        onClick={() => navigate(`/adopter/pet/${req.pet?.id}`, {
+                          state: { existingStatus: req.status }
+                        })}
                       >
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
@@ -284,7 +291,7 @@ export default function AdopterMyRequests() {
                       <button
                         className="od-btn-edit"
                         onClick={() => navigate("/adopter/request-accepted", {
-                          state: { pet: req.pet, owner: req.owner, status: "DECLINED" }
+                          state: { pet: req.pet, owner: req.owner, status: "DECLINED", declineReason: req.declineReason || null }
                         })}
                       >
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -294,7 +301,6 @@ export default function AdopterMyRequests() {
                       </button>
                     )}
                   </div>
-
                 </div>
               );
             })}

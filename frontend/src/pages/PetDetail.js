@@ -9,7 +9,6 @@ import "../styles/Navbar.css";
 import "../styles/PetDetail.css";
 import LogoutModal from "../components/LogoutModal";
 
-// Fix leaflet default marker icon broken in React
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
@@ -20,9 +19,10 @@ L.Icon.Default.mergeOptions({
 export default function PetDetail() {
   const navigate = useNavigate();
   const { petId } = useParams();
+  const location = useLocation();
   const token = localStorage.getItem("token");
+  const existingStatus = location.state?.existingStatus || null;
 
-  // Always fetch from API to guarantee we have coordinates + all fields
   const [pet, setPet] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -87,15 +87,14 @@ export default function PetDetail() {
       </nav>
 
       <div className="od-body">
-        <button className="vr-back-btn" onClick={() => navigate("/adopter/dashboard")} style={{ marginBottom: 24 }}>
+        <button className="vr-back-btn" onClick={() => navigate(-1)} style={{ marginBottom: 24 }}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6" />
           </svg>
-          Back to Browse
+          Back
         </button>
 
         <div className="pd-layout">
-          {/* LEFT: Pet Image */}
           <div className="pd-img-col">
             <div className="pd-img-wrap">
               {pet.imageUrl ? (
@@ -109,7 +108,6 @@ export default function PetDetail() {
             </div>
           </div>
 
-          {/* RIGHT: Pet Info */}
           <div className="pd-info-col">
             <div className="pd-card">
               <h1 className="pd-name">{pet.name}</h1>
@@ -150,13 +148,11 @@ export default function PetDetail() {
 
               <div className="pd-divider" />
 
-              {/* About */}
               <div className="pd-section">
                 <h3 className="pd-section-title">About {pet.name}</h3>
                 <p className="pd-description">{pet.description || "No description provided."}</p>
               </div>
 
-              {/* Personality Traits */}
               {traits.length > 0 && (
                 <>
                   <div className="pd-divider" />
@@ -171,7 +167,6 @@ export default function PetDetail() {
                 </>
               )}
 
-              {/* Health & Care */}
               {hasHealth && (
                 <>
                   <div className="pd-divider" />
@@ -237,7 +232,6 @@ export default function PetDetail() {
 
               <div className="pd-divider" />
 
-              {/* Location Map */}
               <div className="pd-section">
                 <h3 className="pd-section-title">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 16, height: 16 }}>
@@ -279,15 +273,56 @@ export default function PetDetail() {
 
               <div className="pd-divider" />
 
-              <button
-                className="pp-btn-submit"
-                onClick={() => navigate(`/adopter/request/${pet.id}`, { state: { pet } })}
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                </svg>
-                Request Adoption
-              </button>
+              {!existingStatus && (
+                <button
+                  className="pp-btn-submit"
+                  onClick={() => navigate(`/adopter/request/${pet.id}`, { state: { pet } })}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                  </svg>
+                  Request Adoption
+                </button>
+              )}
+
+              {existingStatus === "PENDING" && (
+                <div style={{
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
+                  background: "rgba(199,105,83,0.07)", border: "1px solid rgba(199,105,83,0.2)",
+                  borderRadius: 10, padding: "14px 20px", color: "#9a4a35", fontSize: 14, fontWeight: 600,
+                }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 16, height: 16 }}>
+                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                  Your request is pending review
+                </div>
+              )}
+
+              {existingStatus === "APPROVED" && (
+                <div style={{
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
+                  background: "rgba(22,163,74,0.07)", border: "1px solid rgba(22,163,74,0.2)",
+                  borderRadius: 10, padding: "14px 20px", color: "#15803d", fontSize: 14, fontWeight: 600,
+                }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 16, height: 16 }}>
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  Your adoption request was approved!
+                </div>
+              )}
+
+              {existingStatus === "DECLINED" && (
+                <div style={{
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
+                  background: "rgba(220,38,38,0.05)", border: "1px solid rgba(220,38,38,0.15)",
+                  borderRadius: 10, padding: "14px 20px", color: "#b91c1c", fontSize: 14, fontWeight: 600,
+                }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 16, height: 16 }}>
+                    <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                  Your request was not approved
+                </div>
+              )}
             </div>
           </div>
         </div>

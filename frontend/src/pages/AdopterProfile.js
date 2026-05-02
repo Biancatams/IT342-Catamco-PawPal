@@ -8,7 +8,7 @@ import LogoutModal from "../components/LogoutModal";
 
 export default function AdopterProfile() {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user") || "{}"));
   const token = localStorage.getItem("token");
 
   const [requests, setRequests] = useState([]);
@@ -18,7 +18,6 @@ export default function AdopterProfile() {
   const [form, setForm] = useState({
     fullName: user.fullName || "",
     phone: user.phoneNumber || user.phone || "",
-    location: user.location || "",
   });
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState("");
@@ -74,7 +73,6 @@ export default function AdopterProfile() {
       const formData = new FormData();
       formData.append("fullName", form.fullName);
       formData.append("phoneNumber", form.phone || "");
-      formData.append("location", form.location || "");
       if (profileImg) formData.append("image", profileImg);
 
       const res = await axios.put(
@@ -88,10 +86,10 @@ export default function AdopterProfile() {
         fullName: res.data.data.fullName,
         phone: res.data.data.phoneNumber,
         phoneNumber: res.data.data.phoneNumber,
-        location: res.data.data.location,
         profileImageUrl: res.data.data.profileImageUrl,
       };
       localStorage.setItem("user", JSON.stringify(updated));
+      setUser(updated);
       setSaveMsg("Profile updated!");
       setEditing(false);
       setProfileImg(null);
@@ -148,8 +146,6 @@ export default function AdopterProfile() {
 
       <div className="od-body">
         <div className="prof-layout">
-
-          {/* SIDEBAR */}
           <div className="prof-sidebar">
             <div className="prof-card">
               <div className="prof-card-header">
@@ -206,10 +202,6 @@ export default function AdopterProfile() {
                     <input className="pp-input" value={form.phone || "+63"} onChange={handlePhoneChange} placeholder="+63 9XX XXX XXXX" maxLength={16} />
                     <p style={{ fontSize: 11, color: "var(--muted)", marginTop: 4 }}>Format: +63 9XX XXX XXXX</p>
                   </div>
-                  <div className="pp-field">
-                    <label className="pp-label">Location</label>
-                    <input className="pp-input" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="City, Province" />
-                  </div>
                   <button className="prof-save-btn" onClick={handleSave} disabled={saving}>
                     {saving ? "Saving..." : "Save Changes"}
                   </button>
@@ -236,7 +228,6 @@ export default function AdopterProfile() {
                         </div>
                       </div>
                     </div>
-
                     <div className="prof-field-item">
                       <div className="prof-field-icon-row">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -248,19 +239,6 @@ export default function AdopterProfile() {
                         </div>
                       </div>
                     </div>
-
-                    <div className="prof-field-item">
-                      <div className="prof-field-icon-row">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-                        </svg>
-                        <div>
-                          <div className="prof-field-label">LOCATION</div>
-                          <div className="prof-field-value">{user.location || "Not set"}</div>
-                        </div>
-                      </div>
-                    </div>
-
                     <div className="prof-field-item">
                       <div className="prof-field-icon-row">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -272,7 +250,6 @@ export default function AdopterProfile() {
                         </div>
                       </div>
                     </div>
-
                     <div className="prof-field-item">
                       <div className="prof-field-icon-row">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -291,7 +268,6 @@ export default function AdopterProfile() {
               )}
             </div>
 
-            {/* Quick Stats */}
             <div className="prof-card prof-stats-card">
               <h3 className="prof-card-title">Quick Stats</h3>
               <p className="prof-card-sub">Your adoption activity</p>
@@ -326,7 +302,6 @@ export default function AdopterProfile() {
             </div>
           </div>
 
-          {/* MAIN: Recent Requests */}
           <div className="prof-main">
             <div className="prof-pets-card">
               <div className="prof-pets-header">
@@ -343,9 +318,7 @@ export default function AdopterProfile() {
                 <div className="od-empty">
                   <div className="od-empty-icon">🐾</div>
                   <p>No adoption requests yet.</p>
-                  <button className="od-post-btn" onClick={() => navigate("/adopter/dashboard")}>
-                    Browse Pets
-                  </button>
+                  <button className="od-post-btn" onClick={() => navigate("/adopter/dashboard")}>Browse Pets</button>
                 </div>
               ) : (
                 <div className="prof-pets-grid">
@@ -366,18 +339,13 @@ export default function AdopterProfile() {
                         <div className="prof-pet-item-name">{req.pet?.name || "Pet"}</div>
                         <div className="prof-pet-item-breed">{req.pet?.breed || req.pet?.age || ""}</div>
                         <div className="prof-pet-item-meta">
-                          <span
-                            className={`od-badge ${statusClass(req.status)}`}
-                            style={{ position: "static", fontSize: 10, padding: "2px 8px" }}
-                          >
+                          <span className={`od-badge ${statusClass(req.status)}`} style={{ position: "static", fontSize: 10, padding: "2px 8px" }}>
                             {statusLabel(req.status)}
                           </span>
                         </div>
                         {req.createdAt && (
                           <div className="prof-pet-item-date">
-                            {new Date(req.createdAt).toLocaleDateString("en-US", {
-                              month: "short", day: "numeric", year: "numeric",
-                            })}
+                            {new Date(req.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                           </div>
                         )}
                       </div>
@@ -387,7 +355,6 @@ export default function AdopterProfile() {
               )}
             </div>
           </div>
-
         </div>
       </div>
     </div>

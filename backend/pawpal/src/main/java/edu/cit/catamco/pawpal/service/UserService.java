@@ -21,7 +21,6 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    // ── GET /users/me ────────────────────────────────────────────────────────
     public AuthResponse getMe(String email) {
         User user = userRepository.findByEmail(email).orElse(null);
         if (user == null) return error("USER-001", "User not found.");
@@ -33,7 +32,6 @@ public class UserService {
                 .build();
     }
 
-    // ── PUT /users/me ────────────────────────────────────────────────────────
     public AuthResponse updateMe(String email, Map<String, String> body, MultipartFile image) {
         User user = userRepository.findByEmail(email).orElse(null);
         if (user == null) return error("USER-001", "User not found.");
@@ -44,11 +42,7 @@ public class UserService {
         if (body.get("phoneNumber") != null) {
             user.setPhoneNumber(body.get("phoneNumber"));
         }
-        if (body.get("location") != null) {
-            user.setLocation(body.get("location"));
-        }
 
-        // Handle profile image upload
         if (image != null && !image.isEmpty()) {
             try {
                 Path uploadPath = Paths.get(uploadDir);
@@ -77,7 +71,6 @@ public class UserService {
         map.put("fullName", user.getFullName());
         map.put("email", user.getEmail());
         map.put("phoneNumber", user.getPhoneNumber() != null ? user.getPhoneNumber() : "");
-        map.put("location", user.getLocation() != null ? user.getLocation() : "");
         map.put("profileImageUrl", user.getProfileImageUrl() != null ? user.getProfileImageUrl() : "");
         map.put("role", user.getRole());
         map.put("createdAt", user.getCreatedAt().toString());

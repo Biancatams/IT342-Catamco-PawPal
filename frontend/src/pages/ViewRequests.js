@@ -18,7 +18,12 @@ export default function ViewRequests() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [actionLoading, setActionLoading] = useState(null);
-  const [showLogout, setShowLogout] = useState(false); // ← ADDED
+  const [showLogout, setShowLogout] = useState(false);
+
+  // Decline reason modal state
+  const [declineModal, setDeclineModal] = useState(null); // holds requestId when open
+  const [declineReason, setDeclineReason] = useState("");
+  const [declineError, setDeclineError] = useState("");
 
   useEffect(() => {
     fetchRequests();
@@ -48,11 +53,38 @@ export default function ViewRequests() {
     }
   };
 
-  const handleAction = async (requestId, action) => {
-    setActionLoading(requestId + action);
+  const openDeclineModal = (requestId) => {
+    setDeclineReason("");
+    setDeclineError("");
+    setDeclineModal(requestId);
+  };
+
+  const handleDeclineConfirm = async () => {
+    if (!declineReason.trim()) {
+      setDeclineError("Please provide a reason for declining.");
+      return;
+    }
+    setActionLoading(declineModal + "decline");
     try {
       await axios.put(
-        `http://localhost:8080/api/v1/adoption-requests/${requestId}/${action}`,
+        `http://localhost:8080/api/v1/adoption-requests/${declineModal}/decline`,
+        { declineReason: declineReason.trim() },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setDeclineModal(null);
+      await fetchRequests();
+    } catch {
+      alert("Action failed. Please try again.");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleApprove = async (requestId) => {
+    setActionLoading(requestId + "approve");
+    try {
+      await axios.put(
+        `http://localhost:8080/api/v1/adoption-requests/${requestId}/approve`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -64,32 +96,111 @@ export default function ViewRequests() {
     }
   };
 
-  const confirmLogout = () => { // ← CHANGED (was handleLogout, now opens modal)
+  const confirmLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     navigate("/");
   };
 
   const statusLabel = (s) =>
-    s === "AVAILABLE" ? "Available" : s === "PENDING" ? "Pending" : "Adopted";
+    s === "AVAILABLE" ? "Available"
+    : s === "PENDING" ? "Pending"
+    : s === "UNDER_REVIEW" ? "Under Review"
+    : s === "REJECTED" ? "Rejected"
+    : "Adopted";
+
   const statusClass = (s) =>
-    s === "AVAILABLE"
-      ? "badge-available"
-      : s === "PENDING"
-      ? "badge-pending"
-      : "badge-adopted";
+    s === "AVAILABLE" ? "badge-available"
+    : s === "PENDING" ? "badge-pending"
+    : s === "UNDER_REVIEW" ? "badge-review"
+    : s === "REJECTED" ? "badge-rejected"
+    : "badge-adopted";
 
   const pendingCount = requests.filter((r) => r.status === "PENDING").length;
 
   return (
     <div className="od-page">
-
-      {/* LOGOUT MODAL ← ADDED */}
       {showLogout && (
-        <LogoutModal
-          onConfirm={confirmLogout}
-          onCancel={() => setShowLogout(false)}
-        />
+        <LogoutModal onConfirm={confirmLogout} onCancel={() => setShowLogout(false)} />
+      )}
+
+      {/* ── Decline Reason Modal ── */}
+      {declineModal && (
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 1000,
+          background: "rgba(0,0,0,0.35)", backdropFilter: "blur(3px)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          padding: 20,
+        }}>
+          <div style={{
+            background: "white", borderRadius: 20, padding: 32,
+            width: "100%", maxWidth: 460, boxShadow: "0 20px 60px rgba(0,0,0,0.15)",
+          }}>
+            {/* Icon */}
+            <div style={{
+              width: 52, height: 52, borderRadius: "50%",
+              background: "rgba(220,38,38,0.08)", border: "1.5px solid rgba(220,38,38,0.2)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              marginBottom: 16,
+            }}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 22, height: 22 }}>
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </div>
+
+            <h2 style={{ fontSize: 20, fontWeight: 700, color: "var(--green)", marginBottom: 6 }}>
+              Decline Adoption Request
+            </h2>
+            <p style={{ fontSize: 14, color: "var(--muted)", marginBottom: 20, lineHeight: 1.6 }}>
+              Please let the adopter know why their request is being declined. This message will be visible to them.
+            </p>
+
+            <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--green)", marginBottom: 8 }}>
+              Reason for Declining <span style={{ color: "#dc2626" }}>*</span>
+            </label>
+            <textarea
+              rows={4}
+              value={declineReason}
+              onChange={(e) => { setDeclineReason(e.target.value); setDeclineError(""); }}
+              placeholder="e.g. We've already found a suitable adopter, the living situation doesn't match the pet's needs, etc."
+              style={{
+                width: "100%", borderRadius: 10, border: declineError ? "1.5px solid #dc2626" : "1.5px solid var(--border)",
+                padding: "10px 14px", fontSize: 14, color: "var(--green)",
+                resize: "vertical", fontFamily: "inherit", lineHeight: 1.6,
+                outline: "none", boxSizing: "border-box",
+                background: declineError ? "rgba(220,38,38,0.02)" : "white",
+              }}
+            />
+            {declineError && (
+              <p style={{ fontSize: 12, color: "#dc2626", marginTop: 6, marginBottom: 0 }}>{declineError}</p>
+            )}
+
+            <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
+              <button
+                onClick={() => setDeclineModal(null)}
+                style={{
+                  flex: 1, padding: "11px 0", borderRadius: 10,
+                  border: "1.5px solid var(--border)", background: "white",
+                  color: "var(--muted)", fontWeight: 600, fontSize: 14, cursor: "pointer",
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeclineConfirm}
+                disabled={!!actionLoading}
+                style={{
+                  flex: 1, padding: "11px 0", borderRadius: 10,
+                  border: "none", background: "#dc2626",
+                  color: "white", fontWeight: 600, fontSize: 14, cursor: "pointer",
+                  opacity: actionLoading ? 0.7 : 1,
+                }}
+              >
+                {actionLoading ? "Declining..." : "Confirm Decline"}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       <nav className="navbar">
@@ -119,17 +230,12 @@ export default function ViewRequests() {
         </div>
 
         <div className="vr-layout">
-          {/* LEFT: Pet Card */}
           <div className="vr-pet-panel">
             {pet ? (
               <>
                 <div className="vr-pet-img-wrap">
                   {pet.imageUrl ? (
-                    <img
-                      src={`http://localhost:8080${pet.imageUrl}`}
-                      alt={pet.name}
-                      className="vr-pet-img"
-                    />
+                    <img src={`http://localhost:8080${pet.imageUrl}`} alt={pet.name} className="vr-pet-img" />
                   ) : (
                     <div className="vr-pet-no-img"><span>🐾</span></div>
                   )}
@@ -173,10 +279,9 @@ export default function ViewRequests() {
             )}
           </div>
 
-          {/* RIGHT: Requests List */}
           <div className="vr-requests-panel">
             <div className="vr-requests-header">
-              <h3 className="vr-requests-title">Pending Requests</h3>
+              <h3 className="vr-requests-title">Adoption Requests</h3>
               {pendingCount > 0 && (
                 <span className="vr-active-badge">{pendingCount} Active</span>
               )}
@@ -202,13 +307,22 @@ export default function ViewRequests() {
                     .join("")
                     .toUpperCase()
                     .slice(0, 2);
+                  const adopterImg = req.adopter?.profileImageUrl;
                   return (
                     <div key={req.id} className={`vr-request-card ${req.status !== "PENDING" ? "vr-request-resolved" : ""}`}>
                       <div className="vr-req-top">
-                        <div className="vr-req-avatar">{initials}</div>
+                        {adopterImg ? (
+                          <img
+                            src={`http://localhost:8080${adopterImg}`}
+                            alt={req.adopterName}
+                            className="vr-req-avatar-img"
+                          />
+                        ) : (
+                          <div className="vr-req-avatar">{initials}</div>
+                        )}
                         <div className="vr-req-info">
                           <div className="vr-req-name">{req.adopterName || "Adopter"}</div>
-                          <div className="vr-req-reason-label">Reason for Adoption</div>
+                          <div className="vr-req-reason-label">Adoption Application</div>
                         </div>
                         {req.status !== "PENDING" && (
                           <span className={`vr-status-chip ${req.status === "APPROVED" ? "chip-approved" : "chip-declined"}`}>
@@ -216,31 +330,82 @@ export default function ViewRequests() {
                           </span>
                         )}
                       </div>
-                      <p className="vr-req-message">
-                        {req.message || req.reason || "No message provided."}
-                      </p>
+
+                      <div className="vr-req-body">
+                        {req.contactInfo && (
+                          <div className="vr-req-field">
+                            <div className="vr-req-field-label">Contact Information</div>
+                            <div className="vr-req-contact-box">
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.8a16 16 0 0 0 5.29 5.29l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+                              </svg>
+                              {req.contactInfo}
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="vr-req-field">
+                          <div className="vr-req-field-label">Reason for Adoption</div>
+                          <div className="vr-req-field-value">
+                            {req.reason || req.message || "No reason provided."}
+                          </div>
+                        </div>
+
+                        {req.noteToOwner && (
+                          <div className="vr-req-field">
+                            <div className="vr-req-field-label">Note to Owner</div>
+                            <div className="vr-req-note-box">"{req.noteToOwner}"</div>
+                          </div>
+                        )}
+
+                        {/* Show decline reason if declined */}
+                        {req.status === "DECLINED" && req.declineReason && (
+                          <div className="vr-req-field">
+                            <div className="vr-req-field-label" style={{ color: "#dc2626" }}>Your Decline Reason</div>
+                            <div style={{
+                              background: "rgba(220,38,38,0.05)", border: "1px solid rgba(220,38,38,0.18)",
+                              borderRadius: 8, padding: "10px 14px", fontSize: 13,
+                              color: "#b91c1c", lineHeight: 1.6,
+                            }}>
+                              {req.declineReason}
+                            </div>
+                          </div>
+                        )}
+
+                        {req.createdAt && (
+                          <div className="vr-req-date">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                            Submitted {new Date(req.createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
+                          </div>
+                        )}
+                      </div>
+
                       {req.status === "PENDING" && (
-                        <div className="vr-req-actions">
-                          <button
-                            className="vr-btn-decline"
-                            disabled={!!actionLoading}
-                            onClick={() => handleAction(req.id, "decline")}
-                          >
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                            </svg>
-                            {actionLoading === req.id + "decline" ? "..." : "Decline"}
-                          </button>
-                          <button
-                            className="vr-btn-accept"
-                            disabled={!!actionLoading}
-                            onClick={() => handleAction(req.id, "approve")}
-                          >
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                              <polyline points="20 6 9 17 4 12"/>
-                            </svg>
-                            {actionLoading === req.id + "approve" ? "..." : "Accept Request"}
-                          </button>
+                        <div className="vr-req-footer">
+                          <div className="vr-req-actions">
+                            <button
+                              className="vr-btn-decline"
+                              disabled={!!actionLoading}
+                              onClick={() => openDeclineModal(req.id)}
+                            >
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                              </svg>
+                              Decline
+                            </button>
+                            <button
+                              className="vr-btn-accept"
+                              disabled={!!actionLoading}
+                              onClick={() => handleApprove(req.id)}
+                            >
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <polyline points="20 6 9 17 4 12"/>
+                              </svg>
+                              {actionLoading === req.id + "approve" ? "..." : "Accept Request"}
+                            </button>
+                          </div>
                         </div>
                       )}
                     </div>

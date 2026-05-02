@@ -110,9 +110,10 @@ export default function RequestDetail() {
   const [showLogout, setShowLogout] = useState(false);
   const [copied, setCopied] = useState(null);
 
-  const pet    = location.state?.pet    || null;
-  const owner  = location.state?.owner  || null;
-  const status = location.state?.status || "APPROVED";
+  const pet         = location.state?.pet          || null;
+  const owner       = location.state?.owner        || null;
+  const status      = location.state?.status       || "APPROVED";
+  const declineReason = location.state?.declineReason || null;
   const sd = STATUS[status] || STATUS.APPROVED;
 
   const confirmLogout = () => {
@@ -204,6 +205,20 @@ export default function RequestDetail() {
                     </div>
                   )}
                 </div>
+
+                {/* Declined: permanent notice on the pet card */}
+                {status === "DECLINED" && (
+                  <div style={{
+                    marginTop: 16, padding: "10px 14px", borderRadius: 10,
+                    background: "rgba(220,38,38,0.06)", border: "1px solid rgba(220,38,38,0.18)",
+                    fontSize: 12, color: "#b91c1c", lineHeight: 1.6, fontWeight: 500,
+                  }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 13, height: 13, marginRight: 5, verticalAlign: "middle" }}>
+                      <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    You cannot re-apply for this pet after a declined request.
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -211,7 +226,7 @@ export default function RequestDetail() {
           {/* ── RIGHT ── */}
           <div className="rac-main-col">
 
-            {/* Hero / Congrats Card */}
+            {/* Hero / Status Card */}
             <div className="rac-congrats-card">
               <div className="rac-check-circle" style={{ ...sd.circleStyle, width: 68, height: 68 }}>
                 <CircleIcon type={sd.circleIcon} stroke={sd.circleIconStroke} />
@@ -220,6 +235,27 @@ export default function RequestDetail() {
               <h1 className="rac-congrats-title">{sd.heroTitle}</h1>
               <p className="rac-congrats-sub" style={{ color: sd.heroSubColor }}>{sd.heroSub}</p>
               <p className="rac-congrats-msg">{sd.heroMsg}</p>
+
+              {/* ── Decline Reason Box ── */}
+              {status === "DECLINED" && declineReason && (
+                <div style={{
+                  background: "rgba(220,38,38,0.05)", border: "1px solid rgba(220,38,38,0.2)",
+                  borderRadius: 12, padding: "16px 20px", marginBottom: 16, textAlign: "left",
+                }}>
+                  <div style={{
+                    display: "flex", alignItems: "center", gap: 8,
+                    fontSize: 13, fontWeight: 700, color: "#dc2626", marginBottom: 8,
+                  }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14, flexShrink: 0 }}>
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    Owner's Reason for Declining
+                  </div>
+                  <p style={{ fontSize: 14, color: "#7f1d1d", lineHeight: 1.7, margin: 0, fontStyle: "italic" }}>
+                    "{declineReason}"
+                  </p>
+                </div>
+              )}
 
               <div className="rac-next-steps" style={sd.boxStyle}>
                 <div className="rac-next-steps-title" style={{ color: sd.boxTitleColor }}>
@@ -261,7 +297,6 @@ export default function RequestDetail() {
                   </div>
                 </div>
 
-                {/* Phone */}
                 {owner.phoneNumber && (
                   <div className="rac-contact-row">
                     <div className="rac-contact-icon">
@@ -287,7 +322,6 @@ export default function RequestDetail() {
                   </div>
                 )}
 
-                {/* Email */}
                 {owner.email && (
                   <div className="rac-contact-row">
                     <div className="rac-contact-icon">

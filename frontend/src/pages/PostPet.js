@@ -12,6 +12,53 @@ const PERSONALITY_TRAITS = [
   "Affectionate", "Independent",
 ];
 
+const PH_LOCATIONS = [
+  { label: "Cebu City, Cebu", lat: 10.3157, lng: 123.8854 },
+  { label: "Mandaue City, Cebu", lat: 10.3236, lng: 123.9223 },
+  { label: "Lapu-Lapu City, Cebu", lat: 10.3103, lng: 123.9494 },
+  { label: "Talisay City, Cebu", lat: 10.2442, lng: 123.8484 },
+  { label: "Liloan, Cebu", lat: 10.3978, lng: 123.9972 },
+  { label: "Consolacion, Cebu", lat: 10.3748, lng: 123.9617 },
+  { label: "Minglanilla, Cebu", lat: 10.2442, lng: 123.7967 },
+  { label: "Naga City, Cebu", lat: 10.2119, lng: 123.7536 },
+  { label: "Toledo City, Cebu", lat: 10.3775, lng: 123.6383 },
+  { label: "Danao City, Cebu", lat: 10.5228, lng: 124.0264 },
+  { label: "Carcar City, Cebu", lat: 10.1063, lng: 123.6411 },
+  { label: "Bogo City, Cebu", lat: 11.0517, lng: 124.0053 },
+  { label: "Davao City, Davao del Sur", lat: 7.1907, lng: 125.4553 },
+  { label: "Cagayan de Oro, Misamis Oriental", lat: 8.4542, lng: 124.6319 },
+  { label: "Zamboanga City, Zamboanga del Sur", lat: 6.9214, lng: 122.0790 },
+  { label: "General Santos, South Cotabato", lat: 6.1164, lng: 125.1716 },
+  { label: "Iloilo City, Iloilo", lat: 10.7202, lng: 122.5621 },
+  { label: "Bacolod City, Negros Occidental", lat: 10.6713, lng: 122.9511 },
+  { label: "Dumaguete City, Negros Oriental", lat: 9.3068, lng: 123.3054 },
+  { label: "Tagbilaran City, Bohol", lat: 9.6500, lng: 123.8500 },
+  { label: "Manila, Metro Manila", lat: 14.5995, lng: 120.9842 },
+  { label: "Quezon City, Metro Manila", lat: 14.6760, lng: 121.0437 },
+  { label: "Makati, Metro Manila", lat: 14.5547, lng: 121.0244 },
+  { label: "Pasig, Metro Manila", lat: 14.5764, lng: 121.0851 },
+  { label: "Taguig, Metro Manila", lat: 14.5243, lng: 121.0792 },
+  { label: "Marikina, Metro Manila", lat: 14.6507, lng: 121.1029 },
+  { label: "Caloocan, Metro Manila", lat: 14.6500, lng: 120.9667 },
+  { label: "Antipolo, Rizal", lat: 14.5865, lng: 121.1760 },
+  { label: "Bacoor, Cavite", lat: 14.4624, lng: 120.9645 },
+  { label: "Imus, Cavite", lat: 14.4297, lng: 120.9367 },
+  { label: "Dasmarinas, Cavite", lat: 14.3294, lng: 120.9367 },
+  { label: "San Jose del Monte, Bulacan", lat: 14.8137, lng: 121.0452 },
+  { label: "Angeles City, Pampanga", lat: 15.1450, lng: 120.5887 },
+  { label: "San Fernando, Pampanga", lat: 15.0286, lng: 120.6899 },
+  { label: "Olongapo, Zambales", lat: 14.8292, lng: 120.2828 },
+  { label: "Baguio City, Benguet", lat: 16.4023, lng: 120.5960 },
+  { label: "Lipa City, Batangas", lat: 13.9411, lng: 121.1632 },
+  { label: "Batangas City, Batangas", lat: 13.7565, lng: 121.0583 },
+  { label: "Lucena City, Quezon", lat: 13.9319, lng: 121.6177 },
+  { label: "Legazpi City, Albay", lat: 13.1391, lng: 123.7438 },
+  { label: "Tacloban City, Leyte", lat: 11.2543, lng: 125.0000 },
+  { label: "Butuan City, Agusan del Norte", lat: 8.9475, lng: 125.5406 },
+  { label: "Iligan City, Lanao del Norte", lat: 8.2280, lng: 124.2452 },
+  { label: "Cotabato City, Maguindanao", lat: 7.2236, lng: 124.2489 },
+];
+
 export default function PostPet() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -52,28 +99,21 @@ export default function PostPet() {
     if (file) { setPhoto(file); setPhotoPreview(URL.createObjectURL(file)); }
   };
 
-  const geocodeLocation = async (locationText) => {
-    try {
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(locationText)}&format=json&limit=1`,
-        { headers: { "Accept-Language": "en", "User-Agent": "PawPalApp/1.0" } }
-      );
-      const data = await res.json();
-      if (data && data.length > 0)
-        return { latitude: parseFloat(data[0].lat), longitude: parseFloat(data[0].lon) };
-    } catch {}
-    return { latitude: null, longitude: null };
-  };
-
   const handleSubmit = async () => {
     if (!form.name || !form.type || !form.age || !form.description || !form.location) {
       setError("Please fill in all required fields.");
       return;
     }
+    if (!photo) {
+      setError("Please upload a photo of your pet.");
+      return;
+    }
     setError("");
     setLoading(true);
     try {
-      const { latitude, longitude } = await geocodeLocation(form.location);
+      const selectedLoc = PH_LOCATIONS.find((l) => l.label === form.location);
+      const latitude = selectedLoc?.lat || null;
+      const longitude = selectedLoc?.lng || null;
       const formData = new FormData();
       const petData = {
         name: form.name, type: form.type, breed: form.breed || null,
@@ -136,10 +176,7 @@ export default function PostPet() {
         {error && <div className="od-error" style={{ marginBottom: 20 }}>{error}</div>}
 
         <div className="pp-form-wrap">
-          {/* LEFT COLUMN */}
           <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
-
-            {/* Pet Information */}
             <div className="pp-section">
               <h2 className="pp-section-title">Pet Information</h2>
 
@@ -202,19 +239,21 @@ export default function PostPet() {
 
               <div className="pp-field">
                 <label className="pp-label">Location <span className="pp-required">*</span></label>
-                <div className="pp-input-wrap">
-                  <input className="pp-input pp-input-icon" name="location" value={form.location} onChange={handleChange} placeholder="City, Province (e.g., Cebu City)" />
-                  <svg className="pp-input-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-                  </svg>
+                <div className="pp-select-wrap">
+                  <select className="pp-select" name="location" value={form.location} onChange={handleChange}>
+                    <option value="">Select your city / municipality</option>
+                    {PH_LOCATIONS.map((loc) => (
+                      <option key={loc.label} value={loc.label}>{loc.label}</option>
+                    ))}
+                  </select>
+                  <svg className="pp-select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
                 </div>
                 <p style={{ fontSize: 11, color: "var(--muted)", marginTop: 4 }}>
-                  Enter your general area — exact address will only be shared after adoption approval.
+                  General area only — exact address shared after adoption approval.
                 </p>
               </div>
             </div>
 
-            {/* Personality Traits */}
             <div className="pp-section">
               <h2 className="pp-section-title">Personality Traits</h2>
               <p style={{ fontSize: 13, color: "var(--muted)", marginBottom: 14 }}>
@@ -239,7 +278,6 @@ export default function PostPet() {
               </div>
             </div>
 
-            {/* Health & Care */}
             <div className="pp-section">
               <h2 className="pp-section-title">Health &amp; Care</h2>
               <p style={{ fontSize: 13, color: "var(--muted)", marginBottom: 14 }}>
@@ -278,7 +316,6 @@ export default function PostPet() {
             </div>
           </div>
 
-          {/* RIGHT COLUMN — Photo */}
           <div className="pp-section" style={{ alignSelf: "start" }}>
             <h2 className="pp-section-title">Pet Photo</h2>
             <div

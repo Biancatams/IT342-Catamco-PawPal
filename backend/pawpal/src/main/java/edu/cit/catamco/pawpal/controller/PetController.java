@@ -80,4 +80,40 @@ public class PetController {
                 .status(response.isSuccess() ? HttpStatus.OK : HttpStatus.BAD_REQUEST)
                 .body(response);
     }
+
+    // GET /api/v1/pets/admin/under-review
+    @GetMapping("/admin/under-review")
+    public ResponseEntity<AuthResponse> getPetsUnderReview(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        AuthResponse response = petService.getPetsUnderReview(userDetails.getUsername());
+        return ResponseEntity.ok(response);
+    }
+
+    // GET /api/v1/pets/admin/all
+    @GetMapping("/admin/all")
+    public ResponseEntity<AuthResponse> getAllPetsAdmin(
+            @AuthenticationPrincipal UserDetails userDetails) {
+        AuthResponse response = petService.getAllPetsAdmin(userDetails.getUsername());
+        return ResponseEntity.ok(response);
+    }
+
+    // PUT /api/v1/pets/admin/{id}/approve
+    @PutMapping("/admin/{id}/approve")
+    public ResponseEntity<AuthResponse> approveListing(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long id) {
+        AuthResponse response = petService.approveListing(userDetails.getUsername(), id);
+        return ResponseEntity.ok(response);
+    }
+
+    // PUT /api/v1/pets/admin/{id}/reject
+    @PutMapping("/admin/{id}/reject")
+    public ResponseEntity<AuthResponse> rejectListing(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long id,
+            @RequestBody java.util.Map<String, String> body) {
+        AuthResponse response = petService.rejectListing(
+                userDetails.getUsername(), id, body.getOrDefault("reason", ""));
+        return ResponseEntity.ok(response);
+    }
 }
