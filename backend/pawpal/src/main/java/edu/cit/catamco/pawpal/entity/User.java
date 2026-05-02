@@ -24,9 +24,7 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
-    // ← NEW FIELDS
     private String phoneNumber;
-    private String location;
     private String profileImageUrl;
 
     @Column(updatable = false)
@@ -38,33 +36,28 @@ public class User {
     }
 
     public enum Role {
-        ADOPTER, PET_OWNER
+        ADOPTER, PET_OWNER, ADMIN
     }
 
     public User() {}
 
-    // Getters
     public Long getId() { return id; }
     public String getFullName() { return fullName; }
     public String getEmail() { return email; }
     public String getPassword() { return password; }
     public Role getRole() { return role; }
     public String getPhoneNumber() { return phoneNumber; }
-    public String getLocation() { return location; }
     public String getProfileImageUrl() { return profileImageUrl; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 
-    // Setters
     public void setId(Long id) { this.id = id; }
     public void setFullName(String fullName) { this.fullName = fullName; }
     public void setEmail(String email) { this.email = email; }
     public void setPassword(String password) { this.password = password; }
     public void setRole(Role role) { this.role = role; }
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
-    public void setLocation(String location) { this.location = location; }
     public void setProfileImageUrl(String profileImageUrl) { this.profileImageUrl = profileImageUrl; }
 
-    // Builder
     public static Builder builder() { return new Builder(); }
 
     public static class Builder {

@@ -32,7 +32,6 @@ public class PetService {
         this.adoptionRequestRepository = adoptionRequestRepository;
     }
 
-    // ── Post a Pet ──────────────────────────────────────────────────────────
     public AuthResponse createPet(String email, PetRequest request, MultipartFile image) {
         User owner = userRepository.findByEmail(email).orElse(null);
         if (owner == null) return errorResponse("USER-001", "User not found.");
@@ -47,7 +46,6 @@ public class PetService {
         applyRequest(pet, request);
         pet.setOwner(owner);
         pet.setImageUrl(imageUrl);
-        pet.setStatus(Pet.PetStatus.AVAILABLE);
         petRepository.save(pet);
 
         return AuthResponse.builder()
@@ -63,7 +61,6 @@ public class PetService {
                 .build();
     }
 
-    // ── Get All Available Pets ───────────────────────────────────────────────
     public AuthResponse getAllPets() {
         List<Pet> pets = petRepository.findByStatus(Pet.PetStatus.AVAILABLE);
         List<Map<String, Object>> petList = pets.stream().map(this::toPetSummary).toList();
@@ -74,7 +71,6 @@ public class PetService {
                 .build();
     }
 
-    // ── Get Pet by ID ────────────────────────────────────────────────────────
     public AuthResponse getPetById(Long id) {
         Pet pet = petRepository.findById(id).orElse(null);
         if (pet == null) return errorResponse("DB-001", "Pet not found.");
@@ -85,7 +81,6 @@ public class PetService {
                 .build();
     }
 
-    // ── Get My Pets (Owner Dashboard) ────────────────────────────────────────
     public AuthResponse getMyPets(String email) {
         User owner = userRepository.findByEmail(email).orElse(null);
         if (owner == null) return errorResponse("USER-001", "User not found.");
@@ -98,7 +93,6 @@ public class PetService {
                 .build();
     }
 
-    // ── Delete Pet ───────────────────────────────────────────────────────────
     public AuthResponse deletePet(String email, Long id) {
         Pet pet = petRepository.findById(id).orElse(null);
         if (pet == null) return errorResponse("DB-001", "Pet not found.");
@@ -112,7 +106,6 @@ public class PetService {
                 .build();
     }
 
-    // ── Update Pet ───────────────────────────────────────────────────────────
     public AuthResponse updatePet(String email, Long id, PetRequest request, MultipartFile image) {
         User owner = userRepository.findByEmail(email).orElse(null);
         if (owner == null) return errorResponse("USER-001", "User not found.");
@@ -137,9 +130,6 @@ public class PetService {
                 .build();
     }
 
-    // ── Helpers ───────────────────────────────────────────────────────────────
-
-    /** Apply all PetRequest fields onto a Pet entity (used by create + update). */
     private void applyRequest(Pet pet, PetRequest request) {
         pet.setName(request.getName());
         pet.setType(Pet.PetType.valueOf(request.getType().toUpperCase()));
@@ -153,8 +143,6 @@ public class PetService {
         if (request.getLatitude() != null) pet.setLatitude(request.getLatitude());
         if (request.getLongitude() != null) pet.setLongitude(request.getLongitude());
         if (request.getCharacteristics() != null) pet.setCharacteristics(request.getCharacteristics());
-
-        // Health flags — default false if not provided
         pet.setVaccinated(Boolean.TRUE.equals(request.getVaccinated()));
         pet.setNeutered(Boolean.TRUE.equals(request.getNeutered()));
         pet.setMicrochipped(Boolean.TRUE.equals(request.getMicrochipped()));
@@ -186,6 +174,7 @@ public class PetService {
         map.put("location", pet.getLocation());
         map.put("imageUrl", pet.getImageUrl() != null ? pet.getImageUrl() : "");
         map.put("status", pet.getStatus());
+        map.put("adminNote", pet.getAdminNote() != null ? pet.getAdminNote() : "");
         map.put("description", pet.getDescription() != null ? pet.getDescription() : "");
         map.put("owner", Map.of("id", pet.getOwner().getId(), "fullName", pet.getOwner().getFullName()));
         long pendingCount = adoptionRequestRepository
@@ -200,7 +189,6 @@ public class PetService {
         map.put("latitude", pet.getLatitude());
         map.put("longitude", pet.getLongitude());
         map.put("characteristics", pet.getCharacteristics() != null ? pet.getCharacteristics() : List.of());
-        // Health & Care
         map.put("vaccinated", Boolean.TRUE.equals(pet.getVaccinated()));
         map.put("neutered", Boolean.TRUE.equals(pet.getNeutered()));
         map.put("microchipped", Boolean.TRUE.equals(pet.getMicrochipped()));
@@ -212,6 +200,64 @@ public class PetService {
         return AuthResponse.builder()
                 .success(false)
                 .error(Map.of("code", code, "message", message))
+                .timestamp(LocalDateTime.now().toString())
+                .build();
+    }
+
+    public AuthResponse getPetsUnderReview(String email) {
+        User admin = userRepository.findByEmail(email).orElse(null);
+        if (admin == null || admin.getRole() != User.Role.ADMIN)
+            return errorResponse("AUTH-003", "Access denied.");
+        List<Pet> pets = petRepository.findByStatus(Pet.PetStatus.UNDER_REVIEW);
+        List<Map<String, Object>> petList = pets.stream().map(this::toPetSummary).toList();
+        return AuthResponse.builder()
+                .success(true)
+                .data(Map.of("pets", petList))
+                .timestamp(LocalDateTime.now().toString())
+                .build();
+    }
+
+    public AuthResponse getAllPetsAdmin(String email) {
+        User admin = userRepository.findByEmail(email).orElse(null);
+        if (admin == null || admin.getRole() != User.Role.ADMIN)
+            return errorResponse("AUTH-003", "Access denied.");
+        List<Pet> pets = petRepository.findAll();
+        List<Map<String, Object>> petList = pets.stream().map(this::toPetSummary).toList();
+        return AuthResponse.builder()
+                .success(true)
+                .data(Map.of("pets", petList))
+                .timestamp(LocalDateTime.now().toString())
+                .build();
+    }
+
+    public AuthResponse approveListing(String email, Long petId) {
+        User admin = userRepository.findByEmail(email).orElse(null);
+        if (admin == null || admin.getRole() != User.Role.ADMIN)
+            return errorResponse("AUTH-003", "Access denied.");
+        Pet pet = petRepository.findById(petId).orElse(null);
+        if (pet == null) return errorResponse("DB-001", "Pet not found.");
+        pet.setStatus(Pet.PetStatus.AVAILABLE);
+        pet.setAdminNote(null);
+        petRepository.save(pet);
+        return AuthResponse.builder()
+                .success(true)
+                .data(Map.of("message", "Listing approved.", "petId", petId))
+                .timestamp(LocalDateTime.now().toString())
+                .build();
+    }
+
+    public AuthResponse rejectListing(String email, Long petId, String reason) {
+        User admin = userRepository.findByEmail(email).orElse(null);
+        if (admin == null || admin.getRole() != User.Role.ADMIN)
+            return errorResponse("AUTH-003", "Access denied.");
+        Pet pet = petRepository.findById(petId).orElse(null);
+        if (pet == null) return errorResponse("DB-001", "Pet not found.");
+        pet.setStatus(Pet.PetStatus.REJECTED);
+        pet.setAdminNote(reason);
+        petRepository.save(pet);
+        return AuthResponse.builder()
+                .success(true)
+                .data(Map.of("message", "Listing rejected.", "petId", petId))
                 .timestamp(LocalDateTime.now().toString())
                 .build();
     }

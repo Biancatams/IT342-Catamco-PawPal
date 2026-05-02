@@ -40,3 +40,23 @@ data class AuthResponse(
 data class GoogleAuthRequest(
     val idToken: String
 )
+
+data class Pet(
+    val id: Int,
+    val name: String,
+    val breed: String,
+    val age: String,
+    val petType: String,
+    val location: String,
+    val status: String,
+    val imageUrl: String?
+)
+
+data class PetsResponse(
+    val success: Boolean,
+    val data: PetsData?
+)
+
+data class PetsData(
+    val pets: List<Pet>
+)

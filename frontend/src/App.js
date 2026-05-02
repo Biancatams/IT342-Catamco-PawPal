@@ -16,7 +16,7 @@ import AdopterProfile from "./pages/AdopterProfile";
 import AdopterMyRequests from "./pages/AdopterMyRequests";
 import RequestAdoption from "./pages/RequestAdoption";
 import RequestAccepted from "./pages/RequestAccepted";
-
+import AdminDashboard from "./pages/AdminDashboard";
 
 function App() {
   return (
@@ -33,6 +33,7 @@ function App() {
         <Route path="/adopter/requests" element={<AdopterMyRequests />} />
         <Route path="/adopter/request/:petId" element={<RequestAdoption />} />
         <Route path="/adopter/request-accepted" element={<RequestAccepted />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/adopter/dashboard" element={
           <ProtectedRoute>
             <AdopterDashboard />

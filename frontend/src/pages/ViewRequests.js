@@ -103,9 +103,18 @@ export default function ViewRequests() {
   };
 
   const statusLabel = (s) =>
-    s === "AVAILABLE" ? "Available" : s === "PENDING" ? "Pending" : "Adopted";
+    s === "AVAILABLE" ? "Available"
+    : s === "PENDING" ? "Pending"
+    : s === "UNDER_REVIEW" ? "Under Review"
+    : s === "REJECTED" ? "Rejected"
+    : "Adopted";
+
   const statusClass = (s) =>
-    s === "AVAILABLE" ? "badge-available" : s === "PENDING" ? "badge-pending" : "badge-adopted";
+    s === "AVAILABLE" ? "badge-available"
+    : s === "PENDING" ? "badge-pending"
+    : s === "UNDER_REVIEW" ? "badge-review"
+    : s === "REJECTED" ? "badge-rejected"
+    : "badge-adopted";
 
   const pendingCount = requests.filter((r) => r.status === "PENDING").length;
 

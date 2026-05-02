@@ -44,7 +44,10 @@ public class Pet {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private PetStatus status = PetStatus.AVAILABLE;
+    private PetStatus status = PetStatus.UNDER_REVIEW;
+
+    @Column(columnDefinition = "TEXT")
+    private String adminNote;
 
     // Personality traits (e.g. "Friendly", "Playful", "House-trained")
     @ElementCollection
@@ -68,11 +71,12 @@ public class Pet {
 
     public enum PetType { DOG, CAT, BIRD, RABBIT, OTHER }
     public enum Gender { MALE, FEMALE }
-    public enum PetStatus { AVAILABLE, PENDING, ADOPTED }
+    public enum PetStatus { UNDER_REVIEW, AVAILABLE, PENDING, ADOPTED, REJECTED }
 
     public Pet() {}
 
     // Getters
+    public String getAdminNote() { return adminNote; }
     public Long getId() { return id; }
     public User getOwner() { return owner; }
     public String getName() { return name; }
@@ -94,6 +98,7 @@ public class Pet {
     public LocalDateTime getCreatedAt() { return createdAt; }
 
     // Setters
+    public void setAdminNote(String adminNote) { this.adminNote = adminNote; }
     public void setOwner(User owner) { this.owner = owner; }
     public void setName(String name) { this.name = name; }
     public void setType(PetType type) { this.type = type; }

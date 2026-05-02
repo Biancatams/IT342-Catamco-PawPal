@@ -21,7 +21,9 @@ export default function Login() {
   };
 
   const handleNavigateByRole = (user) => {
-    if (user.role === "PET_OWNER") {
+    if (user.role === "ADMIN") {
+      navigate("/admin/dashboard");
+    } else if (user.role === "PET_OWNER") {
       navigate("/owner/dashboard");
     } else if (user.role === "ADOPTER") {
       navigate("/adopter/dashboard");

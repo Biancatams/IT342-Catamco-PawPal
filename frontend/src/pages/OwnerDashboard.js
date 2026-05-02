@@ -13,6 +13,7 @@ export default function OwnerDashboard() {
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [filter, setFilter] = useState("ALL");
   const [deleteModal, setDeleteModal] = useState({ open: false, petId: null, petName: "" });
   const [deleting, setDeleting] = useState(false);
   const [showLogout, setShowLogout] = useState(false);
@@ -59,24 +60,44 @@ export default function OwnerDashboard() {
     navigate("/");
   };
 
-  const stats = {
-    total: pets.length,
-    available: pets.filter((p) => p.status === "AVAILABLE").length,
-    pending: pets.filter((p) => p.status === "PENDING").length,
+  const counts = {
+    ALL: pets.length,
+    AVAILABLE: pets.filter((p) => p.status === "AVAILABLE").length,
+    UNDER_REVIEW: pets.filter((p) => p.status === "UNDER_REVIEW").length,
+    PENDING: pets.filter((p) => p.status === "PENDING").length,
+    REJECTED: pets.filter((p) => p.status === "REJECTED").length,
+    ADOPTED: pets.filter((p) => p.status === "ADOPTED").length,
   };
 
+  const filtered = filter === "ALL" ? pets : pets.filter((p) => p.status === filter);
+
   const statusLabel = (s) =>
-    s === "AVAILABLE" ? "Available" : s === "PENDING" ? "Pending" : "Adopted";
+    s === "AVAILABLE" ? "Available"
+    : s === "PENDING" ? "Pending"
+    : s === "UNDER_REVIEW" ? "Under Review"
+    : s === "REJECTED" ? "Rejected"
+    : "Adopted";
 
   const statusClass = (s) =>
-    s === "AVAILABLE" ? "badge-available" : s === "PENDING" ? "badge-pending" : "badge-adopted";
+    s === "AVAILABLE" ? "badge-available"
+    : s === "PENDING" ? "badge-pending"
+    : s === "UNDER_REVIEW" ? "badge-review"
+    : s === "REJECTED" ? "badge-rejected"
+    : "badge-adopted";
 
   const firstName = user.fullName?.split(" ")[0] || "there";
+
+  const TABS = [
+    { key: "ALL", label: "All" },
+    { key: "UNDER_REVIEW", label: "Pending Review" },
+    { key: "AVAILABLE", label: "Available" },
+    { key: "REJECTED", label: "Rejected" },
+    { key: "ADOPTED", label: "Adopted" },
+  ];
 
   return (
     <div className="od-page">
 
-      {/* LOGOUT MODAL */}
       {showLogout && (
         <LogoutModal
           onConfirm={confirmLogout}
@@ -84,7 +105,6 @@ export default function OwnerDashboard() {
         />
       )}
 
-      {/* DELETE MODAL */}
       {deleteModal.open && (
         <div className="od-modal-overlay">
           <div className="od-modal">
@@ -152,7 +172,7 @@ export default function OwnerDashboard() {
             </div>
             <div className="od-stat-info">
               <div className="od-stat-label">Total Pets</div>
-              <div className="od-stat-num">{stats.total}</div>
+              <div className="od-stat-num">{counts.ALL}</div>
             </div>
           </div>
           <div className="od-stat-card">
@@ -164,7 +184,7 @@ export default function OwnerDashboard() {
             </div>
             <div className="od-stat-info">
               <div className="od-stat-label">Available</div>
-              <div className="od-stat-num">{stats.available}</div>
+              <div className="od-stat-num">{counts.AVAILABLE}</div>
             </div>
           </div>
           <div className="od-stat-card">
@@ -176,9 +196,31 @@ export default function OwnerDashboard() {
             </div>
             <div className="od-stat-info">
               <div className="od-stat-label">Pending Requests</div>
-              <div className="od-stat-num">{stats.pending}</div>
+              <div className="od-stat-num">{counts.PENDING}</div>
             </div>
           </div>
+        </div>
+
+        <div className="ad-filter-tabs" style={{ marginBottom: 24 }}>
+          {TABS.map((t) => (
+            <button
+              key={t.key}
+              className={`ad-filter-tab ${filter === t.key ? "ad-tab-active" : ""}`}
+              onClick={() => setFilter(t.key)}
+            >
+              {t.label}
+              {counts[t.key] > 0 && (
+                <span style={{
+                  marginLeft: 6, fontSize: 11, fontWeight: 700,
+                  background: filter === t.key ? "rgba(255,255,255,0.25)" : "var(--border)",
+                  color: filter === t.key ? "white" : "var(--muted)",
+                  padding: "1px 7px", borderRadius: 100,
+                }}>
+                  {counts[t.key]}
+                </span>
+              )}
+            </button>
+          ))}
         </div>
 
         {loading ? (
@@ -188,18 +230,20 @@ export default function OwnerDashboard() {
           </div>
         ) : error ? (
           <div className="od-error">{error}</div>
-        ) : pets.length === 0 ? (
+        ) : filtered.length === 0 ? (
           <div className="od-empty">
             <div className="od-empty-icon">🐾</div>
-            <h3>No pets posted yet</h3>
-            <p>Start by posting your first pet for adoption.</p>
-            <button className="od-post-btn" onClick={() => navigate("/owner/post-pet")}>
-              Post Your First Pet
-            </button>
+            <h3>{filter === "ALL" ? "No pets posted yet" : `No ${statusLabel(filter).toLowerCase()} listings`}</h3>
+            <p>{filter === "ALL" ? "Start by posting your first pet for adoption." : "Nothing here right now."}</p>
+            {filter === "ALL" && (
+              <button className="od-post-btn" onClick={() => navigate("/owner/post-pet")}>
+                Post Your First Pet
+              </button>
+            )}
           </div>
         ) : (
           <div className="od-grid">
-            {pets.map((pet) => (
+            {filtered.map((pet) => (
               <div key={pet.id} className="od-pet-card">
                 <div className="od-pet-img-wrap">
                   {pet.imageUrl ? (
@@ -229,6 +273,19 @@ export default function OwnerDashboard() {
                 <div className="od-pet-body">
                   <h3 className="od-pet-name">{pet.name}</h3>
                   {pet.breed && <p className="od-pet-breed">{pet.breed}</p>}
+                  {pet.status === "REJECTED" && pet.adminNote && (
+                    <div style={{
+                      display: "flex", alignItems: "flex-start", gap: 7,
+                      background: "rgba(220,38,38,0.05)", border: "1px solid rgba(220,38,38,0.15)",
+                      borderRadius: 8, padding: "8px 12px", marginTop: 6, marginBottom: 6,
+                      fontSize: 12, color: "#b91c1c", fontStyle: "italic"
+                    }}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 13, height: 13, flexShrink: 0, marginTop: 1 }}>
+                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                      </svg>
+                      Reason: "{pet.adminNote}"
+                    </div>
+                  )}
 
                   <div className="od-pet-meta">
                     <div className="od-meta-row">
@@ -255,7 +312,7 @@ export default function OwnerDashboard() {
                     )}
                   </div>
 
-                  {pet.status !== "ADOPTED" ? (
+                  {pet.status !== "ADOPTED" && pet.status !== "REJECTED" ? (
                     <>
                       <div className="od-requests-row">
                         <div className="od-req-left">
@@ -302,6 +359,13 @@ export default function OwnerDashboard() {
                         </button>
                       </div>
                     </>
+                  ) : pet.status === "REJECTED" ? (
+                    <div className="od-adopted-banner" style={{ background: "rgba(220,38,38,0.06)", color: "#dc2626", border: "1px solid rgba(220,38,38,0.15)" }}>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+                      </svg>
+                      Listing Rejected
+                    </div>
                   ) : (
                     <div className="od-adopted-banner">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

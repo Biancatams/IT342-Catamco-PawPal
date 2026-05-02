@@ -1575,3 +1575,47 @@
   object-fit: cover;
   box-shadow: 0 2px 8px rgba(31,51,39,0.2);
 }
+
+.badge-review {
+  background: rgba(234,179,8,0.15);
+  color: #b45309;
+  border: 1px solid rgba(234,179,8,0.3);
+}
+
+.badge-rejected {
+  background: rgba(220,38,38,0.12);
+  color: #dc2626;
+  border: 1px solid rgba(220,38,38,0.25);
+}
+
+.ad-filter-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ad-filter-tab {
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 1.5px solid var(--border);
+  border-radius: 100px;
+  padding: 8px 18px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 0.18s;
+}
+
+.ad-filter-tab:hover {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.ad-tab-active {
+  background: var(--green);
+  border-color: var(--green);
+  color: white;
+}

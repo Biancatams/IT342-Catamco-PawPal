@@ -18,7 +18,6 @@ export default function AdopterProfile() {
   const [form, setForm] = useState({
     fullName: user.fullName || "",
     phone: user.phoneNumber || user.phone || "",
-    location: user.location || "",
   });
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState("");
@@ -74,7 +73,6 @@ export default function AdopterProfile() {
       const formData = new FormData();
       formData.append("fullName", form.fullName);
       formData.append("phoneNumber", form.phone || "");
-      formData.append("location", form.location || "");
       if (profileImg) formData.append("image", profileImg);
 
       const res = await axios.put(
@@ -88,7 +86,6 @@ export default function AdopterProfile() {
         fullName: res.data.data.fullName,
         phone: res.data.data.phoneNumber,
         phoneNumber: res.data.data.phoneNumber,
-        location: res.data.data.location,
         profileImageUrl: res.data.data.profileImageUrl,
       };
       localStorage.setItem("user", JSON.stringify(updated));
@@ -149,7 +146,6 @@ export default function AdopterProfile() {
 
       <div className="od-body">
         <div className="prof-layout">
-
           <div className="prof-sidebar">
             <div className="prof-card">
               <div className="prof-card-header">
@@ -206,10 +202,6 @@ export default function AdopterProfile() {
                     <input className="pp-input" value={form.phone || "+63"} onChange={handlePhoneChange} placeholder="+63 9XX XXX XXXX" maxLength={16} />
                     <p style={{ fontSize: 11, color: "var(--muted)", marginTop: 4 }}>Format: +63 9XX XXX XXXX</p>
                   </div>
-                  <div className="pp-field">
-                    <label className="pp-label">Location</label>
-                    <input className="pp-input" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder="City, Province" />
-                  </div>
                   <button className="prof-save-btn" onClick={handleSave} disabled={saving}>
                     {saving ? "Saving..." : "Save Changes"}
                   </button>
@@ -244,17 +236,6 @@ export default function AdopterProfile() {
                         <div>
                           <div className="prof-field-label">PHONE NUMBER</div>
                           <div className="prof-field-value">{user.phoneNumber || user.phone || "Not set"}</div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="prof-field-item">
-                      <div className="prof-field-icon-row">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-                        </svg>
-                        <div>
-                          <div className="prof-field-label">LOCATION</div>
-                          <div className="prof-field-value">{user.location || "Not set"}</div>
                         </div>
                       </div>
                     </div>
@@ -374,7 +355,6 @@ export default function AdopterProfile() {
               )}
             </div>
           </div>
-
         </div>
       </div>
     </div>
