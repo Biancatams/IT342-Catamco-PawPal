@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.PawPal" parent="Base.Theme.PawPal">
+        <item name="android:windowSplashScreenBackground">#FFF5EE</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/splash_logo</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">#FFF5EE</item>
+    </style>
+</resources>

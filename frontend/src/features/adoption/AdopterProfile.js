@@ -6,11 +6,33 @@ import "../../shared/styles/Navbar.css";
 import "../../shared/styles/OwnerDashboard.css";
 import LogoutModal from "../../shared/components/LogoutModal";
 
+const CEBU_LOCATIONS = [
+  "Cebu City",
+  "Mandaue",
+  "Lapu-Lapu",
+  "Talisay",
+  "Danao",
+  "Carcar",
+  "Toledo",
+  "Naga",
+  "Bogo",
+  "Minglanilla",
+  "San Fernando",
+  "Consolacion",
+  "Liloan",
+  "Compostela",
+  "Cordova",
+  "Moalboal",
+  "Oslob",
+  "Alcoy",
+  "Dalaguete",
+  "Others",
+];
+
 export default function AdopterProfile() {
   const navigate = useNavigate();
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user") || "{}"));
   const token = localStorage.getItem("token");
-
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -18,6 +40,7 @@ export default function AdopterProfile() {
   const [form, setForm] = useState({
     fullName: user.fullName || "",
     phone: user.phoneNumber || user.phone || "",
+    location: user.address || "",
   });
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState("");
@@ -28,7 +51,24 @@ export default function AdopterProfile() {
     user.profileImageUrl ? `http://localhost:8080${user.profileImageUrl}` : null
   );
 
-  useEffect(() => { fetchMyRequests(); }, []);
+  useEffect(() => {
+    fetchMyRequests();
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    try {
+      const res = await axios.get("http://localhost:8080/api/v1/users/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const p = res.data.data;
+      setForm({ fullName: p.fullName || "", phone: p.phoneNumber || "", location: p.address || "" });
+      const updated = { ...user, ...p };
+      setUser(updated);
+      localStorage.setItem("user", JSON.stringify(updated));
+      if (p.profileImageUrl) setProfileImgPreview(`http://localhost:8080${p.profileImageUrl}`);
+    } catch {}
+  };
 
   const fetchMyRequests = async () => {
     try {
@@ -73,31 +113,27 @@ export default function AdopterProfile() {
       const formData = new FormData();
       formData.append("fullName", form.fullName);
       formData.append("phoneNumber", form.phone || "");
+      formData.append("address", form.location || "");
       if (profileImg) formData.append("image", profileImg);
 
-      const res = await axios.put(
-        "http://localhost:8080/api/v1/users/me",
-        formData,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
+      const res = await axios.put("http://localhost:8080/api/v1/users/me", formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const updated = {
         ...user,
         fullName: res.data.data.fullName,
         phone: res.data.data.phoneNumber,
         phoneNumber: res.data.data.phoneNumber,
+        address: res.data.data.address,
         profileImageUrl: res.data.data.profileImageUrl,
       };
       localStorage.setItem("user", JSON.stringify(updated));
       setUser(updated);
+      setForm({ fullName: res.data.data.fullName, phone: res.data.data.phoneNumber || "", location: res.data.data.address || "" });
       setSaveMsg("Profile updated!");
       setEditing(false);
       setProfileImg(null);
-      setProfileImgPreview(
-        res.data.data.profileImageUrl
-          ? `http://localhost:8080${res.data.data.profileImageUrl}`
-          : null
-      );
+      if (res.data.data.profileImageUrl) setProfileImgPreview(`http://localhost:8080${res.data.data.profileImageUrl}`);
       setTimeout(() => setSaveMsg(""), 3000);
     } catch {
       setSaveMsg("Failed to update. Try again.");
@@ -117,19 +153,21 @@ export default function AdopterProfile() {
     ? new Date(user.createdAt).toLocaleDateString("en-US", { month: "long", year: "numeric" })
     : "January 2024";
 
-  const initials = (user.fullName || "U")
-    .split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+  const initials = (user.fullName || "U").split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 
-  const statusLabel = (s) =>
-    s === "PENDING" ? "Pending" : s === "APPROVED" ? "Approved" : "Declined";
-  const statusClass = (s) =>
-    s === "PENDING" ? "badge-pending" : s === "APPROVED" ? "badge-available" : "badge-adopted";
+  const statusLabel = (s) => s === "PENDING" ? "Pending" : s === "APPROVED" ? "Approved" : "Declined";
+  const statusClass = (s) => s === "PENDING" ? "badge-pending" : s === "APPROVED" ? "badge-available" : "badge-adopted";
+
+  const ppInput = {
+    width: "100%", fontFamily: "DM Sans, sans-serif", fontSize: 13,
+    color: "var(--text)", background: "var(--cream)",
+    border: "1.5px solid var(--border)", borderRadius: 8,
+    padding: "10px 12px", outline: "none", boxSizing: "border-box",
+  };
 
   return (
     <div className="od-page">
-      {showLogout && (
-        <LogoutModal onConfirm={confirmLogout} onCancel={() => setShowLogout(false)} />
-      )}
+      {showLogout && <LogoutModal onConfirm={confirmLogout} onCancel={() => setShowLogout(false)} />}
 
       <nav className="navbar">
         <button className="navbar-brand" onClick={() => navigate("/")}>
@@ -159,12 +197,8 @@ export default function AdopterProfile() {
               </div>
               <p className="prof-card-sub">Your account details</p>
 
-              <div
-                className="prof-avatar-wrap"
-                onClick={() => editing && profileImgRef.current.click()}
-                style={{ cursor: editing ? "pointer" : "default" }}
-                title={editing ? "Click to change photo" : ""}
-              >
+              <div className="prof-avatar-wrap" onClick={() => editing && profileImgRef.current.click()}
+                style={{ cursor: editing ? "pointer" : "default" }} title={editing ? "Click to change photo" : ""}>
                 {profileImgPreview ? (
                   <img src={profileImgPreview} alt="Profile" className="prof-avatar-img" />
                 ) : (
@@ -202,6 +236,14 @@ export default function AdopterProfile() {
                     <input className="pp-input" value={form.phone || "+63"} onChange={handlePhoneChange} placeholder="+63 9XX XXX XXXX" maxLength={16} />
                     <p style={{ fontSize: 11, color: "var(--muted)", marginTop: 4 }}>Format: +63 9XX XXX XXXX</p>
                   </div>
+                  <div className="pp-field">
+                    <label className="pp-label">Location</label>
+                    <select style={{ ...ppInput, cursor: "pointer" }} value={form.location}
+                      onChange={(e) => setForm({ ...form, location: e.target.value })}>
+                      <option value="">Select your city/municipality</option>
+                      {CEBU_LOCATIONS.map((loc) => <option key={loc} value={loc}>{loc}</option>)}
+                    </select>
+                  </div>
                   <button className="prof-save-btn" onClick={handleSave} disabled={saving}>
                     {saving ? "Saving..." : "Save Changes"}
                   </button>
@@ -215,54 +257,32 @@ export default function AdopterProfile() {
                 <>
                   <div className="prof-name">{user.fullName || "User"}</div>
                   <div className="prof-role-tag">Adopter</div>
-
                   <div className="prof-fields">
                     <div className="prof-field-item">
                       <div className="prof-field-icon-row">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
-                        </svg>
-                        <div>
-                          <div className="prof-field-label">EMAIL ADDRESS</div>
-                          <div className="prof-field-value">{user.email || "—"}</div>
-                        </div>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        <div><div className="prof-field-label">EMAIL ADDRESS</div><div className="prof-field-value">{user.email || "—"}</div></div>
                       </div>
                     </div>
                     <div className="prof-field-item">
                       <div className="prof-field-icon-row">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.8a16 16 0 0 0 5.29 5.29l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
-                        </svg>
-                        <div>
-                          <div className="prof-field-label">PHONE NUMBER</div>
-                          <div className="prof-field-value">{user.phoneNumber || user.phone || "Not set"}</div>
-                        </div>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.8a16 16 0 0 0 5.29 5.29l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        <div><div className="prof-field-label">PHONE NUMBER</div><div className="prof-field-value">{user.phoneNumber || user.phone || "Not set"}</div></div>
                       </div>
                     </div>
                     <div className="prof-field-item">
                       <div className="prof-field-icon-row">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                        </svg>
-                        <div>
-                          <div className="prof-field-label">ROLE</div>
-                          <div><span className="prof-adopter-badge">Adopter</span></div>
-                        </div>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        <div><div className="prof-field-label">LOCATION</div><div className="prof-field-value">{user.address || "Not set"}</div></div>
                       </div>
                     </div>
                     <div className="prof-field-item">
                       <div className="prof-field-icon-row">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-                        </svg>
-                        <div>
-                          <div className="prof-field-label">MEMBER SINCE</div>
-                          <div className="prof-field-value">{memberSince}</div>
-                        </div>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        <div><div className="prof-field-label">MEMBER SINCE</div><div className="prof-field-value">{memberSince}</div></div>
                       </div>
                     </div>
                   </div>
-
                   <button className="prof-edit-btn" onClick={() => setEditing(true)}>Edit Profile</button>
                 </>
               )}
@@ -271,47 +291,19 @@ export default function AdopterProfile() {
             <div className="prof-card prof-stats-card">
               <h3 className="prof-card-title">Quick Stats</h3>
               <p className="prof-card-sub">Your adoption activity</p>
-              <div className="prof-stat-item">
-                <div className="prof-stat-dot" style={{ background: "#6b7280" }} />
-                <div className="prof-stat-body">
-                  <div className="prof-stat-label">TOTAL REQUESTS</div>
-                  <div className="prof-stat-num">{stats.total}</div>
-                </div>
-              </div>
-              <div className="prof-stat-item">
-                <div className="prof-stat-dot prof-dot-pending" />
-                <div className="prof-stat-body">
-                  <div className="prof-stat-label">PENDING</div>
-                  <div className="prof-stat-num">{stats.pending}</div>
-                </div>
-              </div>
-              <div className="prof-stat-item">
-                <div className="prof-stat-dot prof-dot-available" />
-                <div className="prof-stat-body">
-                  <div className="prof-stat-label">APPROVED</div>
-                  <div className="prof-stat-num">{stats.approved}</div>
-                </div>
-              </div>
-              <div className="prof-stat-item">
-                <div className="prof-stat-dot prof-dot-adopted" />
-                <div className="prof-stat-body">
-                  <div className="prof-stat-label">DECLINED</div>
-                  <div className="prof-stat-num">{stats.declined}</div>
-                </div>
-              </div>
+              <div className="prof-stat-item"><div className="prof-stat-dot" style={{ background: "#6b7280" }} /><div className="prof-stat-body"><div className="prof-stat-label">TOTAL REQUESTS</div><div className="prof-stat-num">{stats.total}</div></div></div>
+              <div className="prof-stat-item"><div className="prof-stat-dot prof-dot-pending" /><div className="prof-stat-body"><div className="prof-stat-label">PENDING</div><div className="prof-stat-num">{stats.pending}</div></div></div>
+              <div className="prof-stat-item"><div className="prof-stat-dot prof-dot-available" /><div className="prof-stat-body"><div className="prof-stat-label">APPROVED</div><div className="prof-stat-num">{stats.approved}</div></div></div>
+              <div className="prof-stat-item"><div className="prof-stat-dot prof-dot-adopted" /><div className="prof-stat-body"><div className="prof-stat-label">DECLINED</div><div className="prof-stat-num">{stats.declined}</div></div></div>
             </div>
           </div>
 
           <div className="prof-main">
             <div className="prof-pets-card">
               <div className="prof-pets-header">
-                <div>
-                  <h2 className="prof-card-title">My Adoption Requests</h2>
-                  <p className="prof-card-sub">Track your adoption applications</p>
-                </div>
+                <div><h2 className="prof-card-title">My Adoption Requests</h2><p className="prof-card-sub">Track your adoption applications</p></div>
                 <span className="prof-total-badge">{requests.length} Total</span>
               </div>
-
               {loading ? (
                 <div className="od-loading"><div className="od-spinner" /></div>
               ) : requests.length === 0 ? (
@@ -339,9 +331,7 @@ export default function AdopterProfile() {
                         <div className="prof-pet-item-name">{req.pet?.name || "Pet"}</div>
                         <div className="prof-pet-item-breed">{req.pet?.breed || req.pet?.age || ""}</div>
                         <div className="prof-pet-item-meta">
-                          <span className={`od-badge ${statusClass(req.status)}`} style={{ position: "static", fontSize: 10, padding: "2px 8px" }}>
-                            {statusLabel(req.status)}
-                          </span>
+                          <span className={`od-badge ${statusClass(req.status)}`} style={{ position: "static", fontSize: 10, padding: "2px 8px" }}>{statusLabel(req.status)}</span>
                         </div>
                         {req.createdAt && (
                           <div className="prof-pet-item-date">

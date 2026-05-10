@@ -37,10 +37,12 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
+                        .requestMatchers("/uploads/profiles/**").permitAll()
+                        .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/reports/**").authenticated()
+                        .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/reports/**").authenticated()
+                        .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/v1/reports/**").authenticated()
                         .requestMatchers("/api/v1/pets/**").authenticated()
                         .requestMatchers("/api/v1/adoption-requests/**").authenticated()
-                        .requestMatchers("/api/v1/adoption-requests/**").authenticated()
-                        .requestMatchers("/uploads/profiles/**").permitAll()
                         .requestMatchers("/api/v1/users/**").authenticated()
                         .anyRequest().authenticated()
                 )
@@ -55,7 +57,9 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of(
-                "http://localhost:3000"
+                "http://localhost:3000",
+                "http://10.0.2.2:8080",
+                "http://10.0.2.2"
         ));
         configuration.setAllowedMethods(List.of(
                 "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"

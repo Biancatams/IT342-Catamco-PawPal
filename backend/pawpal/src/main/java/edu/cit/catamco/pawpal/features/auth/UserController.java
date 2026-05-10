@@ -40,4 +40,26 @@ public class UserController {
                 .status(res.isSuccess() ? HttpStatus.OK : HttpStatus.BAD_REQUEST)
                 .body(res);
     }
+
+    @GetMapping("/all")
+    public ResponseEntity<AuthResponse> getAllUsers() {
+        AuthResponse res = userService.getAllUsers();
+        return ResponseEntity.ok(res);
+    }
+
+    @PutMapping("/{id}/ban")
+    public ResponseEntity<AuthResponse> banUser(@PathVariable Long id) {
+        AuthResponse res = userService.banUser(id);
+        return ResponseEntity
+                .status(res.isSuccess() ? HttpStatus.OK : HttpStatus.BAD_REQUEST)
+                .body(res);
+    }
+
+    @PutMapping("/{id}/unban")
+    public ResponseEntity<AuthResponse> unbanUser(@PathVariable Long id) {
+        AuthResponse res = userService.unbanUser(id);
+        return ResponseEntity
+                .status(res.isSuccess() ? HttpStatus.OK : HttpStatus.BAD_REQUEST)
+                .body(res);
+    }
 }

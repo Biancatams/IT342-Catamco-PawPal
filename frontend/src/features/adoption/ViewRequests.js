@@ -6,6 +6,14 @@ import "../../shared/styles/Navbar.css";
 import "../../shared/styles/OwnerDashboard.css";
 import LogoutModal from "../../shared/components/LogoutModal";
 
+const REPORT_REASONS = [
+  "Suspicious or fake adopter",
+  "Inappropriate messages",
+  "No-show after approval",
+  "Suspected animal abuse concern",
+  "Others",
+];
+
 export default function ViewRequests() {
   const navigate = useNavigate();
   const { petId } = useParams();
@@ -20,10 +28,15 @@ export default function ViewRequests() {
   const [actionLoading, setActionLoading] = useState(null);
   const [showLogout, setShowLogout] = useState(false);
 
-  // Decline reason modal state
-  const [declineModal, setDeclineModal] = useState(null); // holds requestId when open
+  const [declineModal, setDeclineModal] = useState(null);
   const [declineReason, setDeclineReason] = useState("");
   const [declineError, setDeclineError] = useState("");
+
+  const [reportModal, setReportModal] = useState(null); // holds adopterId
+  const [selectedReportReason, setSelectedReportReason] = useState("");
+  const [customReportReason, setCustomReportReason] = useState("");
+  const [reportSubmitting, setReportSubmitting] = useState(false);
+  const [reportSuccess, setReportSuccess] = useState(false);
 
   useEffect(() => {
     fetchRequests();
@@ -60,10 +73,7 @@ export default function ViewRequests() {
   };
 
   const handleDeclineConfirm = async () => {
-    if (!declineReason.trim()) {
-      setDeclineError("Please provide a reason for declining.");
-      return;
-    }
+    if (!declineReason.trim()) { setDeclineError("Please provide a reason for declining."); return; }
     setActionLoading(declineModal + "decline");
     try {
       await axios.put(
@@ -96,6 +106,33 @@ export default function ViewRequests() {
     }
   };
 
+  const openReportModal = (adopterId) => {
+    setSelectedReportReason("");
+    setCustomReportReason("");
+    setReportSuccess(false);
+    setReportModal(adopterId);
+  };
+
+  const handleSubmitReport = async () => {
+    const reason = selectedReportReason === "Others"
+      ? customReportReason.trim()
+      : selectedReportReason;
+    if (!reason) return;
+    setReportSubmitting(true);
+    try {
+      await axios.post(
+        "http://localhost:8080/api/v1/reports",
+        { reportedUserId: reportModal, reason },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setReportSuccess(true);
+    } catch {
+      alert("Failed to submit report.");
+    } finally {
+      setReportSubmitting(false);
+    }
+  };
+
   const confirmLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -103,102 +140,109 @@ export default function ViewRequests() {
   };
 
   const statusLabel = (s) =>
-    s === "AVAILABLE" ? "Available"
-    : s === "PENDING" ? "Pending"
-    : s === "UNDER_REVIEW" ? "Under Review"
-    : s === "REJECTED" ? "Rejected"
-    : "Adopted";
+    s === "AVAILABLE" ? "Available" : s === "PENDING" ? "Pending"
+    : s === "UNDER_REVIEW" ? "Under Review" : s === "REJECTED" ? "Rejected" : "Adopted";
 
   const statusClass = (s) =>
-    s === "AVAILABLE" ? "badge-available"
-    : s === "PENDING" ? "badge-pending"
-    : s === "UNDER_REVIEW" ? "badge-review"
-    : s === "REJECTED" ? "badge-rejected"
-    : "badge-adopted";
+    s === "AVAILABLE" ? "badge-available" : s === "PENDING" ? "badge-pending"
+    : s === "UNDER_REVIEW" ? "badge-review" : s === "REJECTED" ? "badge-rejected" : "badge-adopted";
 
   const pendingCount = requests.filter((r) => r.status === "PENDING").length;
 
   return (
     <div className="od-page">
-      {showLogout && (
-        <LogoutModal onConfirm={confirmLogout} onCancel={() => setShowLogout(false)} />
-      )}
+      {showLogout && <LogoutModal onConfirm={confirmLogout} onCancel={() => setShowLogout(false)} />}
 
-      {/* ── Decline Reason Modal ── */}
+      {/* Decline Modal */}
       {declineModal && (
-        <div style={{
-          position: "fixed", inset: 0, zIndex: 1000,
-          background: "rgba(0,0,0,0.35)", backdropFilter: "blur(3px)",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          padding: 20,
-        }}>
-          <div style={{
-            background: "white", borderRadius: 20, padding: 32,
-            width: "100%", maxWidth: 460, boxShadow: "0 20px 60px rgba(0,0,0,0.15)",
-          }}>
-            {/* Icon */}
-            <div style={{
-              width: 52, height: 52, borderRadius: "50%",
-              background: "rgba(220,38,38,0.08)", border: "1.5px solid rgba(220,38,38,0.2)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              marginBottom: 16,
-            }}>
+        <div style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.35)", backdropFilter: "blur(3px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+          <div style={{ background: "white", borderRadius: 20, padding: 32, width: "100%", maxWidth: 460, boxShadow: "0 20px 60px rgba(0,0,0,0.15)" }}>
+            <div style={{ width: 52, height: 52, borderRadius: "50%", background: "rgba(220,38,38,0.08)", border: "1.5px solid rgba(220,38,38,0.2)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16 }}>
               <svg viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 22, height: 22 }}>
                 <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
               </svg>
             </div>
-
-            <h2 style={{ fontSize: 20, fontWeight: 700, color: "var(--green)", marginBottom: 6 }}>
-              Decline Adoption Request
-            </h2>
-            <p style={{ fontSize: 14, color: "var(--muted)", marginBottom: 20, lineHeight: 1.6 }}>
-              Please let the adopter know why their request is being declined. This message will be visible to them.
-            </p>
-
+            <h2 style={{ fontSize: 20, fontWeight: 700, color: "var(--green)", marginBottom: 6 }}>Decline Adoption Request</h2>
+            <p style={{ fontSize: 14, color: "var(--muted)", marginBottom: 20, lineHeight: 1.6 }}>Please let the adopter know why their request is being declined.</p>
             <label style={{ display: "block", fontSize: 13, fontWeight: 600, color: "var(--green)", marginBottom: 8 }}>
               Reason for Declining <span style={{ color: "#dc2626" }}>*</span>
             </label>
-            <textarea
-              rows={4}
-              value={declineReason}
+            <textarea rows={4} value={declineReason}
               onChange={(e) => { setDeclineReason(e.target.value); setDeclineError(""); }}
-              placeholder="e.g. We've already found a suitable adopter, the living situation doesn't match the pet's needs, etc."
-              style={{
-                width: "100%", borderRadius: 10, border: declineError ? "1.5px solid #dc2626" : "1.5px solid var(--border)",
-                padding: "10px 14px", fontSize: 14, color: "var(--green)",
-                resize: "vertical", fontFamily: "inherit", lineHeight: 1.6,
-                outline: "none", boxSizing: "border-box",
-                background: declineError ? "rgba(220,38,38,0.02)" : "white",
-              }}
+              placeholder="e.g. We've already found a suitable adopter..."
+              style={{ width: "100%", borderRadius: 10, border: declineError ? "1.5px solid #dc2626" : "1.5px solid var(--border)", padding: "10px 14px", fontSize: 14, color: "var(--green)", resize: "vertical", fontFamily: "inherit", lineHeight: 1.6, outline: "none", boxSizing: "border-box" }}
             />
-            {declineError && (
-              <p style={{ fontSize: 12, color: "#dc2626", marginTop: 6, marginBottom: 0 }}>{declineError}</p>
-            )}
-
+            {declineError && <p style={{ fontSize: 12, color: "#dc2626", marginTop: 6 }}>{declineError}</p>}
             <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
-              <button
-                onClick={() => setDeclineModal(null)}
-                style={{
-                  flex: 1, padding: "11px 0", borderRadius: 10,
-                  border: "1.5px solid var(--border)", background: "white",
-                  color: "var(--muted)", fontWeight: 600, fontSize: 14, cursor: "pointer",
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleDeclineConfirm}
-                disabled={!!actionLoading}
-                style={{
-                  flex: 1, padding: "11px 0", borderRadius: 10,
-                  border: "none", background: "#dc2626",
-                  color: "white", fontWeight: 600, fontSize: 14, cursor: "pointer",
-                  opacity: actionLoading ? 0.7 : 1,
-                }}
-              >
+              <button onClick={() => setDeclineModal(null)} style={{ flex: 1, padding: "11px 0", borderRadius: 10, border: "1.5px solid var(--border)", background: "white", color: "var(--muted)", fontWeight: 600, fontSize: 14, cursor: "pointer" }}>Cancel</button>
+              <button onClick={handleDeclineConfirm} disabled={!!actionLoading} style={{ flex: 1, padding: "11px 0", borderRadius: 10, border: "none", background: "#dc2626", color: "white", fontWeight: 600, fontSize: 14, cursor: "pointer", opacity: actionLoading ? 0.7 : 1 }}>
                 {actionLoading ? "Declining..." : "Confirm Decline"}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Report Modal */}
+      {reportModal !== null && (
+        <div style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.35)", backdropFilter: "blur(3px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 20 }}>
+          <div style={{ background: "white", borderRadius: 20, padding: 32, width: "100%", maxWidth: 460, boxShadow: "0 20px 60px rgba(0,0,0,0.15)" }}>
+            {reportSuccess ? (
+              <div style={{ textAlign: "center", padding: "12px 0" }}>
+                <div style={{ width: 56, height: 56, borderRadius: "50%", background: "rgba(22,163,74,0.1)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 24, height: 24 }}><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <h3 style={{ fontSize: 18, fontWeight: 700, color: "var(--green)", marginBottom: 8 }}>Report Submitted</h3>
+                <p style={{ fontSize: 14, color: "var(--muted)", marginBottom: 24 }}>Thank you for helping keep PawPal safe.</p>
+                <button onClick={() => setReportModal(null)} style={{ background: "var(--green)", color: "white", border: "none", borderRadius: 10, padding: "11px 32px", fontWeight: 600, fontSize: 14, cursor: "pointer" }}>Done</button>
+              </div>
+            ) : (
+              <>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+                  <div style={{ width: 48, height: 48, borderRadius: "50%", background: "rgba(220,38,38,0.08)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 22, height: 22 }}>
+                      <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+                      <line x1="4" y1="22" x2="4" y2="15"/>
+                    </svg>
+                  </div>
+                  <button onClick={() => setReportModal(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--muted)", fontSize: 22, lineHeight: 1 }}>✕</button>
+                </div>
+                <h3 style={{ fontSize: 18, fontWeight: 700, color: "var(--green)", marginBottom: 6 }}>Report this Adopter</h3>
+                <p style={{ fontSize: 13, color: "var(--muted)", marginBottom: 20, lineHeight: 1.6 }}>Select a reason for your report. Your identity will remain anonymous.</p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
+                  {REPORT_REASONS.map((r) => (
+                    <button key={r} onClick={() => setSelectedReportReason(r)} style={{
+                      display: "flex", alignItems: "center", gap: 10,
+                      background: selectedReportReason === r ? "rgba(220,38,38,0.06)" : "var(--cream)",
+                      border: selectedReportReason === r ? "1.5px solid #dc2626" : "1.5px solid var(--border)",
+                      borderRadius: 8, padding: "10px 14px", fontSize: 13,
+                      fontWeight: selectedReportReason === r ? 600 : 500,
+                      color: selectedReportReason === r ? "#dc2626" : "var(--text)",
+                      cursor: "pointer", textAlign: "left", fontFamily: "inherit",
+                    }}>
+                      {selectedReportReason === r && (
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 13, height: 13, flexShrink: 0 }}><polyline points="20 6 9 17 4 12"/></svg>
+                      )}
+                      {r}
+                    </button>
+                  ))}
+                </div>
+                {selectedReportReason === "Others" && (
+                  <textarea value={customReportReason} onChange={(e) => setCustomReportReason(e.target.value)}
+                    placeholder="Please describe the issue..." maxLength={300}
+                    style={{ width: "100%", borderRadius: 10, border: "1.5px solid var(--border)", padding: "10px 14px", fontSize: 13, resize: "vertical", minHeight: 80, fontFamily: "inherit", outline: "none", boxSizing: "border-box", marginBottom: 8 }}
+                  />
+                )}
+                <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
+                  <button onClick={() => setReportModal(null)} style={{ flex: 1, padding: "11px 0", borderRadius: 10, border: "1.5px solid var(--border)", background: "white", color: "var(--muted)", fontWeight: 600, fontSize: 14, cursor: "pointer" }}>Cancel</button>
+                  <button onClick={handleSubmitReport}
+                    disabled={!selectedReportReason || (selectedReportReason === "Others" && !customReportReason.trim()) || reportSubmitting}
+                    style={{ flex: 1, padding: "11px 0", borderRadius: 10, border: "none", background: "#dc2626", color: "white", fontWeight: 600, fontSize: 14, cursor: "pointer", opacity: (!selectedReportReason || reportSubmitting) ? 0.5 : 1 }}>
+                    {reportSubmitting ? "Submitting..." : "Submit Report"}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}
@@ -218,9 +262,7 @@ export default function ViewRequests() {
       <div className="od-body">
         <div className="vr-header">
           <button className="vr-back-btn" onClick={() => navigate("/owner/dashboard")}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="15 18 9 12 15 6" />
-            </svg>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6" /></svg>
             Back to Dashboard
           </button>
           <div>
@@ -243,31 +285,23 @@ export default function ViewRequests() {
                 <div className="vr-pet-info">
                   <div className="vr-pet-name-row">
                     <h2 className="vr-pet-name">{pet.name}</h2>
-                    <span className={`od-badge ${statusClass(pet.status)}`}>
-                      {statusLabel(pet.status)}
-                    </span>
+                    <span className={`od-badge ${statusClass(pet.status)}`}>{statusLabel(pet.status)}</span>
                   </div>
                   {pet.breed && <p className="vr-pet-breed">{pet.breed}</p>}
                   <div className="od-pet-meta" style={{ marginTop: 12 }}>
                     {pet.age && (
                       <div className="od-meta-row">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-                        </svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                         <span>{pet.age}</span>
                       </div>
                     )}
                     <div className="od-meta-row">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                      </svg>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
                       <span>{pet.type}</span>
                     </div>
                     {pet.location && (
                       <div className="od-meta-row">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-                        </svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
                         <span>{pet.location}</span>
                       </div>
                     )}
@@ -282,9 +316,7 @@ export default function ViewRequests() {
           <div className="vr-requests-panel">
             <div className="vr-requests-header">
               <h3 className="vr-requests-title">Adoption Requests</h3>
-              {pendingCount > 0 && (
-                <span className="vr-active-badge">{pendingCount} Active</span>
-              )}
+              {pendingCount > 0 && <span className="vr-active-badge">{pendingCount} Active</span>}
             </div>
 
             {loading ? (
@@ -294,29 +326,18 @@ export default function ViewRequests() {
             ) : requests.length === 0 ? (
               <div className="vr-empty">
                 <span>🐾</span>
-                <p style={{ fontWeight: 700, color: "var(--green)", fontSize: 15 }}>
-                  No paw-tential adopters yet!
-                </p>
+                <p style={{ fontWeight: 700, color: "var(--green)", fontSize: 15 }}>No paw-tential adopters yet!</p>
               </div>
             ) : (
               <div className="vr-requests-list">
                 {requests.map((req) => {
-                  const initials = (req.adopterName || "?")
-                    .split(" ")
-                    .map((n) => n[0])
-                    .join("")
-                    .toUpperCase()
-                    .slice(0, 2);
+                  const initials = (req.adopterName || "?").split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
                   const adopterImg = req.adopter?.profileImageUrl;
                   return (
                     <div key={req.id} className={`vr-request-card ${req.status !== "PENDING" ? "vr-request-resolved" : ""}`}>
                       <div className="vr-req-top">
                         {adopterImg ? (
-                          <img
-                            src={`http://localhost:8080${adopterImg}`}
-                            alt={req.adopterName}
-                            className="vr-req-avatar-img"
-                          />
+                          <img src={`http://localhost:8080${adopterImg}`} alt={req.adopterName} className="vr-req-avatar-img" />
                         ) : (
                           <div className="vr-req-avatar">{initials}</div>
                         )}
@@ -336,78 +357,61 @@ export default function ViewRequests() {
                           <div className="vr-req-field">
                             <div className="vr-req-field-label">Contact Information</div>
                             <div className="vr-req-contact-box">
-                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.8a16 16 0 0 0 5.29 5.29l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
-                              </svg>
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.8a16 16 0 0 0 5.29 5.29l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
                               {req.contactInfo}
                             </div>
                           </div>
                         )}
-
                         <div className="vr-req-field">
                           <div className="vr-req-field-label">Reason for Adoption</div>
-                          <div className="vr-req-field-value">
-                            {req.reason || req.message || "No reason provided."}
-                          </div>
+                          <div className="vr-req-field-value">{req.reason || req.message || "No reason provided."}</div>
                         </div>
-
                         {req.noteToOwner && (
                           <div className="vr-req-field">
                             <div className="vr-req-field-label">Note to Owner</div>
                             <div className="vr-req-note-box">"{req.noteToOwner}"</div>
                           </div>
                         )}
-
-                        {/* Show decline reason if declined */}
                         {req.status === "DECLINED" && req.declineReason && (
                           <div className="vr-req-field">
                             <div className="vr-req-field-label" style={{ color: "#dc2626" }}>Your Decline Reason</div>
-                            <div style={{
-                              background: "rgba(220,38,38,0.05)", border: "1px solid rgba(220,38,38,0.18)",
-                              borderRadius: 8, padding: "10px 14px", fontSize: 13,
-                              color: "#b91c1c", lineHeight: 1.6,
-                            }}>
+                            <div style={{ background: "rgba(220,38,38,0.05)", border: "1px solid rgba(220,38,38,0.18)", borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#b91c1c", lineHeight: 1.6 }}>
                               {req.declineReason}
                             </div>
                           </div>
                         )}
-
                         {req.createdAt && (
                           <div className="vr-req-date">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-                            </svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                             Submitted {new Date(req.createdAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}
                           </div>
                         )}
                       </div>
 
-                      {req.status === "PENDING" && (
-                        <div className="vr-req-footer">
+                      <div className="vr-req-footer" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8, padding: "12px 0 4px" }}>
+                        {req.status === "PENDING" && (
                           <div className="vr-req-actions">
-                            <button
-                              className="vr-btn-decline"
-                              disabled={!!actionLoading}
-                              onClick={() => openDeclineModal(req.id)}
-                            >
-                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-                              </svg>
+                            <button className="vr-btn-decline" disabled={!!actionLoading} onClick={() => openDeclineModal(req.id)}>
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                               Decline
                             </button>
-                            <button
-                              className="vr-btn-accept"
-                              disabled={!!actionLoading}
-                              onClick={() => handleApprove(req.id)}
-                            >
-                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <polyline points="20 6 9 17 4 12"/>
-                              </svg>
+                            <button className="vr-btn-accept" disabled={!!actionLoading} onClick={() => handleApprove(req.id)}>
+                              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                               {actionLoading === req.id + "approve" ? "..." : "Accept Request"}
                             </button>
                           </div>
-                        </div>
-                      )}
+                        )}
+                        <button
+                          onClick={() => openReportModal(req.adopterId)}
+                          style={{ display: "flex", alignItems: "center", gap: 5, background: "none", border: "1px solid rgba(220,38,38,0.25)", borderRadius: 8, color: "#dc2626", fontSize: 12, cursor: "pointer", padding: "6px 12px", fontWeight: 500, fontFamily: "inherit" }}
+                        >
+                          <svg viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 12, height: 12 }}>
+                            <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+                            <line x1="4" y1="22" x2="4" y2="15"/>
+                          </svg>
+                          Report this adopter
+                        </button>
+                      </div>
                     </div>
                   );
                 })}

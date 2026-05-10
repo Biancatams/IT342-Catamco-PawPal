@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background>
+        <color android:color="#FFF5EE"/>
+    </background>
+    <foreground>
+        <inset
+            android:insetTop="30%"
+            android:insetBottom="30%"
+            android:insetLeft="30%"
+            android:insetRight="30%">
+            <bitmap
+                android:src="@drawable/pawlogo"
+                android:gravity="center"/>
+        </inset>
+    </foreground>
+</adaptive-icon>

@@ -10,4 +10,6 @@
     <color name="text">#1a1a1a</color>
     <color name="error_bg">#fff0f0</color>
     <color name="error_text">#dc2626</color>
+    <color name="terracotta">#C76953</color>
+    <color name="dark">#1F3327</color>
 </resources>

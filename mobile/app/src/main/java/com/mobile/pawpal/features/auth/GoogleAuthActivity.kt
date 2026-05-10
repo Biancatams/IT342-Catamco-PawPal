@@ -8,6 +8,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.mobile.pawpal.features.admin.AdminDashboardActivity
+import com.mobile.pawpal.features.adoption.AdopterDashboardActivity
+import com.mobile.pawpal.features.pets.OwnerDashboardActivity
+import com.mobile.pawpal.features.verification.VerificationStatusActivity
 import com.mobile.pawpal.shared.GoogleAuthRequest
 import com.mobile.pawpal.shared.RetrofitClient
 import kotlinx.coroutines.CoroutineScope
@@ -48,7 +52,6 @@ class GoogleAuthActivity : AppCompatActivity() {
             .build()
 
         val googleSignInClient = GoogleSignIn.getClient(this, gso)
-        // Always force account picker
         googleSignInClient.signOut().addOnCompleteListener {
             signInLauncher.launch(googleSignInClient.signInIntent)
         }
@@ -57,9 +60,7 @@ class GoogleAuthActivity : AppCompatActivity() {
     private fun sendTokenToBackend(idToken: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = RetrofitClient.instance.googleLogin(
-                    GoogleAuthRequest(idToken)
-                )
+                val response = RetrofitClient.instance.googleLogin(GoogleAuthRequest(idToken))
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful && response.body()?.success == true) {
                         val data = response.body()!!.data!!
@@ -69,10 +70,45 @@ class GoogleAuthActivity : AppCompatActivity() {
                             .putString("fullName", data.user.fullName)
                             .putString("email", data.user.email)
                             .putString("role", data.user.role)
-                            .putInt("userId", data.user.id)
                             .apply()
-                        startActivity(Intent(this@GoogleAuthActivity, DashboardActivity::class.java))
-                        finish()
+
+                        val role = data.user.role.uppercase()
+
+                        if (role == "ADMIN") {
+                            val intent = Intent(this@GoogleAuthActivity, AdminDashboardActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            startActivity(intent)
+                            finish()
+                            return@withContext
+                        }
+
+                        CoroutineScope(Dispatchers.IO).launch {
+                            try {
+                                val verifToken = "Bearer ${data.accessToken}"
+                                val verifResponse = RetrofitClient.instance.getMyVerification(verifToken)
+                                withContext(Dispatchers.Main) {
+                                    val status = verifResponse.body()?.data?.status?.uppercase() ?: "NONE"
+                                    val intent = if (status == "APPROVED") {
+                                        when (role) {
+                                            "PET_OWNER" -> Intent(this@GoogleAuthActivity, OwnerDashboardActivity::class.java)
+                                            else -> Intent(this@GoogleAuthActivity, AdopterDashboardActivity::class.java)
+                                        }
+                                    } else {
+                                        Intent(this@GoogleAuthActivity, VerificationStatusActivity::class.java)
+                                    }
+                                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                    startActivity(intent)
+                                    finish()
+                                }
+                            } catch (e: Exception) {
+                                withContext(Dispatchers.Main) {
+                                    val intent = Intent(this@GoogleAuthActivity, VerificationStatusActivity::class.java)
+                                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                                    startActivity(intent)
+                                    finish()
+                                }
+                            }
+                        }
                     } else {
                         Toast.makeText(
                             this@GoogleAuthActivity,

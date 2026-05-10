@@ -24,7 +24,7 @@
             <ImageView
                 android:layout_width="28dp"
                 android:layout_height="28dp"
-                android:src="@drawable/pawlogo"
+                android:src="@drawable/pawlogo2"
                 android:scaleType="fitCenter"/>
             <TextView
                 android:layout_width="wrap_content"

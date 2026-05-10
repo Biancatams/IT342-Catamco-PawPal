@@ -26,7 +26,7 @@
             <ImageView
                 android:layout_width="26dp"
                 android:layout_height="26dp"
-                android:src="@drawable/pawlogo"
+                android:src="@drawable/pawlogo2"
                 android:scaleType="fitCenter"
                 android:contentDescription="PawPal Logo"/>
 
@@ -367,7 +367,7 @@
                 <ImageView
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/pawlogo"
+                    android:src="@drawable/pawlogo2"
                     android:scaleType="fitCenter"
                     android:contentDescription="PawPal Logo"/>
                 <TextView

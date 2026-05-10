@@ -1,4 +1,5 @@
 package edu.cit.catamco.pawpal.features.auth;
+
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -26,6 +27,9 @@ public class User {
     private String phoneNumber;
     private String profileImageUrl;
 
+    // THIS IS THE MISSING FIELD THAT FIXES YOUR ERROR
+    private String address;
+
     @Column(updatable = false)
     private LocalDateTime createdAt;
 
@@ -49,6 +53,9 @@ public class User {
     public String getProfileImageUrl() { return profileImageUrl; }
     public LocalDateTime getCreatedAt() { return createdAt; }
 
+    // THE MISSING GETTER
+    public String getAddress() { return address; }
+
     public void setId(Long id) { this.id = id; }
     public void setFullName(String fullName) { this.fullName = fullName; }
     public void setEmail(String email) { this.email = email; }
@@ -57,6 +64,9 @@ public class User {
     public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
     public void setProfileImageUrl(String profileImageUrl) { this.profileImageUrl = profileImageUrl; }
 
+    // THE MISSING SETTER
+    public void setAddress(String address) { this.address = address; }
+
     public static Builder builder() { return new Builder(); }
 
     public static class Builder {
@@ -64,18 +74,28 @@ public class User {
         private String email;
         private String password;
         private Role role;
+        private String address;
 
         public Builder fullName(String fullName) { this.fullName = fullName; return this; }
         public Builder email(String email) { this.email = email; return this; }
         public Builder password(String password) { this.password = password; return this; }
         public Builder role(Role role) { this.role = role; return this; }
+        public Builder address(String address) { this.address = address; return this; }
+
         public User build() {
             User user = new User();
             user.fullName = this.fullName;
             user.email = this.email;
             user.password = this.password;
             user.role = this.role;
+            user.address = this.address;
             return user;
         }
     }
+
+    @Column(nullable = false)
+    private boolean isBanned = false;
+
+    public boolean isBanned() { return isBanned; }
+    public void setBanned(boolean banned) { isBanned = banned; }
 }

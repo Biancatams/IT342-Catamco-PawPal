@@ -6,6 +6,29 @@ import "../../shared/styles/Navbar.css";
 import "./OwnerDashboard.css";
 import LogoutModal from "../../shared/components/LogoutModal";
 
+const CEBU_LOCATIONS = [
+  "Cebu City",
+  "Mandaue",
+  "Lapu-Lapu",
+  "Talisay",
+  "Danao",
+  "Carcar",
+  "Toledo",
+  "Naga",
+  "Bogo",
+  "Minglanilla",
+  "San Fernando",
+  "Consolacion",
+  "Liloan",
+  "Compostela",
+  "Cordova",
+  "Moalboal",
+  "Oslob",
+  "Alcoy",
+  "Dalaguete",
+  "Others",
+];
+
 export default function OwnerProfile() {
   const navigate = useNavigate();
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user") || "{}"));
@@ -17,6 +40,7 @@ export default function OwnerProfile() {
   const [form, setForm] = useState({
     fullName: user.fullName || "",
     phone: user.phoneNumber || user.phone || "",
+    location: user.address || "",
   });
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState("");
@@ -27,7 +51,24 @@ export default function OwnerProfile() {
     user.profileImageUrl ? `http://localhost:8080${user.profileImageUrl}` : null
   );
 
-  useEffect(() => { fetchMyPets(); }, []);
+  useEffect(() => {
+    fetchMyPets();
+    fetchProfile();
+  }, []);
+
+  const fetchProfile = async () => {
+    try {
+      const res = await axios.get("http://localhost:8080/api/v1/users/me", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const p = res.data.data;
+      setForm({ fullName: p.fullName || "", phone: p.phoneNumber || "", location: p.address || "" });
+      const updated = { ...user, ...p };
+      setUser(updated);
+      localStorage.setItem("user", JSON.stringify(updated));
+      if (p.profileImageUrl) setProfileImgPreview(`http://localhost:8080${p.profileImageUrl}`);
+    } catch {}
+  };
 
   const fetchMyPets = async () => {
     try {
@@ -58,10 +99,7 @@ export default function OwnerProfile() {
 
   const handleProfileImg = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setProfileImg(file);
-      setProfileImgPreview(URL.createObjectURL(file));
-    }
+    if (file) { setProfileImg(file); setProfileImgPreview(URL.createObjectURL(file)); }
   };
 
   const handleSave = async () => {
@@ -75,31 +113,27 @@ export default function OwnerProfile() {
       const formData = new FormData();
       formData.append("fullName", form.fullName);
       formData.append("phoneNumber", form.phone || "");
+      formData.append("address", form.location || "");
       if (profileImg) formData.append("image", profileImg);
 
-      const res = await axios.put(
-        "http://localhost:8080/api/v1/users/me",
-        formData,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-
+      const res = await axios.put("http://localhost:8080/api/v1/users/me", formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const updated = {
         ...user,
         fullName: res.data.data.fullName,
         phone: res.data.data.phoneNumber,
         phoneNumber: res.data.data.phoneNumber,
+        address: res.data.data.address,
         profileImageUrl: res.data.data.profileImageUrl,
       };
       localStorage.setItem("user", JSON.stringify(updated));
       setUser(updated);
+      setForm({ fullName: res.data.data.fullName, phone: res.data.data.phoneNumber || "", location: res.data.data.address || "" });
       setSaveMsg("Profile updated!");
       setEditing(false);
       setProfileImg(null);
-      setProfileImgPreview(
-        res.data.data.profileImageUrl
-          ? `http://localhost:8080${res.data.data.profileImageUrl}`
-          : null
-      );
+      if (res.data.data.profileImageUrl) setProfileImgPreview(`http://localhost:8080${res.data.data.profileImageUrl}`);
       setTimeout(() => setSaveMsg(""), 3000);
     } catch {
       setSaveMsg("Failed to update. Try again.");
@@ -110,36 +144,34 @@ export default function OwnerProfile() {
 
   const stats = {
     available: pets.filter((p) => p.status === "AVAILABLE").length,
-    pending: pets.filter((p) => p.status === "PENDING").length,
+    pending: pets.filter((p) => p.status === "UNDER_REVIEW").length,
     adopted: pets.filter((p) => p.status === "ADOPTED").length,
   };
 
   const statusLabel = (s) =>
-    s === "AVAILABLE" ? "Available"
-    : s === "PENDING" ? "Pending"
-    : s === "UNDER_REVIEW" ? "Under Review"
-    : s === "REJECTED" ? "Rejected"
-    : "Adopted";
+    s === "AVAILABLE" ? "Available" : s === "UNDER_REVIEW" ? "Under Review"
+    : s === "REJECTED" ? "Rejected" : "Adopted";
 
   const statusClass = (s) =>
-    s === "AVAILABLE" ? "badge-available"
-    : s === "PENDING" ? "badge-pending"
-    : s === "UNDER_REVIEW" ? "badge-review"
-    : s === "REJECTED" ? "badge-rejected"
-    : "badge-adopted";
+    s === "AVAILABLE" ? "badge-available" : s === "UNDER_REVIEW" ? "badge-review"
+    : s === "REJECTED" ? "badge-rejected" : "badge-adopted";
 
   const memberSince = user.createdAt
     ? new Date(user.createdAt).toLocaleDateString("en-US", { month: "long", year: "numeric" })
     : "January 2024";
 
-  const initials = (user.fullName || "U")
-    .split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+  const initials = (user.fullName || "U").split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
+
+  const ppInput = {
+    width: "100%", fontFamily: "DM Sans, sans-serif", fontSize: 13,
+    color: "var(--text)", background: "var(--cream)",
+    border: "1.5px solid var(--border)", borderRadius: 8,
+    padding: "10px 12px", outline: "none", boxSizing: "border-box",
+  };
 
   return (
     <div className="od-page">
-      {showLogout && (
-        <LogoutModal onConfirm={confirmLogout} onCancel={() => setShowLogout(false)} />
-      )}
+      {showLogout && <LogoutModal onConfirm={confirmLogout} onCancel={() => setShowLogout(false)} />}
 
       <nav className="navbar">
         <button className="navbar-brand" onClick={() => navigate("/")}>
@@ -211,6 +243,19 @@ export default function OwnerProfile() {
                     <input className="pp-input" value={form.phone || "+63"} onChange={handlePhoneChange} placeholder="+63 9XX XXX XXXX" maxLength={16} />
                     <p style={{ fontSize: 11, color: "var(--muted)", marginTop: 4 }}>Format: +63 9XX XXX XXXX</p>
                   </div>
+                  <div className="pp-field">
+                    <label className="pp-label">Location</label>
+                    <select
+                      style={{ ...ppInput, cursor: "pointer" }}
+                      value={form.location}
+                      onChange={(e) => setForm({ ...form, location: e.target.value })}
+                    >
+                      <option value="">Select your city/municipality</option>
+                      {CEBU_LOCATIONS.map((loc) => (
+                        <option key={loc} value={loc}>{loc}</option>
+                      ))}
+                    </select>
+                  </div>
                   <button className="prof-save-btn" onClick={handleSave} disabled={saving}>
                     {saving ? "Saving..." : "Save Changes"}
                   </button>
@@ -224,54 +269,32 @@ export default function OwnerProfile() {
                 <>
                   <div className="prof-name">{user.fullName || "User"}</div>
                   <div className="prof-role-tag">Pet Owner</div>
-
                   <div className="prof-fields">
                     <div className="prof-field-item">
                       <div className="prof-field-icon-row">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
-                        </svg>
-                        <div>
-                          <div className="prof-field-label">EMAIL ADDRESS</div>
-                          <div className="prof-field-value">{user.email || "—"}</div>
-                        </div>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        <div><div className="prof-field-label">EMAIL ADDRESS</div><div className="prof-field-value">{user.email || "—"}</div></div>
                       </div>
                     </div>
                     <div className="prof-field-item">
                       <div className="prof-field-icon-row">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.8a16 16 0 0 0 5.29 5.29l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
-                        </svg>
-                        <div>
-                          <div className="prof-field-label">PHONE NUMBER</div>
-                          <div className="prof-field-value">{user.phoneNumber || user.phone || "Not set"}</div>
-                        </div>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.8a16 16 0 0 0 5.29 5.29l.96-.96a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        <div><div className="prof-field-label">PHONE NUMBER</div><div className="prof-field-value">{user.phoneNumber || user.phone || "Not set"}</div></div>
                       </div>
                     </div>
                     <div className="prof-field-item">
                       <div className="prof-field-icon-row">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                        </svg>
-                        <div>
-                          <div className="prof-field-label">ROLE</div>
-                          <div><span className="prof-owner-badge">Pet Owner</span></div>
-                        </div>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        <div><div className="prof-field-label">LOCATION</div><div className="prof-field-value">{user.address || "Not set"}</div></div>
                       </div>
                     </div>
                     <div className="prof-field-item">
                       <div className="prof-field-icon-row">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-                        </svg>
-                        <div>
-                          <div className="prof-field-label">MEMBER SINCE</div>
-                          <div className="prof-field-value">{memberSince}</div>
-                        </div>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        <div><div className="prof-field-label">MEMBER SINCE</div><div className="prof-field-value">{memberSince}</div></div>
                       </div>
                     </div>
                   </div>
-
                   <button className="prof-edit-btn" onClick={() => setEditing(true)}>Edit Profile</button>
                 </>
               )}
@@ -282,24 +305,15 @@ export default function OwnerProfile() {
               <p className="prof-card-sub">Your pet listing overview</p>
               <div className="prof-stat-item">
                 <div className="prof-stat-dot prof-dot-available" />
-                <div className="prof-stat-body">
-                  <div className="prof-stat-label">AVAILABLE</div>
-                  <div className="prof-stat-num">{stats.available}</div>
-                </div>
+                <div className="prof-stat-body"><div className="prof-stat-label">AVAILABLE</div><div className="prof-stat-num">{stats.available}</div></div>
               </div>
               <div className="prof-stat-item">
                 <div className="prof-stat-dot prof-dot-pending" />
-                <div className="prof-stat-body">
-                  <div className="prof-stat-label">PENDING</div>
-                  <div className="prof-stat-num">{stats.pending}</div>
-                </div>
+                <div className="prof-stat-body"><div className="prof-stat-label">PENDING</div><div className="prof-stat-num">{stats.pending}</div></div>
               </div>
               <div className="prof-stat-item">
                 <div className="prof-stat-dot prof-dot-adopted" />
-                <div className="prof-stat-body">
-                  <div className="prof-stat-label">ADOPTED</div>
-                  <div className="prof-stat-num">{stats.adopted}</div>
-                </div>
+                <div className="prof-stat-body"><div className="prof-stat-label">ADOPTED</div><div className="prof-stat-num">{stats.adopted}</div></div>
               </div>
             </div>
           </div>
@@ -313,7 +327,6 @@ export default function OwnerProfile() {
                 </div>
                 <span className="prof-total-badge">{pets.length} Total</span>
               </div>
-
               {loading ? (
                 <div className="od-loading"><div className="od-spinner" /></div>
               ) : pets.length === 0 ? (
@@ -325,8 +338,7 @@ export default function OwnerProfile() {
               ) : (
                 <div className="prof-pets-grid">
                   {pets.map((pet) => (
-                    <div key={pet.id} className="prof-pet-item"
-                      onClick={() => navigate(`/owner/requests/${pet.id}`, { state: { pet } })}>
+                    <div key={pet.id} className="prof-pet-item" onClick={() => navigate(`/owner/requests/${pet.id}`, { state: { pet } })}>
                       <div className="prof-pet-thumb-wrap">
                         {pet.imageUrl ? (
                           <img src={`http://localhost:8080${pet.imageUrl}`} alt={pet.name} className="prof-pet-thumb" />
@@ -342,9 +354,7 @@ export default function OwnerProfile() {
                         <div className="prof-pet-item-name">{pet.name}</div>
                         <div className="prof-pet-item-breed">{pet.breed || pet.type}</div>
                         <div className="prof-pet-item-meta">
-                          <span className={`od-badge ${statusClass(pet.status)}`} style={{ position: "static", fontSize: 10, padding: "2px 8px" }}>
-                            {statusLabel(pet.status)}
-                          </span>
+                          <span className={`od-badge ${statusClass(pet.status)}`} style={{ position: "static", fontSize: 10, padding: "2px 8px" }}>{statusLabel(pet.status)}</span>
                           {pet.age && <span className="prof-pet-item-age">{pet.age}</span>}
                         </div>
                         {pet.createdAt && (

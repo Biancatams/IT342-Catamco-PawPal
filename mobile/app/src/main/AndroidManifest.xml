@@ -8,9 +8,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/pawlogo"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/pawlogo"
         android:supportsRtl="true"
         android:theme="@style/Theme.PawPal"
         android:usesCleartextTraffic="true"
@@ -33,7 +33,18 @@
         <activity android:name=".features.adoption.AdopterDashboardActivity" />
         <activity android:name=".features.pets.OwnerDashboardActivity" />
         <activity android:name=".features.admin.AdminDashboardActivity" />
-
+        <activity android:name=".features.adoption.PetDetailActivity" />
+        <activity android:name=".features.adoption.AdoptionRequestActivity" />
+        <activity android:name=".features.adoption.MyRequestsActivity" />
+        <activity android:name=".features.adoption.RequestAcceptedActivity" />
+        <activity android:name=".features.auth.ProfileActivity" />
+        <activity android:name=".features.pets.PostPetActivity" />
+        <activity android:name=".features.pets.EditPetActivity" />
+        <activity android:name=".features.pets.ViewRequestsActivity" />
+        <activity android:name=".features.pets.OwnerProfileActivity" />
+        <activity android:name=".features.verification.VerificationActivity" />
+        <activity android:name=".features.verification.VerificationStatusActivity" />
+        <activity android:name=".features.admin.ReportDetailsActivity" />
     </application>
 
 </manifest>
