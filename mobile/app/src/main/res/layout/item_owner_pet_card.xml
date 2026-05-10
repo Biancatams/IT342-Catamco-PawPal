@@ -4,111 +4,215 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@drawable/card_background"
-    android:layout_marginBottom="12dp"
-    android:elevation="2dp">
+    android:layout_marginBottom="12dp">
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="180dp">
+        android:layout_height="200dp">
 
         <ImageView
             android:id="@+id/ivPetImage"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scaleType="centerCrop"/>
+            android:scaleType="centerCrop" />
 
+        <!-- Red trash icon top-LEFT -->
+        <ImageButton
+            android:id="@+id/btnDelete"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@android:drawable/ic_menu_delete"
+            android:background="@color/terracotta"
+            android:layout_gravity="top|start"
+            android:layout_margin="8dp"
+            android:padding="6dp" />
+
+        <!-- Status badge top-RIGHT -->
         <TextView
             android:id="@+id/tvStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|end"
-            android:layout_margin="10dp"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
+            android:textSize="11sp"
+            android:textColor="@color/white"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:paddingTop="4dp"
             android:paddingBottom="4dp"
-            android:textSize="11sp"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:background="@drawable/badge_available"/>
+            android:layout_gravity="top|end"
+            android:layout_margin="8dp" />
+
     </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:gravity="center_vertical">
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvPetName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/dark" />
+
+        <TextView
+            android:id="@+id/tvBreed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="13sp"
+            android:textColor="@color/muted"
+            android:layout_marginBottom="8dp" />
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:orientation="horizontal"
+            android:layout_marginBottom="2dp">
 
             <TextView
-                android:id="@+id/tvPetName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="17sp"
-                android:textStyle="bold"
-                android:textColor="@color/green"/>
-
-            <TextView
-                android:id="@+id/tvBreed"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="13sp"
-                android:textColor="@color/muted"
-                android:layout_marginBottom="6dp"/>
+                android:text="🕐 "
+                android:textSize="13sp" />
 
             <TextView
                 android:id="@+id/tvAge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:textColor="@color/muted"/>
+                android:textSize="13sp"
+                android:textColor="@color/dark" />
 
-            <TextView
-                android:id="@+id/tvType"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:textColor="@color/muted"/>
-
-            <TextView
-                android:id="@+id/tvLocation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:textColor="@color/muted"/>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="end">
+            android:orientation="horizontal"
+            android:layout_marginBottom="2dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🐾 "
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/tvType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:textColor="@color/dark" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📍 "
+                android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/tvLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:textColor="@color/dark" />
+
+        </LinearLayout>
+
+        <!-- Adoption Requests row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@drawable/chip_inactive"
+            android:padding="12dp"
+            android:layout_marginBottom="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="👤 "
+                android:textSize="13sp"
+                android:layout_gravity="center_vertical" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Adoption Requests"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/dark" />
+
+                <TextView
+                    android:id="@+id/tvRequestCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="@color/muted" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Available/Pending/Rejected actions -->
+        <LinearLayout
+            android:id="@+id/llActions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <Button
                 android:id="@+id/btnViewRequests"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:text="View Requests"
-                android:textSize="11sp"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:text="👁 View Requests"
                 android:textColor="@color/white"
-                android:backgroundTint="@color/green"
-                android:layout_marginBottom="6dp"/>
+                android:backgroundTint="@color/terracotta"
+                android:layout_marginBottom="8dp" />
 
             <Button
-                android:id="@+id/btnDelete"
-                android:layout_width="wrap_content"
-                android:layout_height="36dp"
-                android:text="Delete"
-                android:textSize="11sp"
-                android:textColor="@color/white"
-                android:backgroundTint="#DC2626"/>
-        </LinearLayout>
-    </LinearLayout>
+                android:id="@+id/btnEdit"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:text="✏ Edit"
+                android:textColor="@color/dark"
+                android:backgroundTint="@color/white" />
 
+        </LinearLayout>
+
+        <!-- Adopted state — checkmark only -->
+        <LinearLayout
+            android:id="@+id/llAdopted"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:text="✓  Adopted"
+                android:textColor="@color/muted"
+                android:textSize="14sp"
+                android:gravity="center"
+                android:background="@drawable/chip_inactive" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 </LinearLayout>

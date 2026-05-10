@@ -2,9 +2,12 @@ package com.mobile.pawpal.features.auth
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.RadioButton
@@ -12,6 +15,7 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.mobile.pawpal.R
+import com.mobile.pawpal.features.verification.VerificationStatusActivity
 import com.mobile.pawpal.shared.RegisterRequest
 import com.mobile.pawpal.shared.RetrofitClient
 import kotlinx.coroutines.CoroutineScope
@@ -33,6 +37,8 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var tvLogin: TextView
     private lateinit var tvError: TextView
     private lateinit var progressBar: ProgressBar
+    private lateinit var ivTogglePassword: ImageView
+    private var passwordVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +56,16 @@ class RegisterActivity : AppCompatActivity() {
         tvLogin = findViewById(R.id.tvLogin)
         tvError = findViewById(R.id.tvError)
         progressBar = findViewById(R.id.progressBar)
+        ivTogglePassword = findViewById(R.id.ivTogglePassword)
+
+        ivTogglePassword.setOnClickListener {
+            passwordVisible = !passwordVisible
+            etPassword.transformationMethod = if (passwordVisible)
+                HideReturnsTransformationMethod.getInstance()
+            else PasswordTransformationMethod.getInstance()
+            ivTogglePassword.setImageResource(if (passwordVisible) R.drawable.ic_eye_off else R.drawable.ic_eye)
+            etPassword.setSelection(etPassword.text.length)
+        }
 
         rbAdopter.setOnClickListener {
             rbAdopter.setBackgroundResource(R.drawable.role_button_active)
@@ -75,22 +91,17 @@ class RegisterActivity : AppCompatActivity() {
                 R.id.rbPetOwner -> "PET_OWNER"
                 else -> ""
             }
-
             if (fullName.isEmpty() || email.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-                showError("Please fill in all fields.")
-                return@setOnClickListener
+                showError("Please fill in all fields."); return@setOnClickListener
             }
             if (password.length < 8) {
-                showError("Password must be at least 8 characters.")
-                return@setOnClickListener
+                showError("Password must be at least 8 characters."); return@setOnClickListener
             }
             if (password != confirmPassword) {
-                showError("Passwords do not match.")
-                return@setOnClickListener
+                showError("Passwords do not match."); return@setOnClickListener
             }
             if (role.isEmpty()) {
-                showError("Please select a role.")
-                return@setOnClickListener
+                showError("Please select a role."); return@setOnClickListener
             }
             register(fullName, email, password, confirmPassword, role)
         }
@@ -132,7 +143,9 @@ class RegisterActivity : AppCompatActivity() {
                             .putString("email", data.user.email)
                             .putString("role", data.user.role)
                             .apply()
-                        startActivity(Intent(this@RegisterActivity, DashboardActivity::class.java))
+                        val intent = Intent(this@RegisterActivity, VerificationStatusActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intent)
                         finish()
                     } else {
                         showError(response.body()?.error?.message ?: "Registration failed.")

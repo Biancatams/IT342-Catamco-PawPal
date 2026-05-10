@@ -18,9 +18,9 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(
-            @Valid @RequestBody RegisterRequest request) {
-        AuthResponse response = authService.register(request);
+    public ResponseEntity<edu.cit.catamco.pawpal.dto.AuthResponse> register(
+            @Valid @RequestBody edu.cit.catamco.pawpal.dto.RegisterRequest request) {
+            edu.cit.catamco.pawpal.dto.AuthResponse response = authService.register(request);
         return ResponseEntity
                 .status(response.isSuccess() ?
                         HttpStatus.CREATED : HttpStatus.BAD_REQUEST)
@@ -28,9 +28,9 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(
-            @Valid @RequestBody LoginRequest request) {
-        AuthResponse response = authService.login(request);
+    public ResponseEntity<edu.cit.catamco.pawpal.dto.AuthResponse> login(
+            @Valid @RequestBody edu.cit.catamco.pawpal.dto.LoginRequest request) {
+        edu.cit.catamco.pawpal.dto.AuthResponse response = authService.login(request);
         return ResponseEntity
                 .status(response.isSuccess() ?
                         HttpStatus.OK : HttpStatus.UNAUTHORIZED)
@@ -38,9 +38,9 @@ public class AuthController {
     }
 
     @PostMapping("/google-register")
-    public ResponseEntity<AuthResponse> googleRegister(
-            @Valid @RequestBody GoogleAuthRequest request) {
-        AuthResponse response = authService.googleRegister(request);
+    public ResponseEntity<edu.cit.catamco.pawpal.dto.AuthResponse> googleRegister(
+            @Valid @RequestBody edu.cit.catamco.pawpal.dto.GoogleAuthRequest request) {
+        edu.cit.catamco.pawpal.dto.AuthResponse response = authService.googleRegister(request);
         return ResponseEntity
                 .status(response.isSuccess() ?
                         HttpStatus.CREATED : HttpStatus.BAD_REQUEST)
@@ -48,9 +48,9 @@ public class AuthController {
     }
 
     @PostMapping("/google-login")
-    public ResponseEntity<AuthResponse> googleLogin(
-            @Valid @RequestBody GoogleAuthRequest request) {
-        AuthResponse response = authService.googleLogin(request);
+    public ResponseEntity<edu.cit.catamco.pawpal.dto.AuthResponse> googleLogin(
+            @Valid @RequestBody edu.cit.catamco.pawpal.dto.GoogleAuthRequest request) {
+        edu.cit.catamco.pawpal.dto.AuthResponse response = authService.googleLogin(request);
         return ResponseEntity
                 .status(response.isSuccess() ?
                         HttpStatus.OK : HttpStatus.UNAUTHORIZED)

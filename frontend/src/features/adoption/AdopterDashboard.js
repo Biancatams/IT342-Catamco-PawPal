@@ -180,13 +180,29 @@ export default function AdopterDashboard() {
 
               return (
                 <div
-                  key={pet.id}
-                  className="od-pet-card"
-                  onClick={() => navigate(`/adopter/pet/${pet.id}`, {
-                    state: { pet, existingStatus: reqStatus || null }
-                  })}
-                  style={{ opacity: isBlockedByOtherPending ? 0.65 : 1 }}
-                >
+                    key={pet.id}
+                    className="od-pet-card"
+                    onClick={() => {
+                      if (isBlockedByOtherPending) return;
+                      if (isThisPetPending) {
+                        navigate("/adopter/requests");
+                        return;
+                      }
+                      if (isApproved) {
+                        navigate("/adopter/request-accepted", {
+                          state: { pet, owner: existingReq?.owner, status: "APPROVED" }
+                        });
+                        return;
+                      }
+                      navigate(`/adopter/pet/${pet.id}`, {
+                        state: { pet, existingStatus: reqStatus || null }
+                      });
+                    }}
+                    style={{
+                      opacity: isBlockedByOtherPending ? 0.65 : 1,
+                      cursor: isBlockedByOtherPending ? "not-allowed" : "pointer"
+                    }}
+                  >
                   <div className="od-pet-img-wrap">
                     {pet.imageUrl ? (
                       <img src={`http://localhost:8080${pet.imageUrl}`} alt={pet.name} className="od-pet-img" />

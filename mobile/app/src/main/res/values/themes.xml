@@ -3,6 +3,7 @@
         <item name="android:windowBackground">@color/cream</item>
         <item name="colorPrimary">@color/green</item>
         <item name="colorSecondary">@color/orange</item>
+
     </style>
 
     <style name="Theme.PawPal" parent="Base.Theme.PawPal" />

@@ -17,6 +17,8 @@ import AdopterMyRequests from "./features/adoption/AdopterMyRequests";
 import RequestAdoption from "./features/adoption/RequestAdoption";
 import RequestAccepted from "./features/adoption/RequestAccepted";
 import AdminDashboard from "./features/admin/AdminDashboard";
+import VerificationPage from "./features/verification/VerificationPage";
+import VerificationStatus from "./features/verification/VerificationStatus";
 
 function App() {
   return (
@@ -50,6 +52,8 @@ function App() {
           </ProtectedRoute>
         } />
         <Route path="/owner/edit-pet/:petId" element={<EditPet />} />
+        <Route path="/verification" element={<VerificationPage />} />
+        <Route path="/verification/status" element={<VerificationStatus />} />  
       </Routes>
     </BrowserRouter>
   );

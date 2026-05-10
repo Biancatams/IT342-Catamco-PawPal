@@ -14,7 +14,6 @@
         android:paddingTop="48dp"
         android:paddingBottom="40dp">
 
-        <!-- PawPal Header -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -24,7 +23,7 @@
             <ImageView
                 android:layout_width="28dp"
                 android:layout_height="28dp"
-                android:src="@drawable/pawlogo"
+                android:src="@drawable/pawlogo2"
                 android:scaleType="fitCenter"/>
             <TextView
                 android:layout_width="wrap_content"
@@ -35,7 +34,6 @@
                 android:textColor="@color/green"/>
         </LinearLayout>
 
-        <!-- Eyebrow -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -45,7 +43,6 @@
             android:textColor="@color/orange"
             android:layout_marginBottom="6dp"/>
 
-        <!-- Title -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -55,7 +52,6 @@
             android:textColor="@color/green"
             android:layout_marginBottom="6dp"/>
 
-        <!-- Subtitle -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -64,7 +60,6 @@
             android:textColor="@color/muted"
             android:layout_marginBottom="28dp"/>
 
-        <!-- Error -->
         <TextView
             android:id="@+id/tvError"
             android:layout_width="match_parent"
@@ -77,7 +72,6 @@
             android:textStyle="bold"
             android:layout_marginBottom="16dp"/>
 
-        <!-- Card -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -118,20 +112,34 @@
                 android:textColor="#555555"
                 android:layout_marginBottom="6dp"/>
 
-            <EditText
-                android:id="@+id/etPassword"
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:hint="Enter your password"
-                android:inputType="textPassword"
-                android:background="@drawable/input_background"
-                android:paddingStart="14dp"
-                android:paddingEnd="14dp"
-                android:textSize="14sp"
-                android:textColor="@color/text"
-                android:layout_marginBottom="20dp"/>
+                android:layout_marginBottom="20dp">
 
-            <!-- Login Button -->
+                <EditText
+                    android:id="@+id/etPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="Enter your password"
+                    android:inputType="textPassword"
+                    android:background="@drawable/input_background"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="48dp"
+                    android:textSize="14sp"
+                    android:textColor="@color/text"/>
+
+                <ImageView
+                    android:id="@+id/ivTogglePassword"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_eye"
+                    android:layout_gravity="center_vertical|end"
+                    android:layout_marginEnd="12dp"
+                    android:padding="2dp"/>
+
+            </FrameLayout>
+
             <Button
                 android:id="@+id/btnLogin"
                 android:layout_width="match_parent"
@@ -143,7 +151,6 @@
                 android:backgroundTint="@color/orange"
                 android:layout_marginBottom="16dp"/>
 
-            <!-- OR Divider -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -171,7 +178,6 @@
                     android:background="#e8e0d8"/>
             </LinearLayout>
 
-            <!-- Google Button -->
             <LinearLayout
                 android:id="@+id/btnGoogle"
                 android:layout_width="match_parent"
@@ -197,7 +203,6 @@
 
             </LinearLayout>
 
-            <!-- Progress -->
             <ProgressBar
                 android:id="@+id/progressBar"
                 android:layout_width="wrap_content"
@@ -207,7 +212,6 @@
 
         </LinearLayout>
 
-        <!-- Footer -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -27,15 +27,22 @@ export default function Register() {
     setError("");
   };
 
-  const handleNavigateByRole = (user) => {
-    if (user.role === "PET_OWNER") {
-      navigate("/owner/dashboard");
-    } else if (user.role === "ADOPTER") {
-      navigate("/adopter/dashboard");
+  const handleNavigateByRole = async (user, token) => {
+  try {
+    const verifRes = await axios.get("http://localhost:8080/api/v1/verification/my", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const status = verifRes.data.data?.status;
+    if (status === "APPROVED") {
+      if (user.role === "PET_OWNER") navigate("/owner/dashboard");
+      else navigate("/adopter/dashboard");
     } else {
-      navigate("/home");
+      navigate("/verification/status");
     }
-  };
+  } catch {
+    navigate("/verification/status");
+  }
+};
 
   const handleSubmit = async () => {
     if (!form.fullName || !form.email || !form.password || !form.confirmPassword) {

@@ -5,7 +5,6 @@
     android:orientation="vertical"
     android:background="@color/cream">
 
-    <!-- Navbar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -20,8 +19,9 @@
         <ImageView
             android:layout_width="22dp"
             android:layout_height="22dp"
-            android:src="@drawable/pawlogo"
+            android:src="@drawable/pawlogo2"
             android:scaleType="fitCenter"/>
+
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -31,57 +31,17 @@
             android:textStyle="bold"
             android:textColor="@color/white"/>
 
-        <TextView
-            android:id="@+id/btnBrowse"
-            android:layout_width="wrap_content"
-            android:layout_height="34dp"
-            android:text="Browse"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:background="@drawable/role_button_active"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp"
-            android:gravity="center"
-            android:layout_marginEnd="6dp"/>
-
-        <TextView
-            android:id="@+id/btnMyRequests"
-            android:layout_width="wrap_content"
-            android:layout_height="34dp"
-            android:text="My Requests"
-            android:textSize="12sp"
-            android:textColor="@color/white"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp"
-            android:gravity="center"
-            android:layout_marginEnd="6dp"/>
-
-        <TextView
-            android:id="@+id/btnProfile"
-            android:layout_width="wrap_content"
-            android:layout_height="34dp"
-            android:text="Profile"
-            android:textSize="12sp"
-            android:textColor="@color/white"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp"
-            android:gravity="center"
-            android:layout_marginEnd="6dp"/>
-
-        <TextView
+        <Button
             android:id="@+id/btnLogout"
             android:layout_width="wrap_content"
             android:layout_height="34dp"
             android:text="Logout"
             android:textSize="12sp"
             android:textColor="@color/white"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp"
-            android:gravity="center"/>
+            android:backgroundTint="@color/terracotta"/>
+
     </LinearLayout>
 
-    <!-- Content -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -114,7 +74,6 @@
                 android:textColor="@color/muted"
                 android:layout_marginBottom="20dp"/>
 
-            <!-- Search -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
@@ -140,9 +99,39 @@
                     android:textSize="13sp"
                     android:background="@null"
                     android:singleLine="true"/>
+
             </LinearLayout>
 
-            <!-- Filter Chips -->
+            <LinearLayout
+                android:id="@+id/llPendingBanner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@drawable/chip_inactive"
+                android:padding="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:gravity="center_vertical"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="⚠️"
+                    android:textSize="16sp"
+                    android:layout_marginEnd="8dp"/>
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="You have a pending adoption request. You can only submit one request at a time — please wait for a response before applying for another pet."
+                    android:textSize="12sp"
+                    android:textColor="@color/dark"
+                    android:lineSpacingMultiplier="1.3"/>
+            </LinearLayout>
+
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -180,5 +169,117 @@
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:id="@+id/bottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:orientation="horizontal"
+        android:background="@color/white"
+        android:elevation="12dp">
+
+        <FrameLayout
+            android:id="@+id/navBrowse"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center">
+                <ImageView
+                    android:id="@+id/navIconBrowse"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_nav_pets"
+                    />
+                <TextView
+                    android:id="@+id/navLabelBrowse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Browse"
+                    android:textSize="10sp"
+                    android:textColor="@color/green"
+                    android:layout_marginTop="3dp"/>
+            </LinearLayout>
+        </FrameLayout>
+
+        <View android:layout_width="1dp" android:layout_height="match_parent" android:background="@color/border"/>
+
+        <FrameLayout
+            android:id="@+id/navRequests"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center">
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:id="@+id/navIconRequests"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_nav_verification"
+                       />
+                    <TextView
+                        android:id="@+id/navBadgeRequests"
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:gravity="center"
+                        android:textSize="9sp"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:background="@drawable/nav_badge_background"
+                        android:layout_gravity="top|end"
+                        android:translationX="6dp"
+                        android:translationY="-4dp"
+                        android:visibility="gone"/>
+                </FrameLayout>
+                <TextView
+                    android:id="@+id/navLabelRequests"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="My Requests"
+                    android:textSize="10sp"
+                    android:textColor="@color/muted"
+                    android:layout_marginTop="3dp"/>
+            </LinearLayout>
+        </FrameLayout>
+
+        <View android:layout_width="1dp" android:layout_height="match_parent" android:background="@color/border"/>
+
+        <FrameLayout
+            android:id="@+id/navProfile"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center">
+                <ImageView
+                    android:id="@+id/navIconProfile"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_nav_home"
+                   />
+                <TextView
+                    android:id="@+id/navLabelProfile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Profile"
+                    android:textSize="10sp"
+                    android:textColor="@color/muted"
+                    android:layout_marginTop="3dp"/>
+            </LinearLayout>
+        </FrameLayout>
+
+    </LinearLayout>
 
 </LinearLayout>

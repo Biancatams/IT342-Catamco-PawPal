@@ -20,17 +20,26 @@ export default function Login() {
     setError("");
   };
 
-  const handleNavigateByRole = (user) => {
-    if (user.role === "ADMIN") {
-      navigate("/admin/dashboard");
-    } else if (user.role === "PET_OWNER") {
-      navigate("/owner/dashboard");
-    } else if (user.role === "ADOPTER") {
-      navigate("/adopter/dashboard");
+  const handleNavigateByRole = async (user, token) => {
+  if (user.role === "ADMIN") {
+    navigate("/admin/dashboard");
+    return;
+  }
+  try {
+    const verifRes = await axios.get("http://localhost:8080/api/v1/verification/my", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const status = verifRes.data.data?.status;
+    if (status === "APPROVED") {
+      if (user.role === "PET_OWNER") navigate("/owner/dashboard");
+      else navigate("/adopter/dashboard");
     } else {
-      navigate("/home");
+      navigate("/verification/status");
     }
-  };
+  } catch {
+    navigate("/verification/status");
+  }
+};
 
   const fetchAndSaveFullUser = async (token) => {
     const meRes = await axios.get("http://localhost:8080/api/v1/users/me", {
@@ -52,7 +61,7 @@ export default function Login() {
         const token = res.data.data.accessToken;
         localStorage.setItem("token", token);
         const fullUser = await fetchAndSaveFullUser(token);
-        handleNavigateByRole(fullUser);
+        handleNavigateByRole(fullUser, token);
       } else {
         setError(res.data.error?.message || "Login failed.");
       }
@@ -74,7 +83,7 @@ export default function Login() {
           const token = res.data.data.accessToken;
           localStorage.setItem("token", token);
           const fullUser = await fetchAndSaveFullUser(token);
-          handleNavigateByRole(fullUser);
+          handleNavigateByRole(fullUser, token);
         } else {
           setError(res.data.error?.message || "Google login failed.");
         }

@@ -1,8 +1,7 @@
 package edu.cit.catamco.pawpal.features.auth;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.cit.catamco.pawpal.dto.*;
-import edu.cit.catamco.pawpal.features.auth.User;
-import edu.cit.catamco.pawpal.features.auth.UserRepository;
 import edu.cit.catamco.pawpal.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,8 +13,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Map;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class AuthService {
