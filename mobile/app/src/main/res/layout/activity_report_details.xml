@@ -280,7 +280,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="📋 Adoption Request Reference"
+                    android:text="📋 Adoption Request Form"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:textColor="@color/dark"
@@ -292,52 +292,176 @@
                     android:background="@color/peach"
                     android:layout_marginBottom="12dp"/>
 
-                <TextView
-                    android:id="@+id/tvArAdopterName"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="13sp"
-                    android:textColor="@color/dark"
-                    android:background="@drawable/chip_inactive"
-                    android:padding="12dp"
-                    android:layout_marginBottom="8dp"/>
+                    android:orientation="vertical"
+                    android:background="@drawable/card_background">
 
-                <TextView
-                    android:id="@+id/tvArContact"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="13sp"
-                    android:textColor="@color/dark"
-                    android:background="@drawable/chip_inactive"
-                    android:padding="12dp"
-                    android:layout_marginBottom="8dp"/>
+                    <!-- Adopter Name row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:minHeight="44dp">
 
-                <TextView
-                    android:id="@+id/tvArReason"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="13sp"
-                    android:textColor="@color/dark"
-                    android:background="@drawable/chip_inactive"
-                    android:padding="12dp"
-                    android:lineSpacingMultiplier="1.4"
-                    android:layout_marginBottom="8dp"/>
+                        <TextView
+                            android:layout_width="130dp"
+                            android:layout_height="match_parent"
+                            android:text="Adopter Name"
+                            android:textSize="13sp"
+                            android:textColor="@color/muted"
+                            android:textStyle="bold"
+                            android:background="@color/cream"
+                            android:padding="12dp"
+                            android:gravity="center_vertical"/>
 
-                <TextView
-                    android:id="@+id/tvArNote"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="13sp"
-                    android:textColor="@color/dark"
-                    android:background="@drawable/chip_inactive"
-                    android:padding="12dp"
-                    android:lineSpacingMultiplier="1.4"
-                    android:visibility="gone"/>
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:background="@color/peach"/>
 
+                        <TextView
+                            android:id="@+id/tvArAdopterName"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textSize="13sp"
+                            android:textColor="@color/dark"
+                            android:padding="12dp"
+                            android:gravity="center_vertical"/>
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/peach"/>
+
+                    <!-- Contact Info row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:minHeight="44dp">
+
+                        <TextView
+                            android:layout_width="130dp"
+                            android:layout_height="match_parent"
+                            android:text="Contact Info"
+                            android:textSize="13sp"
+                            android:textColor="@color/muted"
+                            android:textStyle="bold"
+                            android:background="@color/cream"
+                            android:padding="12dp"
+                            android:gravity="center_vertical"/>
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:background="@color/peach"/>
+
+                        <TextView
+                            android:id="@+id/tvArContact"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textSize="13sp"
+                            android:textColor="@color/dark"
+                            android:padding="12dp"
+                            android:gravity="center_vertical"/>
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/peach"/>
+
+                    <!-- Reason row -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:minHeight="44dp">
+
+                        <TextView
+                            android:layout_width="130dp"
+                            android:layout_height="match_parent"
+                            android:text="Reason for Adopting"
+                            android:textSize="13sp"
+                            android:textColor="@color/muted"
+                            android:textStyle="bold"
+                            android:background="@color/cream"
+                            android:padding="12dp"
+                            android:gravity="center_vertical"/>
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:background="@color/peach"/>
+
+                        <TextView
+                            android:id="@+id/tvArReason"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textSize="13sp"
+                            android:textColor="@color/dark"
+                            android:padding="12dp"
+                            android:lineSpacingMultiplier="1.4"
+                            android:gravity="center_vertical"/>
+                    </LinearLayout>
+
+                    <!-- Note to Owner divider (hidden by default) -->
+                    <View
+                        android:id="@+id/dividerArNote"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/peach"
+                        android:visibility="gone"/>
+
+                    <!-- Note to Owner row (hidden by default) -->
+                    <LinearLayout
+                        android:id="@+id/rowArNote"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:minHeight="44dp"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="130dp"
+                            android:layout_height="match_parent"
+                            android:text="Note to Owner"
+                            android:textSize="13sp"
+                            android:textColor="@color/muted"
+                            android:textStyle="bold"
+                            android:background="@color/cream"
+                            android:padding="12dp"
+                            android:gravity="center_vertical"/>
+
+                        <View
+                            android:layout_width="1dp"
+                            android:layout_height="match_parent"
+                            android:background="@color/peach"/>
+
+                        <TextView
+                            android:id="@+id/tvArNote"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textSize="13sp"
+                            android:textColor="@color/dark"
+                            android:padding="12dp"
+                            android:lineSpacingMultiplier="1.4"
+                            android:gravity="center_vertical"/>
+                    </LinearLayout>
+
+                </LinearLayout>
             </LinearLayout>
 
             <!-- REPORTED USER'S PETS -->
             <LinearLayout
+                android:id="@+id/cardPetListings"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"

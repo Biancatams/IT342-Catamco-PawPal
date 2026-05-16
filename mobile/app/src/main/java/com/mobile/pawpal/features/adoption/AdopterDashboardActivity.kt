@@ -376,7 +376,7 @@ class PetCardAdapter(
         }
 
         if (!pet.imageUrl.isNullOrEmpty()) {
-            val fullUrl = if (pet.imageUrl.startsWith("http")) pet.imageUrl else "http://10.0.2.2:8080${pet.imageUrl}"
+            val fullUrl = if (pet.imageUrl.startsWith("http")) pet.imageUrl else "https://net-vanquish-poise.ngrok-free.dev${pet.imageUrl}"
             Glide.with(ctx).load(fullUrl).centerCrop().into(holder.image)
         } else {
             holder.image.setImageResource(R.drawable.pawlogo2)

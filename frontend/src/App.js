@@ -19,6 +19,8 @@ import RequestAccepted from "./features/adoption/RequestAccepted";
 import AdminDashboard from "./features/admin/AdminDashboard";
 import VerificationPage from "./features/verification/VerificationPage";
 import VerificationStatus from "./features/verification/VerificationStatus";
+import Banned from "./features/auth/Banned";
+
 
 function App() {
   return (
@@ -36,6 +38,7 @@ function App() {
         <Route path="/adopter/request/:petId" element={<RequestAdoption />} />
         <Route path="/adopter/request-accepted" element={<RequestAccepted />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/banned" element={<Banned />} />
         <Route path="/adopter/dashboard" element={
           <ProtectedRoute>
             <AdopterDashboard />

@@ -42,7 +42,9 @@
                 android:scaleType="centerCrop"
                 android:background="@drawable/chip_inactive"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="12dp" />
+                android:layout_marginBottom="12dp"
+                android:clickable="true"
+                android:focusable="true" />
 
             <TextView
                 android:id="@+id/tvFullName"

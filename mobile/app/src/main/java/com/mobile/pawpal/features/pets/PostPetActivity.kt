@@ -80,6 +80,28 @@ class PostPetActivity : AppCompatActivity() {
 
     private val IMAGE_PICK_CODE = 1001
 
+    private val locationCoords = mapOf(
+        "Cebu City, Cebu" to Pair(10.3157, 123.8854),
+        "Mandaue City, Cebu" to Pair(10.3236, 123.9223),
+        "Lapu-Lapu City, Cebu" to Pair(10.3103, 123.9494),
+        "Talisay City, Cebu" to Pair(10.2442, 123.8484),
+        "Liloan, Cebu" to Pair(10.3978, 123.9972),
+        "Consolacion, Cebu" to Pair(10.3748, 123.9617),
+        "Minglanilla, Cebu" to Pair(10.2442, 123.7967),
+        "Naga City, Cebu" to Pair(10.2119, 123.7536),
+        "Toledo City, Cebu" to Pair(10.3775, 123.6383),
+        "Danao City, Cebu" to Pair(10.5228, 124.0264),
+        "Carcar City, Cebu" to Pair(10.1063, 123.6411),
+        "Bogo City, Cebu" to Pair(11.0517, 124.0053),
+        "Compostela, Cebu" to Pair(10.4572, 124.0089),
+        "Cordova, Cebu" to Pair(10.2667, 123.9500),
+        "Moalboal, Cebu" to Pair(9.9383, 123.3961),
+        "Oslob, Cebu" to Pair(9.5333, 123.4167),
+        "Alcoy, Cebu" to Pair(9.7167, 123.5000),
+        "Dalaguete, Cebu" to Pair(9.7614, 123.5342),
+        "San Fernando, Cebu" to Pair(10.1667, 123.7167),
+    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_post_pet)
@@ -253,6 +275,7 @@ class PostPetActivity : AppCompatActivity() {
         progressBar.visibility = View.VISIBLE
         btnSubmit.isEnabled = false
 
+        val coords = locationCoords[location]
         val petData = mapOf(
             "name" to name,
             "type" to type.uppercase(),
@@ -261,6 +284,8 @@ class PostPetActivity : AppCompatActivity() {
             "age" to age,
             "description" to description,
             "location" to location,
+            "latitude" to coords?.first,
+            "longitude" to coords?.second,
             "characteristics" to selectedTraits.toList(),
             "vaccinated" to vaccinated,
             "neutered" to neutered,

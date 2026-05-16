@@ -17,19 +17,21 @@
         android:gravity="center_vertical">
 
         <ImageView
-            android:layout_width="22dp"
-            android:layout_height="22dp"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
             android:src="@drawable/pawlogo2"
-            android:scaleType="fitCenter"/>
+            android:scaleType="fitCenter"
+            android:contentDescription="PawPal Logo"/>
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text=" PawPal"
-            android:textSize="16sp"
+            android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="@color/white"/>
+            android:textColor="@color/white"
+            android:layout_marginStart="4dp"/>
 
         <Button
             android:id="@+id/btnLogout"

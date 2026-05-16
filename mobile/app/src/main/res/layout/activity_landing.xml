@@ -11,7 +11,9 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Navbar -->
+        <!-- ═══════════════════════════════════════ -->
+        <!-- NAVBAR -->
+        <!-- ═══════════════════════════════════════ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -69,7 +71,9 @@
 
         </LinearLayout>
 
-        <!-- Hero Section -->
+        <!-- ═══════════════════════════════════════ -->
+        <!-- HERO SECTION -->
+        <!-- ═══════════════════════════════════════ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -77,7 +81,8 @@
             android:paddingStart="28dp"
             android:paddingEnd="28dp"
             android:paddingTop="40dp"
-            android:paddingBottom="32dp">
+            android:paddingBottom="32dp"
+            android:background="@color/cream">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -92,7 +97,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Give a pet a "
+                android:text="Give a pet a"
                 android:textSize="34sp"
                 android:textStyle="bold"
                 android:textColor="@color/green"
@@ -121,7 +126,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="PawPal connects caring adopters with pets in need of a loving home. Simple, safe, and organized."
+                android:text="PawPal connects caring adopters with pets in need of a loving home. Whether you&#8217;re looking to adopt or rehome a pet, our platform makes the process simple, safe, and organized."
                 android:textSize="14sp"
                 android:textColor="@color/muted"
                 android:lineSpacingMultiplier="1.6"
@@ -133,7 +138,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="40dp">
+                android:layout_marginBottom="32dp">
 
                 <Button
                     android:id="@+id/btnGetStarted"
@@ -162,36 +167,305 @@
 
             </LinearLayout>
 
-            <!-- Hero Image Card -->
+            <!-- Hero Image Card with homedog -->
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="220dp"
+                android:background="@drawable/hero_card_bg">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/homedog"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="Dog"/>
+
+                <!-- Dark gradient overlay -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#88000000"/>
+
+                <!-- Text on top of image -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_gravity="bottom"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Every pet deserves a loving home."
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/white"
+                        android:layout_marginBottom="4dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Connecting owners and adopters since 2026"
+                        android:textSize="12sp"
+                        android:textColor="#dddddd"/>
+
+                </LinearLayout>
+            </FrameLayout>
+
+        </LinearLayout>
+
+        <!-- ═══════════════════════════════════════ -->
+        <!-- MARQUEE STRIP -->
+        <!-- ═══════════════════════════════════════ -->
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/orange"
+            android:scrollbars="none"
+            android:overScrollMode="never">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="44dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
+
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Safe Adoption Process" android:textColor="@color/white"
+                    android:textSize="12sp" android:textStyle="bold" android:paddingEnd="12dp"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="·" android:textColor="@color/white" android:textSize="14sp"
+                    android:paddingEnd="12dp"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Verified Listings" android:textColor="@color/white"
+                    android:textSize="12sp" android:textStyle="bold" android:paddingEnd="12dp"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="·" android:textColor="@color/white" android:textSize="14sp"
+                    android:paddingEnd="12dp"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Email Notifications" android:textColor="@color/white"
+                    android:textSize="12sp" android:textStyle="bold" android:paddingEnd="12dp"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="·" android:textColor="@color/white" android:textSize="14sp"
+                    android:paddingEnd="12dp"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Free Platform" android:textColor="@color/white"
+                    android:textSize="12sp" android:textStyle="bold" android:paddingEnd="12dp"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="·" android:textColor="@color/white" android:textSize="14sp"
+                    android:paddingEnd="12dp"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Web &amp; Mobile" android:textColor="@color/white"
+                    android:textSize="12sp" android:textStyle="bold" android:paddingEnd="12dp"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="·" android:textColor="@color/white" android:textSize="14sp"
+                    android:paddingEnd="12dp"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                    android:text="Google Maps Integration" android:textColor="@color/white"
+                    android:textSize="12sp" android:textStyle="bold" android:paddingEnd="12dp"/>
+
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <!-- ═══════════════════════════════════════ -->
+        <!-- HOW IT WORKS SECTION -->
+        <!-- ═══════════════════════════════════════ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/cream"
+            android:paddingStart="28dp"
+            android:paddingEnd="28dp"
+            android:paddingTop="40dp"
+            android:paddingBottom="40dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="HOW IT WORKS"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:textColor="@color/orange"
+                android:letterSpacing="0.12"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="A simple process from start to finish"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@color/green"
+                android:lineSpacingMultiplier="1.2"
+                android:layout_marginBottom="10dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PawPal streamlines the entire adoption journey — from finding a pet to getting approved — in just a few steps."
+                android:textSize="13sp"
+                android:textColor="@color/muted"
+                android:lineSpacingMultiplier="1.6"
+                android:layout_marginBottom="28dp"/>
+
+            <!-- Step 01 -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:background="@drawable/hero_card_bg"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:gravity="bottom"
+                android:background="@color/white"
+                android:padding="20dp"
+                android:layout_marginBottom="14dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Step 01"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/orange"
+                    android:layout_marginBottom="12dp"/>
+
+                <LinearLayout
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/feature_icon_bg"
+                    android:gravity="center"
+                    android:layout_marginBottom="12dp">
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_person"
+                        android:scaleType="fitCenter"
+                        android:contentDescription="Account"/>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Create an Account"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/green"
+                    android:layout_marginBottom="6dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Register as an Adopter or Pet Owner. Sign up with email or continue with Google."
+                    android:textSize="12sp"
+                    android:textColor="@color/muted"
+                    android:lineSpacingMultiplier="1.5"/>
+            </LinearLayout>
+
+            <!-- Step 02 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/white"
+                android:padding="20dp"
+                android:layout_marginBottom="14dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Step 02"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/orange"
+                    android:layout_marginBottom="12dp"/>
+
+                <LinearLayout
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/feature_icon_bg"
+                    android:gravity="center"
+                    android:layout_marginBottom="12dp">
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_search"
+                        android:scaleType="fitCenter"
+                        android:contentDescription="Browse"/>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Browse or Post Pets"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/green"
+                    android:layout_marginBottom="6dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Adopters browse available pets. Pet owners post listings with photos, details, and location."
+                    android:textSize="12sp"
+                    android:textColor="@color/muted"
+                    android:lineSpacingMultiplier="1.5"/>
+            </LinearLayout>
+
+            <!-- Step 03 -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/white"
                 android:padding="20dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Every pet deserves a loving home."
-                    android:textSize="18sp"
+                    android:text="Step 03"
+                    android:textSize="11sp"
                     android:textStyle="bold"
-                    android:textColor="@color/white"
-                    android:layout_marginBottom="4dp"/>
+                    android:textColor="@color/orange"
+                    android:layout_marginBottom="12dp"/>
+
+                <LinearLayout
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:background="@drawable/feature_icon_bg"
+                    android:gravity="center"
+                    android:layout_marginBottom="12dp">
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_check"
+                        android:scaleType="fitCenter"
+                        android:contentDescription="Approved"/>
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Connecting owners and adopters since 2026"
-                    android:textSize="12sp"
-                    android:textColor="#dddddd"/>
+                    android:text="Get Approved &amp; Connect"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/green"
+                    android:layout_marginBottom="6dp"/>
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Submit an adoption request. Once approved, you&#8217;ll receive the owner&#8217;s contact details by email."
+                    android:textSize="12sp"
+                    android:textColor="@color/muted"
+                    android:lineSpacingMultiplier="1.5"/>
             </LinearLayout>
 
         </LinearLayout>
 
-        <!-- Features Section -->
+        <!-- ═══════════════════════════════════════ -->
+        <!-- WHAT IS PAWPAL / FEATURES SECTION -->
+        <!-- ═══════════════════════════════════════ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -199,155 +473,350 @@
             android:background="@color/green"
             android:paddingStart="28dp"
             android:paddingEnd="28dp"
-            android:paddingTop="32dp"
-            android:paddingBottom="32dp">
+            android:paddingTop="40dp"
+            android:paddingBottom="40dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="What is PawPal?"
-                android:textSize="22sp"
+                android:text="WHO IS PAWPAL FOR?"
+                android:textSize="10sp"
                 android:textStyle="bold"
-                android:textColor="@color/white"
+                android:textColor="@color/orange"
+                android:letterSpacing="0.12"
                 android:layout_marginBottom="8dp"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="A simple and organized pet adoption platform."
+                android:text="Two ways to use the platform"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:lineSpacingMultiplier="1.2"
+                android:layout_marginBottom="10dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PawPal serves both sides of pet adoption — those looking to welcome a new pet, and those looking to find a safe home for one."
                 android:textSize="13sp"
                 android:textColor="#AAAAAA"
-                android:layout_marginBottom="24dp"/>
+                android:lineSpacingMultiplier="1.6"
+                android:layout_marginBottom="28dp"/>
 
-            <!-- Feature 1 -->
+            <!-- For Adopters Card -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="20dp">
-                <LinearLayout
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:background="@drawable/feature_icon_bg"
-                    android:gravity="center">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🐾"
-                        android:textSize="20sp"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="0dp"
+                android:orientation="vertical"
+                android:background="#1a2e22"
+                android:padding="20dp"
+                android:layout_marginBottom="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginStart="14dp">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Post a Pet"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/white"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="List your pet for adoption with photos and details."
-                        android:textSize="12sp"
-                        android:textColor="#AAAAAA"
-                        android:lineSpacingMultiplier="1.5"/>
+                    android:text="For Adopters"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/orange"
+                    android:background="@drawable/tag_bg"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:layout_marginBottom="12dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Find Your New Companion"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Browse verified pet listings and submit adoption requests directly through the platform."
+                    android:textSize="12sp"
+                    android:textColor="#AAAAAA"
+                    android:lineSpacingMultiplier="1.5"
+                    android:layout_marginBottom="16dp"/>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:layout_marginBottom="8dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="+" android:textColor="@color/orange" android:textSize="14sp"
+                        android:textStyle="bold" android:layout_marginEnd="8dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Browse all available pets" android:textColor="@color/white"
+                        android:textSize="13sp"/>
                 </LinearLayout>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:layout_marginBottom="8dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="+" android:textColor="@color/orange" android:textSize="14sp"
+                        android:textStyle="bold" android:layout_marginEnd="8dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Filter by pet type" android:textColor="@color/white"
+                        android:textSize="13sp"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:layout_marginBottom="8dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="+" android:textColor="@color/orange" android:textSize="14sp"
+                        android:textStyle="bold" android:layout_marginEnd="8dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Submit adoption requests" android:textColor="@color/white"
+                        android:textSize="13sp"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="+" android:textColor="@color/orange" android:textSize="14sp"
+                        android:textStyle="bold" android:layout_marginEnd="8dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Get notified on request status" android:textColor="@color/white"
+                        android:textSize="13sp"/>
+                </LinearLayout>
+
             </LinearLayout>
 
-            <!-- Feature 2 -->
+            <!-- For Pet Owners Card -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="20dp">
-                <LinearLayout
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:background="@drawable/feature_icon_bg"
-                    android:gravity="center">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🏠"
-                        android:textSize="20sp"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginStart="14dp">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Browse and Adopt"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/white"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Find pets near you and send adoption requests."
-                        android:textSize="12sp"
-                        android:textColor="#AAAAAA"
-                        android:lineSpacingMultiplier="1.5"/>
-                </LinearLayout>
-            </LinearLayout>
+                android:orientation="vertical"
+                android:background="#1a2e22"
+                android:padding="20dp">
 
-            <!-- Feature 3 -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-                <LinearLayout
-                    android:layout_width="44dp"
-                    android:layout_height="44dp"
-                    android:background="@drawable/feature_icon_bg"
-                    android:gravity="center">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="🤝"
-                        android:textSize="20sp"/>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="0dp"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:layout_marginStart="14dp">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Connect"
-                        android:textSize="15sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/white"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Approved adopters receive owner contact info to meet the pet."
-                        android:textSize="12sp"
-                        android:textColor="#AAAAAA"
-                        android:lineSpacingMultiplier="1.5"/>
+                    android:text="For Pet Owners"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/orange"
+                    android:background="@drawable/tag_bg"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:layout_marginBottom="12dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rehome with Confidence"
+                    android:textSize="17sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="List your pet and manage adoption requests from your dashboard. You decide who gives your pet a home."
+                    android:textSize="12sp"
+                    android:textColor="#AAAAAA"
+                    android:lineSpacingMultiplier="1.5"
+                    android:layout_marginBottom="16dp"/>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:layout_marginBottom="8dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="+" android:textColor="@color/orange" android:textSize="14sp"
+                        android:textStyle="bold" android:layout_marginEnd="8dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Post pets with photos" android:textColor="@color/white"
+                        android:textSize="13sp"/>
                 </LinearLayout>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:layout_marginBottom="8dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="+" android:textColor="@color/orange" android:textSize="14sp"
+                        android:textStyle="bold" android:layout_marginEnd="8dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Manage adoption requests" android:textColor="@color/white"
+                        android:textSize="13sp"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:layout_marginBottom="8dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="+" android:textColor="@color/orange" android:textSize="14sp"
+                        android:textStyle="bold" android:layout_marginEnd="8dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Accept or decline applicants" android:textColor="@color/white"
+                        android:textSize="13sp"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="+" android:textColor="@color/orange" android:textSize="14sp"
+                        android:textStyle="bold" android:layout_marginEnd="8dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Email notifications on activity" android:textColor="@color/white"
+                        android:textSize="13sp"/>
+                </LinearLayout>
+
             </LinearLayout>
 
         </LinearLayout>
 
-        <!-- Footer -->
+        <!-- ═══════════════════════════════════════ -->
+        <!-- CTA SECTION -->
+        <!-- ═══════════════════════════════════════ -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/cream"
+            android:paddingStart="28dp"
+            android:paddingEnd="28dp"
+            android:paddingTop="40dp"
+            android:paddingBottom="40dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="GET STARTED TODAY"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                android:textColor="@color/orange"
+                android:letterSpacing="0.12"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ready to make a difference?"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@color/green"
+                android:lineSpacingMultiplier="1.2"
+                android:layout_marginBottom="10dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Join PawPal and be part of a community that believes every pet deserves a loving, permanent home."
+                android:textSize="13sp"
+                android:textColor="@color/muted"
+                android:lineSpacingMultiplier="1.6"
+                android:layout_marginBottom="28dp"/>
+
+            <!-- CTA Card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/green"
+                android:padding="24dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Create a free account"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:layout_marginBottom="8dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No fees. No complications. Just a simple way to adopt or rehome a pet."
+                    android:textSize="12sp"
+                    android:textColor="#AAAAAA"
+                    android:lineSpacingMultiplier="1.5"
+                    android:layout_marginBottom="20dp"/>
+
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:layout_marginBottom="10dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="+" android:textColor="@color/orange" android:textSize="14sp"
+                        android:textStyle="bold" android:layout_marginEnd="8dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Register in under 2 minutes" android:textColor="@color/white"
+                        android:textSize="13sp"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:layout_marginBottom="10dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="+" android:textColor="@color/orange" android:textSize="14sp"
+                        android:textStyle="bold" android:layout_marginEnd="8dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Available on web and mobile" android:textColor="@color/white"
+                        android:textSize="13sp"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:layout_marginBottom="10dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="+" android:textColor="@color/orange" android:textSize="14sp"
+                        android:textStyle="bold" android:layout_marginEnd="8dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Secure JWT authentication" android:textColor="@color/white"
+                        android:textSize="13sp"/>
+                </LinearLayout>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="horizontal" android:layout_marginBottom="24dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="+" android:textColor="@color/orange" android:textSize="14sp"
+                        android:textStyle="bold" android:layout_marginEnd="8dp"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                        android:text="Email notifications included" android:textColor="@color/white"
+                        android:textSize="13sp"/>
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnCreateAccount"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:text="Create an Account"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:backgroundTint="@color/orange"
+                    android:layout_marginBottom="16dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Already have an account? "
+                        android:textSize="12sp"
+                        android:textColor="#AAAAAA"/>
+                    <TextView
+                        android:id="@+id/btnSignInLink"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sign in here"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/orange"/>
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- ═══════════════════════════════════════ -->
+        <!-- FOOTER -->
+        <!-- ═══════════════════════════════════════ -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/green"
             android:paddingStart="28dp"
             android:paddingEnd="28dp"
-            android:paddingTop="16dp"
+            android:paddingTop="20dp"
             android:paddingBottom="32dp"
             android:orientation="vertical"
             android:gravity="center">
@@ -382,7 +851,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="2026 PawPal. All rights reserved."
+                android:text="&#169; 2026 PawPal. All rights reserved."
                 android:textSize="11sp"
                 android:textColor="#888888"/>
 

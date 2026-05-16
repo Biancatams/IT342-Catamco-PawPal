@@ -285,3 +285,7 @@
   height: 22px;
   stroke: #dc2626;
 }
+
+.od-empty-icon svg {
+  stroke: var(--border);
+}

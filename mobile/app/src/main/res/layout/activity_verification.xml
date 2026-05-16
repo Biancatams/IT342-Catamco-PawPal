@@ -12,13 +12,22 @@
         android:padding="16dp"
         android:gravity="center_vertical">
 
+        <ImageView
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/pawlogo2"
+            android:scaleType="fitCenter"
+            android:contentDescription="PawPal Logo"/>
+
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="🐾 PawPal"
+            android:layout_weight="1"
+            android:text=" PawPal"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="@color/white" />
+            android:textColor="@color/white"
+            android:layout_marginStart="4dp"/>
 
     </LinearLayout>
 
@@ -239,7 +248,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="8dp"
-                android:text="Back to Home"
+                android:text="Go to Dashboard"
                 android:textColor="@color/dark"
                 android:backgroundTint="@color/cream"
                 android:layout_marginBottom="24dp" />

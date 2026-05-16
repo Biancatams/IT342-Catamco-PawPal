@@ -19,6 +19,19 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import android.Manifest
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Environment
+import android.provider.MediaStore
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.FileProvider
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class ProfileActivity : AppCompatActivity() {
 
@@ -57,6 +70,8 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var navLabelProfile: TextView
 
     private var token = ""
+    private var selectedImageUri: Uri? = null
+    private var cameraImageUri: Uri? = null
 
     private val locations = listOf(
         "Select your city/municipality",
@@ -66,6 +81,25 @@ class ProfileActivity : AppCompatActivity() {
         "Dalaguete", "Others"
     )
 
+    private val galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let {
+            selectedImageUri = it
+            Glide.with(this).load(it).circleCrop().into(ivProfileImage)
+        }
+    }
+
+    private val cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+        if (success) {
+            cameraImageUri?.let {
+                selectedImageUri = it
+                Glide.with(this).load(it).circleCrop().into(ivProfileImage)
+            }
+        }
+    }
+
+    private val cameraPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) launchCamera() else Toast.makeText(this, "Camera permission denied.", Toast.LENGTH_SHORT).show()
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
@@ -133,6 +167,9 @@ class ProfileActivity : AppCompatActivity() {
             btnEdit.visibility = View.GONE
         }
 
+        ivProfileImage.isClickable = true
+        ivProfileImage.setOnClickListener { showImagePickerDialog() }
+
         btnCancel.setOnClickListener {
             viewForm.visibility = View.GONE
             viewDisplay.visibility = View.VISIBLE
@@ -172,6 +209,33 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
+    private fun showImagePickerDialog() {
+        val options = arrayOf("Take Photo", "Choose from Gallery", "Cancel")
+        android.app.AlertDialog.Builder(this)
+            .setTitle("Update Profile Photo")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> {
+                        if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                            launchCamera()
+                        } else {
+                            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                        }
+                    }
+                    1 -> galleryLauncher.launch("image/*")
+                }
+            }.show()
+    }
+
+    private fun launchCamera() {
+        val photoFile = File.createTempFile(
+            "profile_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())}",
+            ".jpg",
+            getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        )
+        cameraImageUri = FileProvider.getUriForFile(this, "${packageName}.fileprovider", photoFile)
+        cameraLauncher.launch(cameraImageUri!!)
+    }
     private fun loadProfile() {
         progressBar.visibility = View.VISIBLE
         CoroutineScope(Dispatchers.IO).launch {
@@ -192,7 +256,7 @@ class ProfileActivity : AppCompatActivity() {
                         if (locationIndex >= 0) etAddress.setSelection(locationIndex)
                         if (!profile.profileImageUrl.isNullOrEmpty()) {
                             val fullUrl = if (profile.profileImageUrl.startsWith("http")) profile.profileImageUrl
-                            else "http://10.0.2.2:8080${profile.profileImageUrl}"
+                            else "https://net-vanquish-poise.ngrok-free.dev${profile.profileImageUrl}"
                             Glide.with(this@ProfileActivity).load(fullUrl).circleCrop().into(ivProfileImage)
                         }
                     } else {
@@ -285,7 +349,7 @@ class ProfileActivity : AppCompatActivity() {
 
             if (!request.pet.imageUrl.isNullOrEmpty()) {
                 val fullUrl = if (request.pet.imageUrl.startsWith("http")) request.pet.imageUrl
-                else "http://10.0.2.2:8080${request.pet.imageUrl}"
+                else "https://net-vanquish-poise.ngrok-free.dev${request.pet.imageUrl}"
                 Glide.with(this).load(fullUrl).centerCrop().into(ivPet)
             } else {
                 ivPet.setImageResource(R.drawable.pawlogo2)
@@ -308,19 +372,27 @@ class ProfileActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val plain = "text/plain".toMediaTypeOrNull()
+                val imagePart = selectedImageUri?.let { uri ->
+                    val stream = contentResolver.openInputStream(uri)
+                    val bytes = stream?.readBytes() ?: return@let null
+                    stream.close()
+                    val requestBody = bytes.toRequestBody("image/jpeg".toMediaTypeOrNull())
+                    MultipartBody.Part.createFormData("image", "profile.jpg", requestBody)
+                }
                 val response = RetrofitClient.instance.updateProfile(
                     token = token,
                     fullName = fullName.toRequestBody(plain),
                     phoneNumber = if (phone.isEmpty()) null else phone.toRequestBody(plain),
                     address = if (address.isEmpty()) null else address.toRequestBody(plain),
                     bio = null,
-                    profileImage = null
+                    profileImage = imagePart
                 )
                 withContext(Dispatchers.Main) {
                     progressBar.visibility = View.GONE
                     btnSave.isEnabled = true
                     if (response.isSuccessful && response.body()?.success == true) {
                         Toast.makeText(this@ProfileActivity, "Profile updated!", Toast.LENGTH_SHORT).show()
+                        selectedImageUri = null
                         viewForm.visibility = View.GONE
                         viewDisplay.visibility = View.VISIBLE
                         btnEdit.visibility = View.VISIBLE

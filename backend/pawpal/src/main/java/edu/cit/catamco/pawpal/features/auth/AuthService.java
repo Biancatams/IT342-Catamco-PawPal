@@ -32,16 +32,14 @@ public class AuthService {
         this.jwtUtil = jwtUtil;
     }
 
-    // ── Helper: fetch Google user info using access token ──────────────────
-    private Map<String, Object> getGoogleUserInfo(String accessToken) throws Exception {
-        URL url = new URL("https://www.googleapis.com/oauth2/v3/userinfo");
+    private Map<String, Object> getGoogleUserInfo(String idToken) throws Exception {
+        URL url = new URL("https://oauth2.googleapis.com/tokeninfo?id_token=" + idToken);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
-        conn.setRequestProperty("Authorization", "Bearer " + accessToken);
 
         int status = conn.getResponseCode();
         if (status != 200) {
-            throw new RuntimeException("Failed to fetch Google user info, status: " + status);
+            throw new RuntimeException("Failed to verify Google ID token, status: " + status);
         }
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
@@ -54,7 +52,6 @@ public class AuthService {
         return mapper.readValue(sb.toString(), Map.class);
     }
 
-    // ── Register ────────────────────────────────────────────────────────────
     public AuthResponse register(RegisterRequest request) {
         if (!request.getPassword().equals(request.getConfirmPassword())) {
             return AuthResponse.builder()
@@ -99,7 +96,6 @@ public class AuthService {
                 .build();
     }
 
-    // ── Login ───────────────────────────────────────────────────────────────
     public AuthResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail()).orElse(null);
 
@@ -122,7 +118,8 @@ public class AuthService {
                                 "id", user.getId(),
                                 "fullName", user.getFullName(),
                                 "email", user.getEmail(),
-                                "role", user.getRole()
+                                "role", user.getRole(),
+                                "isBanned", user.isBanned()
                         ),
                         "accessToken", token
                 ))
@@ -130,7 +127,6 @@ public class AuthService {
                 .build();
     }
 
-    // ── Google Register ─────────────────────────────────────────────────────
     public AuthResponse googleRegister(GoogleAuthRequest request) {
         try {
             Map<String, Object> userInfo = getGoogleUserInfo(request.getToken());
@@ -200,7 +196,6 @@ public class AuthService {
         }
     }
 
-    // ── Google Login ────────────────────────────────────────────────────────
     public AuthResponse googleLogin(GoogleAuthRequest request) {
         try {
             Map<String, Object> userInfo = getGoogleUserInfo(request.getToken());
@@ -235,7 +230,8 @@ public class AuthService {
                                     "id", user.getId(),
                                     "fullName", user.getFullName(),
                                     "email", user.getEmail(),
-                                    "role", user.getRole()
+                                    "role", user.getRole(),
+                                    "isBanned", user.isBanned()
                             ),
                             "accessToken", token
                     ))
