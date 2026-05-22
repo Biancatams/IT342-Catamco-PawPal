@@ -70,6 +70,7 @@ class AdminDashboardActivity : AppCompatActivity() {
     private var allVerifications = listOf<VerificationData>()
     private var allUsers = listOf<AdminUserItem>()
     private var userRoleFilter = "ALL"
+    private var reportStatusFilter = "ALL"
 
     private lateinit var tvStatPendingLabel: TextView
     private lateinit var tvStatApprovedLabel: TextView
@@ -295,6 +296,36 @@ class AdminDashboardActivity : AppCompatActivity() {
         tvStatApproved.text = owners.toString()
         tvStatRejected.text = banned.toString()
         tvStatTotal.text = total.toString()
+        cardRejected.visibility = View.VISIBLE
+        listOf(cardPending, cardApproved, cardRejected, cardTotal).forEach {
+            it.setBackgroundResource(R.drawable.card_background)
+        }
+        when (userRoleFilter) {
+            "ADOPTER"  -> cardPending.setBackgroundResource(R.drawable.stat_card_active)
+            "PET_OWNER"-> cardApproved.setBackgroundResource(R.drawable.stat_card_active)
+            "BANNED"   -> cardRejected.setBackgroundResource(R.drawable.stat_card_active)
+            else       -> cardTotal.setBackgroundResource(R.drawable.stat_card_active)
+        }
+        cardPending.setOnClickListener {
+            userRoleFilter = "ADOPTER"
+            updateUserStats()
+            renderUserCards(allUsers.filter { it.role.uppercase() == "ADOPTER" })
+        }
+        cardApproved.setOnClickListener {
+            userRoleFilter = "PET_OWNER"
+            updateUserStats()
+            renderUserCards(allUsers.filter { it.role.uppercase() == "PET_OWNER" })
+        }
+        cardRejected.setOnClickListener {
+            userRoleFilter = "BANNED"
+            updateUserStats()
+            renderUserCards(allUsers.filter { it.isBanned })
+        }
+        cardTotal.setOnClickListener {
+            userRoleFilter = "ALL"
+            updateUserStats()
+            renderUserCards(allUsers)
+        }
     }
 
     private fun buildUserList(users: List<AdminUserItem>) {
@@ -314,23 +345,33 @@ class AdminDashboardActivity : AppCompatActivity() {
         val btnAll = makeToggle("All", "ALL")
         val btnAdopter = makeToggle("Adopter", "ADOPTER")
         val btnOwner = makeToggle("Pet Owner", "PET_OWNER")
+        val btnBanned = makeToggle("Banned", "BANNED")
 
         fun updateToggle(selected: String) {
             userRoleFilter = selected
-            listOf(btnAll, btnAdopter, btnOwner).forEach { it.setBackgroundResource(R.drawable.chip_inactive); it.setTextColor(getColor(R.color.dark)) }
+            listOf(btnAll, btnAdopter, btnOwner, btnBanned).forEach { it.setBackgroundResource(R.drawable.chip_inactive); it.setTextColor(getColor(R.color.dark)) }
             when (selected) {
                 "ALL" -> { btnAll.setBackgroundResource(R.drawable.chip_active); btnAll.setTextColor(getColor(R.color.white)) }
                 "ADOPTER" -> { btnAdopter.setBackgroundResource(R.drawable.chip_active); btnAdopter.setTextColor(getColor(R.color.white)) }
                 "PET_OWNER" -> { btnOwner.setBackgroundResource(R.drawable.chip_active); btnOwner.setTextColor(getColor(R.color.white)) }
+                "BANNED" -> { btnBanned.setBackgroundResource(R.drawable.chip_active); btnBanned.setTextColor(getColor(R.color.white)) }
             }
-            val filtered = if (selected == "ALL") allUsers else allUsers.filter { it.role.uppercase() == selected }
+            val filtered = when (selected) {
+                "ADOPTER" -> allUsers.filter { it.role.uppercase() == "ADOPTER" }
+                "PET_OWNER" -> allUsers.filter { it.role.uppercase() == "PET_OWNER" }
+                "BANNED" -> allUsers.filter { it.isBanned }
+                else -> allUsers
+            }
             renderUserCards(filtered)
         }
 
         btnAll.setOnClickListener { updateToggle("ALL") }
         btnAdopter.setOnClickListener { updateToggle("ADOPTER") }
         btnOwner.setOnClickListener { updateToggle("PET_OWNER") }
+        btnBanned.setOnClickListener { updateToggle("BANNED") }
         toggleRow.addView(btnAll); toggleRow.addView(btnAdopter); toggleRow.addView(btnOwner)
+        toggleRow.addView(btnBanned)
+
         llUserList.addView(toggleRow)
 
         val container = LinearLayout(this).apply {
@@ -347,7 +388,7 @@ class AdminDashboardActivity : AppCompatActivity() {
         container.removeAllViews()
         if (users.isEmpty()) { tvEmpty.text = "No users found."; tvEmpty.visibility = View.VISIBLE; return }
         tvEmpty.visibility = View.GONE
-        val baseUrl = "http://10.0.2.2:8080"
+        val baseUrl = "https://net-vanquish-poise.ngrok-free.dev"
         users.forEach { user ->
             val card = LayoutInflater.from(this).inflate(R.layout.item_admin_user_card, container, false)
             val ivAvatar = card.findViewById<ImageView>(R.id.ivUserAvatar)
@@ -379,7 +420,7 @@ class AdminDashboardActivity : AppCompatActivity() {
     }
 
     private fun showUserDetailDialog(user: AdminUserItem) {
-        val baseUrl = "http://10.0.2.2:8080"
+        val baseUrl = "https://net-vanquish-poise.ngrok-free.dev"
         val dialogView = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(48, 48, 48, 48) }
 
         val profileIv = ImageView(this).apply {
@@ -456,9 +497,9 @@ class AdminDashboardActivity : AppCompatActivity() {
                 val underReviewResponse = RetrofitClient.instance.getUnderReviewPets(token)
                 withContext(Dispatchers.Main) {
                     progressBar.visibility = View.GONE
-                    val available = if (allResponse.isSuccessful) allResponse.body()?.data?.pets ?: listOf() else listOf()
+                    val allFromServer = if (allResponse.isSuccessful) allResponse.body()?.data?.pets ?: listOf() else listOf()
                     val underReview = if (underReviewResponse.isSuccessful) underReviewResponse.body()?.data?.pets ?: listOf() else listOf()
-                    allPets = (underReview + available).distinctBy { it.id }
+                    allPets = (underReview + allFromServer).distinctBy { it.id }
                     if (currentSection == "PETS") { updateStats(); setFilter(currentFilter) }
                     updateNavBadges()
                 }
@@ -504,6 +545,59 @@ class AdminDashboardActivity : AppCompatActivity() {
         tabAll.text = "All (${allVerifications.size})"
     }
 
+    private fun updateReportStats() {
+        val pending = allReports.count { it.status.uppercase() == "PENDING" && !it.reportedUserBanned }
+        val resolved = allReports.count { it.status.uppercase() == "RESOLVED" || it.reportedUserBanned }
+        val total = allReports.size
+        tvStatPendingLabel.text = "Pending"
+        tvStatApprovedLabel.text = "Resolved"
+        tvStatRejectedLabel.text = ""
+        tvStatTotalLabel.text = "Total"
+        tvStatPending.text = pending.toString()
+        tvStatApproved.text = resolved.toString()
+        tvStatRejected.text = ""
+        tvStatTotal.text = total.toString()
+        // Highlight the active stat card
+        listOf(cardPending, cardApproved, cardRejected, cardTotal).forEach {
+            it.setBackgroundResource(R.drawable.card_background)
+        }
+        cardRejected.visibility = View.GONE
+        when (reportStatusFilter) {
+            "ALL"     -> cardTotal.setBackgroundResource(R.drawable.stat_card_active)
+            "PENDING" -> cardPending.setBackgroundResource(R.drawable.stat_card_active)
+            "RESOLVED"-> cardApproved.setBackgroundResource(R.drawable.stat_card_active)
+        }
+        cardPending.setOnClickListener {
+            reportStatusFilter = "PENDING"
+            updateReportStats()
+            setReportTabActive("PENDING")
+            buildReportsList(allReports.filter { it.status.uppercase() == "PENDING" })
+        }
+        cardApproved.setOnClickListener {
+            reportStatusFilter = "RESOLVED"
+            updateReportStats()
+            setReportTabActive("RESOLVED")
+            buildReportsList(allReports.filter { it.status.uppercase() == "RESOLVED" || it.reportedUserBanned })
+        }
+        cardTotal.setOnClickListener {
+            reportStatusFilter = "ALL"
+            updateReportStats()
+            setReportTabActive("ALL")
+            buildReportsList(allReports)
+        }
+    }
+
+    private fun setReportTabActive(filter: String) {
+        listOf(tabPending, tabApproved, tabAll).forEach {
+            it.setBackgroundResource(R.drawable.chip_inactive)
+            it.setTextColor(getColor(R.color.dark))
+        }
+        when (filter) {
+            "ALL"      -> { tabAll.setBackgroundResource(R.drawable.chip_active); tabAll.setTextColor(getColor(R.color.white)) }
+            "PENDING"  -> { tabPending.setBackgroundResource(R.drawable.chip_active); tabPending.setTextColor(getColor(R.color.white)) }
+            "RESOLVED" -> { tabApproved.setBackgroundResource(R.drawable.chip_active); tabApproved.setTextColor(getColor(R.color.white)) }
+        }
+    }
     private fun setFilter(filter: String) {
         currentFilter = filter
         listOf(cardPending, cardApproved, cardRejected, cardTotal).forEach { it.setBackgroundResource(R.drawable.card_background) }
@@ -539,7 +633,7 @@ class AdminDashboardActivity : AppCompatActivity() {
         llPetList.removeAllViews()
         if (pets.isEmpty()) { tvEmpty.visibility = View.VISIBLE; return }
         tvEmpty.visibility = View.GONE
-        val baseUrl = "http://10.0.2.2:8080"
+        val baseUrl = "https://net-vanquish-poise.ngrok-free.dev"
         pets.forEach { pet ->
             val card = LayoutInflater.from(this).inflate(R.layout.item_admin_pet_card, llPetList, false)
             val iv = card.findViewById<ImageView>(R.id.ivPetImage)
@@ -582,7 +676,7 @@ class AdminDashboardActivity : AppCompatActivity() {
     }
 
     private fun showPetDetailDialog(pet: Pet) {
-        val baseUrl = "http://10.0.2.2:8080"
+        val baseUrl = "https://net-vanquish-poise.ngrok-free.dev"
         progressBar.visibility = View.VISIBLE
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -796,7 +890,7 @@ class AdminDashboardActivity : AppCompatActivity() {
         listContainer.removeAllViews()
         if (list.isEmpty()) { tvEmpty.text = "No verification requests."; tvEmpty.visibility = View.VISIBLE; return }
         tvEmpty.visibility = View.GONE
-        val baseUrl = "http://10.0.2.2:8080"
+        val baseUrl = "https://net-vanquish-poise.ngrok-free.dev"
         list.forEach { verif ->
             val card = LayoutInflater.from(this).inflate(R.layout.item_verification_card, listContainer, false)
             val tvUserName = card.findViewById<TextView>(R.id.tvUserName)
@@ -814,14 +908,22 @@ class AdminDashboardActivity : AppCompatActivity() {
                 "REJECTED" -> { tvVerifStatus.setBackgroundResource(R.drawable.badge_declined); tvVerifStatus.setTextColor(getColor(R.color.white)) }
             }
             val profileUrl = verif.user?.profileImageUrl
-            if (!profileUrl.isNullOrEmpty()) Glide.with(this).load(if (profileUrl.startsWith("http")) profileUrl else "$baseUrl$profileUrl").circleCrop().into(ivProfileImage)
+            if (!profileUrl.isNullOrEmpty()) {
+                Glide.with(this).load(if (profileUrl.startsWith("http")) profileUrl else "$baseUrl$profileUrl").circleCrop().into(ivProfileImage)
+            } else {
+                ivProfileImage.setImageResource(R.drawable.pawlogo2)
+            }
             llExpandedContent.visibility = View.GONE; ivChevron.visibility = View.GONE
             val idUrl = verif.idImageUrl
             llCardHeader.setOnClickListener {
                 val dialogView = LinearLayout(this@AdminDashboardActivity).apply { orientation = LinearLayout.VERTICAL; setPadding(48, 48, 48, 48) }
                 val headerLayout = LinearLayout(this@AdminDashboardActivity).apply { orientation = LinearLayout.HORIZONTAL; gravity = android.view.Gravity.CENTER_VERTICAL; layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).also { it.bottomMargin = 40 } }
                 val profileIv = ImageView(this@AdminDashboardActivity).apply { layoutParams = LinearLayout.LayoutParams(140, 140).also { it.marginEnd = 32 }; scaleType = ImageView.ScaleType.CENTER_CROP; setBackgroundResource(R.drawable.chip_inactive); clipToOutline = true }
-                if (!profileUrl.isNullOrEmpty()) Glide.with(this@AdminDashboardActivity).load(if (profileUrl.startsWith("http")) profileUrl else "$baseUrl$profileUrl").circleCrop().into(profileIv)
+                if (!profileUrl.isNullOrEmpty()) {
+                    Glide.with(this@AdminDashboardActivity).load(if (profileUrl.startsWith("http")) profileUrl else "$baseUrl$profileUrl").circleCrop().into(profileIv)
+                } else {
+                    profileIv.setImageResource(R.drawable.pawlogo2)
+                }
                 headerLayout.addView(profileIv)
                 val infoLayout = LinearLayout(this@AdminDashboardActivity).apply { orientation = LinearLayout.VERTICAL }
                 val nameRoleLayout = LinearLayout(this@AdminDashboardActivity).apply { orientation = LinearLayout.HORIZONTAL; gravity = android.view.Gravity.CENTER_VERTICAL; layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT).also { it.bottomMargin = 12 } }
@@ -882,21 +984,32 @@ class AdminDashboardActivity : AppCompatActivity() {
         currentSection = "REPORTS"
         setNavActive("REPORTS")
         showFilterTabs()
-        tabRejected.visibility = View.VISIBLE
+        tabRejected.visibility = View.GONE  // no more Ignored tab
+        reportStatusFilter = "ALL"
         tabPending.text = "Pending"
         tabApproved.text = "Resolved"
-        tabRejected.text = "Ignored"
         tabAll.text = "All"
-        listOf(tabPending, tabApproved, tabRejected, tabAll).forEach {
+        listOf(tabPending, tabApproved, tabAll).forEach {
             it.setBackgroundResource(R.drawable.chip_inactive)
             it.setTextColor(getColor(R.color.dark))
         }
         tabAll.setBackgroundResource(R.drawable.chip_active)
         tabAll.setTextColor(getColor(R.color.white))
-        tabAll.setOnClickListener { buildReportsList(allReports) }
-        tabPending.setOnClickListener { buildReportsList(allReports.filter { it.status.uppercase() == "PENDING" }) }
-        tabApproved.setOnClickListener { buildReportsList(allReports.filter { it.status.uppercase() == "RESOLVED" }) }
-        tabRejected.setOnClickListener { buildReportsList(allReports.filter { it.status.uppercase() == "IGNORED" }) }
+        tabAll.setOnClickListener {
+            reportStatusFilter = "ALL"
+            updateReportStats()
+            buildReportsList(allReports)
+        }
+        tabPending.setOnClickListener {
+            reportStatusFilter = "PENDING"
+            updateReportStats()
+            buildReportsList(allReports.filter { it.status.uppercase() == "PENDING" })
+        }
+        tabApproved.setOnClickListener {
+            reportStatusFilter = "RESOLVED"
+            updateReportStats()
+            buildReportsList(allReports.filter { it.status.uppercase() == "RESOLVED" || it.reportedUserBanned })
+        }
         loadReports()
     }
 
@@ -909,7 +1022,15 @@ class AdminDashboardActivity : AppCompatActivity() {
                     progressBar.visibility = View.GONE
                     if (response.isSuccessful) {
                         allReports = response.body()?.data ?: emptyList()
-                        if (currentSection == "REPORTS") buildReportsList(allReports)
+                        if (currentSection == "REPORTS") {
+                            updateReportStats()
+                            val filtered = when (reportStatusFilter) {
+                                "PENDING"  -> allReports.filter { it.status.uppercase() == "PENDING" }
+                                "RESOLVED" -> allReports.filter { it.status.uppercase() == "RESOLVED" || it.reportedUserBanned }
+                                else       -> allReports
+                            }
+                            buildReportsList(filtered)
+                        }
                         updateNavBadges()
                     } else {
                         Toast.makeText(this@AdminDashboardActivity, "Failed to load reports: ${response.code()}", Toast.LENGTH_SHORT).show()
@@ -995,7 +1116,6 @@ class AdminDashboardActivity : AppCompatActivity() {
                 ).also { it.bottomMargin = 8 }
             })
 
-            // Reason box
             card.addView(LinearLayout(this).apply {
                 orientation = LinearLayout.VERTICAL
                 setBackgroundResource(R.drawable.chip_inactive)
@@ -1011,15 +1131,14 @@ class AdminDashboardActivity : AppCompatActivity() {
                 })
             })
 
-            // Tap to open details
             card.setOnClickListener {
                 val intent = Intent(this, ReportDetailsActivity::class.java).apply {
                     putExtra("reportId", report.id)
                     putExtra("reportedUserId", report.reportedUserId)
-                    putExtra("token", token.removePrefix("Bearer "))
                     putExtra("status", report.status)
                     putExtra("reporterName", report.reporterName)
                     putExtra("reporterEmail", report.reporterEmail)
+                    putExtra("reporterRole", report.reporterRole)
                     putExtra("reportedUserName", report.reportedUserName)
                     putExtra("reportedUserEmail", report.reportedUserEmail)
                     putExtra("reportedUserBanned", report.reportedUserBanned)
@@ -1030,11 +1149,10 @@ class AdminDashboardActivity : AppCompatActivity() {
                         putExtra("arAdopterName", ar.adopterName)
                         putExtra("arContact", ar.contactInfo)
                         putExtra("arReason", ar.reason)
-                        putExtra("arNote", ar.noteToOwner)
+                        putExtra("arNote", ar.noteToOwner ?: "")
                     }
                     putExtra("hasAdoptionRequest", report.adoptionRequest != null)
                 }
-
                 startActivity(intent)
             }
 

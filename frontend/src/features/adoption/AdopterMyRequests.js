@@ -43,7 +43,7 @@ export default function AdopterMyRequests() {
 
   const statusConfig = {
     PENDING:  { label: "Pending",  badgeCls: "badge-pending",   bannerBg: "rgba(199,105,83,0.07)",   bannerBorder: "rgba(199,105,83,0.2)",   bannerColor: "#9a4a35" },
-    APPROVED: { label: "Approved", badgeCls: "badge-available", bannerBg: "rgba(31,51,39,0.06)",    bannerBorder: "rgba(31,51,39,0.15)",    bannerColor: "var(--orange)" },
+    APPROVED: { label: "Approved", badgeCls: "badge-available", bannerBg: "rgba(22,163,74,0.07)", bannerBorder: "rgba(22,163,74,0.2)", bannerColor: "#16a34a" },
     DECLINED: { label: "Declined", badgeCls: "badge-adopted",   bannerBg: "rgba(220,38,38,0.05)",   bannerBorder: "rgba(220,38,38,0.15)",   bannerColor: "#b91c1c" },
   };
 

@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/cream">
@@ -250,7 +250,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="📍 Location"
+                android:text="Location"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/dark"
@@ -282,7 +282,8 @@
                 android:id="@+id/mapWebView"
                 android:layout_width="match_parent"
                 android:layout_height="220dp"
-                android:visibility="gone" />
+                android:visibility="gone"
+                tools:ignore="WebViewLayout" />
 
         </LinearLayout>
 
@@ -301,7 +302,7 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:gravity="center"
-            android:text="✕  Your request was not approved"
+            android:text="Your request was not approved"
             android:textColor="@color/muted"
             android:background="@drawable/chip_inactive"
             android:layout_marginTop="16dp"
@@ -312,7 +313,7 @@
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:gravity="center"
-            android:text="⏳  Adoption request pending"
+            android:text="Adoption request pending"
             android:textColor="@color/muted"
             android:background="@drawable/chip_inactive"
             android:layout_marginTop="16dp"
@@ -322,7 +323,7 @@
             android:id="@+id/btnReport"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="⚑ Report this owner"
+            android:text="Report this owner"
             android:textColor="#CC0000"
             android:textSize="13sp"
             android:padding="8dp"

@@ -59,6 +59,10 @@ export default function Login() {
       const res = await axios.post("http://localhost:8080/api/v1/auth/login", form);
       if (res.data.success) {
         const token = res.data.data.accessToken;
+        if (res.data.data.user?.isBanned) {
+          navigate("/banned");
+          return;
+        }
         localStorage.setItem("token", token);
         const fullUser = await fetchAndSaveFullUser(token);
         handleNavigateByRole(fullUser, token);
@@ -81,6 +85,10 @@ export default function Login() {
         );
         if (res.data.success) {
           const token = res.data.data.accessToken;
+          if (res.data.data.user?.isBanned) {
+            navigate("/banned");
+            return;
+          }
           localStorage.setItem("token", token);
           const fullUser = await fetchAndSaveFullUser(token);
           handleNavigateByRole(fullUser, token);
@@ -172,7 +180,7 @@ export default function Login() {
               <div className="form-group">
                 <div className="form-label-row">
                   <label className="form-label">Password</label>
-                  <button className="forgot-link" type="button">Forgot password?</button>
+                  
                 </div>
                 <div className="input-wrapper">
                   <input

@@ -58,9 +58,15 @@ class GoogleAuthActivity : AppCompatActivity() {
     }
 
     private fun sendTokenToBackend(idToken: String) {
+        val mode = intent.getStringExtra("mode") ?: "login"
+        val role = intent.getStringExtra("role")
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val response = RetrofitClient.instance.googleLogin(GoogleAuthRequest(idToken))
+                val response = if (mode == "register") {
+                    RetrofitClient.instance.googleRegister(GoogleAuthRequest(token = idToken, role = role))
+                } else {
+                    RetrofitClient.instance.googleLogin(GoogleAuthRequest(token = idToken))
+                }
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful && response.body()?.success == true) {
                         val data = response.body()!!.data!!
@@ -72,10 +78,18 @@ class GoogleAuthActivity : AppCompatActivity() {
                             .putString("role", data.user.role)
                             .apply()
 
-                        val role = data.user.role.uppercase()
+                        val userRole = data.user.role.uppercase()
 
-                        if (role == "ADMIN") {
+                        if (userRole == "ADMIN") {
                             val intent = Intent(this@GoogleAuthActivity, AdminDashboardActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            startActivity(intent)
+                            finish()
+                            return@withContext
+                        }
+
+                        if (mode == "register") {
+                            val intent = Intent(this@GoogleAuthActivity, VerificationStatusActivity::class.java)
                             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                             startActivity(intent)
                             finish()
@@ -89,7 +103,7 @@ class GoogleAuthActivity : AppCompatActivity() {
                                 withContext(Dispatchers.Main) {
                                     val status = verifResponse.body()?.data?.status?.uppercase() ?: "NONE"
                                     val intent = if (status == "APPROVED") {
-                                        when (role) {
+                                        when (userRole) {
                                             "PET_OWNER" -> Intent(this@GoogleAuthActivity, OwnerDashboardActivity::class.java)
                                             else -> Intent(this@GoogleAuthActivity, AdopterDashboardActivity::class.java)
                                         }

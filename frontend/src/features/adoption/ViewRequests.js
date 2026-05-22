@@ -37,6 +37,8 @@ export default function ViewRequests() {
   const [customReportReason, setCustomReportReason] = useState("");
   const [reportSubmitting, setReportSubmitting] = useState(false);
   const [reportSuccess, setReportSuccess] = useState(false);
+  const [reportError, setReportError] = useState("");
+  const [actionError, setActionError] = useState("");
 
   useEffect(() => {
     fetchRequests();
@@ -84,7 +86,7 @@ export default function ViewRequests() {
       setDeclineModal(null);
       await fetchRequests();
     } catch {
-      alert("Action failed. Please try again.");
+      setActionError("Action failed. Please try again.");
     } finally {
       setActionLoading(null);
     }
@@ -100,38 +102,44 @@ export default function ViewRequests() {
       );
       await fetchRequests();
     } catch {
-      alert("Action failed. Please try again.");
+      setActionError("Action failed. Please try again.");
     } finally {
       setActionLoading(null);
     }
   };
 
-  const openReportModal = (adopterId) => {
-    setSelectedReportReason("");
-    setCustomReportReason("");
-    setReportSuccess(false);
-    setReportModal(adopterId);
-  };
+  const openReportModal = (adopterId, adoptionRequestId) => {
+  setSelectedReportReason("");
+  setCustomReportReason("");
+  setReportSuccess(false);
+  setReportError("");
+  setReportModal({ adopterId, adoptionRequestId });  
+};
 
   const handleSubmitReport = async () => {
-    const reason = selectedReportReason === "Others"
-      ? customReportReason.trim()
-      : selectedReportReason;
-    if (!reason) return;
-    setReportSubmitting(true);
-    try {
-      await axios.post(
-        "http://localhost:8080/api/v1/reports",
-        { reportedUserId: reportModal, reason },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setReportSuccess(true);
-    } catch {
-      alert("Failed to submit report.");
-    } finally {
-      setReportSubmitting(false);
-    }
-  };
+  const reason = selectedReportReason === "Others"
+    ? customReportReason.trim()
+    : selectedReportReason;
+  if (!reason) return;
+  setReportSubmitting(true);
+  setReportError("");
+  try {
+    await axios.post(
+      "http://localhost:8080/api/v1/reports",
+      { 
+        reportedUserId: reportModal.adopterId, 
+        reason,
+        adoptionRequestId: reportModal.adoptionRequestId  // ← ADD THIS
+      },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    setReportSuccess(true);
+  } catch {
+    setReportError("Failed to submit report. Please try again.");
+  } finally {
+    setReportSubmitting(false);
+  }
+};
 
   const confirmLogout = () => {
     localStorage.removeItem("token");
@@ -232,6 +240,20 @@ export default function ViewRequests() {
                     placeholder="Please describe the issue..." maxLength={300}
                     style={{ width: "100%", borderRadius: 10, border: "1.5px solid var(--border)", padding: "10px 14px", fontSize: 13, resize: "vertical", minHeight: 80, fontFamily: "inherit", outline: "none", boxSizing: "border-box", marginBottom: 8 }}
                   />
+                )}
+                {reportError && (
+                  <div style={{
+                    background: "rgba(220,38,38,0.06)", border: "1px solid rgba(220,38,38,0.2)",
+                    borderRadius: 8, padding: "10px 14px", fontSize: 13, color: "#dc2626",
+                    marginBottom: 8, display: "flex", alignItems: "center", gap: 6
+                  }}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2"
+                      strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14, flexShrink: 0 }}>
+                      <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/>
+                      <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    {reportError}
+                  </div>
                 )}
                 <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
                   <button onClick={() => setReportModal(null)} style={{ flex: 1, padding: "11px 0", borderRadius: 10, border: "1.5px solid var(--border)", background: "white", color: "var(--muted)", fontWeight: 600, fontSize: 14, cursor: "pointer" }}>Cancel</button>
@@ -402,7 +424,7 @@ export default function ViewRequests() {
                           </div>
                         )}
                         <button
-                          onClick={() => openReportModal(req.adopterId)}
+                          onClick={() => openReportModal(req.adopter?.id, req.id)}
                           style={{ display: "flex", alignItems: "center", gap: 5, background: "none", border: "1px solid rgba(220,38,38,0.25)", borderRadius: 8, color: "#dc2626", fontSize: 12, cursor: "pointer", padding: "6px 12px", fontWeight: 500, fontFamily: "inherit" }}
                         >
                           <svg viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 12, height: 12 }}>

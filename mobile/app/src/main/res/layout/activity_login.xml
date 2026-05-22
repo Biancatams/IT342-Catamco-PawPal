@@ -46,10 +46,18 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Sign in to PawPal"
+            android:text="Sign in to"
             android:textSize="26sp"
             android:textStyle="bold"
             android:textColor="@color/green"
+            android:layout_marginBottom="2dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PawPal."
+            android:textSize="26sp"
+            android:textStyle="bold|italic"
+            android:textColor="@color/orange"
             android:layout_marginBottom="6dp"/>
 
         <TextView
@@ -232,6 +240,5 @@
                 android:textColor="@color/orange"
                 android:textStyle="bold"/>
         </LinearLayout>
-
     </LinearLayout>
 </ScrollView>

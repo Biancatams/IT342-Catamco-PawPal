@@ -38,7 +38,9 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var tvError: TextView
     private lateinit var progressBar: ProgressBar
     private lateinit var ivTogglePassword: ImageView
+    private lateinit var ivToggleConfirmPassword: ImageView
     private var passwordVisible = false
+    private var confirmPasswordVisible = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +59,7 @@ class RegisterActivity : AppCompatActivity() {
         tvError = findViewById(R.id.tvError)
         progressBar = findViewById(R.id.progressBar)
         ivTogglePassword = findViewById(R.id.ivTogglePassword)
+        ivToggleConfirmPassword = findViewById(R.id.ivToggleConfirmPassword)
 
         ivTogglePassword.setOnClickListener {
             passwordVisible = !passwordVisible
@@ -65,6 +68,15 @@ class RegisterActivity : AppCompatActivity() {
             else PasswordTransformationMethod.getInstance()
             ivTogglePassword.setImageResource(if (passwordVisible) R.drawable.ic_eye_off else R.drawable.ic_eye)
             etPassword.setSelection(etPassword.text.length)
+        }
+
+        ivToggleConfirmPassword.setOnClickListener {
+            confirmPasswordVisible = !confirmPasswordVisible
+            etConfirmPassword.transformationMethod = if (confirmPasswordVisible)
+                HideReturnsTransformationMethod.getInstance()
+            else PasswordTransformationMethod.getInstance()
+            ivToggleConfirmPassword.setImageResource(if (confirmPasswordVisible) R.drawable.ic_eye_off else R.drawable.ic_eye)
+            etConfirmPassword.setSelection(etConfirmPassword.text.length)
         }
 
         rbAdopter.setOnClickListener {
@@ -107,7 +119,19 @@ class RegisterActivity : AppCompatActivity() {
         }
 
         btnGoogle.setOnClickListener {
-            startActivity(Intent(this, GoogleAuthActivity::class.java))
+            val role = when (rgRole.checkedRadioButtonId) {
+                R.id.rbAdopter -> "ADOPTER"
+                R.id.rbPetOwner -> "PET_OWNER"
+                else -> ""
+            }
+            if (role.isEmpty()) {
+                showError("Please select a role before signing up with Google.")
+                return@setOnClickListener
+            }
+            val intent = Intent(this, GoogleAuthActivity::class.java)
+            intent.putExtra("mode", "register")
+            intent.putExtra("role", role)
+            startActivity(intent)
         }
 
         tvLogin.setOnClickListener {

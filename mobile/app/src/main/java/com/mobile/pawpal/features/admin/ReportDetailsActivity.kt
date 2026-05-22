@@ -42,7 +42,7 @@ class ReportDetailsActivity : AppCompatActivity() {
     private var reportId = 0L
     private var reportedUserId = 0L
     private var token = ""
-    private val baseUrl = "http://10.0.2.2:8080"
+    private val baseUrl = "https://net-vanquish-poise.ngrok-free.dev"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,29 +78,34 @@ class ReportDetailsActivity : AppCompatActivity() {
 
         btnBack.setOnClickListener { finish() }
 
+        val reporterRole = intent.getStringExtra("reporterRole") ?: ""
         val hasAr = intent.getBooleanExtra("hasAdoptionRequest", false)
-        if (hasAr) {
+
+        if (reporterRole.uppercase() == "PET_OWNER" && hasAr) {
             cardAdoptionRequest.visibility = View.VISIBLE
-            tvArAdopterName.text = "👤  ${intent.getStringExtra("arAdopterName") ?: "—"}"
-            tvArContact.text     = "📞  ${intent.getStringExtra("arContact") ?: "—"}"
-            tvArReason.text      = "💬  ${intent.getStringExtra("arReason") ?: "—"}"
+            tvArAdopterName.text = intent.getStringExtra("arAdopterName") ?: "—"
+            tvArContact.text     = intent.getStringExtra("arContact") ?: "—"
+            tvArReason.text      = intent.getStringExtra("arReason") ?: "—"
             val note = intent.getStringExtra("arNote")
             if (!note.isNullOrBlank()) {
-                tvArNote.visibility = View.VISIBLE
-                tvArNote.text = "📝  $note"
+                findViewById<View>(R.id.dividerArNote).visibility = View.VISIBLE
+                findViewById<LinearLayout>(R.id.rowArNote).visibility = View.VISIBLE
+                tvArNote.text = note
             }
         }
 
-        // Populate header fields
+        if (reporterRole.uppercase() == "PET_OWNER") {
+            llPetCards.visibility = View.GONE
+            tvNoPets.visibility = View.GONE
+            progressBarPets.visibility = View.GONE
+        }
+
         val status = intent.getStringExtra("status") ?: "PENDING"
         tvStatus.text = status
         tvStatus.setBackgroundResource(when (status.uppercase()) {
             "RESOLVED" -> R.drawable.badge_available
-            "IGNORED"  -> R.drawable.chip_inactive
             else       -> R.drawable.badge_pending
         })
-        if (status.uppercase() == "IGNORED")
-            tvStatus.setTextColor(getColor(R.color.muted))
 
         tvDate.text          = intent.getStringExtra("createdAt")?.take(10) ?: "—"
         tvReason.text        = intent.getStringExtra("reason") ?: "—"
@@ -117,17 +122,22 @@ class ReportDetailsActivity : AppCompatActivity() {
             btnBanUser.text = "User Already Banned"
         }
 
-        if (status.uppercase() == "RESOLVED" || status.uppercase() == "IGNORED") {
+        if (status.uppercase() == "RESOLVED") {
             disableActionButtons()
         }
 
-        // Load reported user's profile image
         loadUserAvatar(reportedUserId.toInt(), ivReportedAvatar)
         val reporterEmail = intent.getStringExtra("reporterEmail") ?: ""
         loadReporterAvatar(reporterEmail, ivReporterAvatar)
 
-        // Load reported user's pets
-        loadUserPets(reportedUserId.toInt())
+        val cardPetListings = findViewById<LinearLayout>(R.id.cardPetListings)
+
+        if (reporterRole.uppercase() != "PET_OWNER") {
+            cardPetListings.visibility = View.VISIBLE
+            loadUserPets(reportedUserId.toInt())
+        } else {
+            cardPetListings.visibility = View.GONE
+        }
 
         btnBanUser.setOnClickListener {
             AlertDialog.Builder(this)
@@ -137,7 +147,7 @@ class ReportDetailsActivity : AppCompatActivity() {
                 .setNegativeButton("Cancel", null)
                 .show()
         }
-        btnIgnore.setOnClickListener { updateStatus("IGNORED") }
+        btnIgnore.visibility = View.GONE
         btnResolve.setOnClickListener { updateStatus("RESOLVED") }
     }
 
@@ -456,7 +466,6 @@ class ReportDetailsActivity : AppCompatActivity() {
                         tvStatus.text = newStatus
                         tvStatus.setBackgroundResource(when (newStatus.uppercase()) {
                             "RESOLVED" -> R.drawable.badge_available
-                            "IGNORED"  -> R.drawable.chip_inactive
                             else       -> R.drawable.badge_pending
                         })
                         disableActionButtons()

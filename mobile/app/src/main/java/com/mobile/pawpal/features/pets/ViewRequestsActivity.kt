@@ -66,9 +66,9 @@ class ViewRequestsActivity : AppCompatActivity() {
                         val pet = petResponse.body()!!.data!!
                         tvPetName.text = pet.name
                         tvPetBreed.text = pet.breed
-                        tvPetAge.text = "🕐 ${pet.age}"
-                        tvPetType.text = "🐾 ${pet.type}"
-                        tvPetLocation.text = "📍 ${pet.location}"
+                        tvPetAge.text = pet.age
+                        tvPetType.text = pet.type
+                        tvPetLocation.text = pet.location
                         if (!pet.imageUrl.isNullOrEmpty()) {
                             val fullUrl = if (pet.imageUrl.startsWith("http")) pet.imageUrl
                             else "https://net-vanquish-poise.ngrok-free.dev${pet.imageUrl}"
@@ -286,7 +286,7 @@ class ViewRequestsActivity : AppCompatActivity() {
             ).also { it.bottomMargin = 4 }
         })
         contextCard.addView(TextView(this).apply {
-            text = "📞  ${req.contactInfo}"
+            text = req.contactInfo
             textSize = 13f
             setTextColor(getColor(R.color.dark))
             layoutParams = LinearLayout.LayoutParams(
@@ -295,7 +295,7 @@ class ViewRequestsActivity : AppCompatActivity() {
             ).also { it.bottomMargin = 4 }
         })
         contextCard.addView(TextView(this).apply {
-            text = "💬  ${req.reason}"
+            text = req.reason
             textSize = 13f
             setTextColor(getColor(R.color.dark))
             layoutParams = LinearLayout.LayoutParams(
@@ -305,7 +305,7 @@ class ViewRequestsActivity : AppCompatActivity() {
         })
         if (!req.noteToOwner.isNullOrBlank()) {
             contextCard.addView(TextView(this).apply {
-                text = "📝  ${req.noteToOwner}"
+                text = req.noteToOwner ?: ""
                 textSize = 13f
                 setTextColor(getColor(R.color.dark))
             })

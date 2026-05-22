@@ -267,7 +267,7 @@ class MyRequestsActivity : AppCompatActivity() {
 
             if (!req.pet.imageUrl.isNullOrEmpty()) {
                 val fullUrl = if (req.pet.imageUrl.startsWith("http")) req.pet.imageUrl
-                else "http://10.0.2.2:8080${req.pet.imageUrl}"
+                else "https://net-vanquish-poise.ngrok-free.dev${req.pet.imageUrl}"
                 Glide.with(ctx).load(fullUrl).centerCrop().into(holder.ivPet)
             } else {
                 holder.ivPet.setImageResource(R.drawable.pawlogo2)

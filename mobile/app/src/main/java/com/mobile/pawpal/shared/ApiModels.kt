@@ -179,7 +179,8 @@ data class UserProfile(
     val phoneNumber: String?,
     val address: String?,
     val profileImageUrl: String?,
-    val bio: String?
+    val bio: String?,
+    val createdAt: String? = null
 )
 
 data class ProfileResponse(
@@ -291,9 +292,11 @@ data class ReportItem(
     val id: Long,
     val reporterName: String,
     val reporterEmail: String,
+    val reporterRole: String = "",
     val reportedUserId: Long,
     val reportedUserName: String,
     val reportedUserEmail: String,
+    val reportedUserRole: String = "",
     val reportedUserBanned: Boolean,
     val reason: String,
     val status: String,

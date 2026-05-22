@@ -17,6 +17,17 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
+import android.Manifest
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Environment
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.FileProvider
+import okhttp3.MultipartBody
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class OwnerProfileActivity : AppCompatActivity() {
 
@@ -24,8 +35,10 @@ class OwnerProfileActivity : AppCompatActivity() {
     private lateinit var tvFullName: TextView
     private lateinit var tvRole: TextView
     private lateinit var tvEmail: TextView
-    private lateinit var tvPhone: TextView
-    private lateinit var tvMemberSince: TextView
+    private lateinit var tvDisplayEmail: TextView
+    private lateinit var tvDisplayPhone: TextView
+    private lateinit var tvDisplayAddress: TextView
+    private lateinit var tvDisplayMemberSince: TextView
     private lateinit var btnEdit: Button
     private lateinit var tvStatAvailable: TextView
     private lateinit var tvStatPending: TextView
@@ -54,6 +67,8 @@ class OwnerProfileActivity : AppCompatActivity() {
     private lateinit var navLabelOwnerProfile: TextView
 
     private var token = ""
+    private var selectedImageUri: Uri? = null
+    private var cameraImageUri: Uri? = null
 
     private val locations = listOf(
         "Select your city/municipality",
@@ -62,6 +77,26 @@ class OwnerProfileActivity : AppCompatActivity() {
         "Liloan", "Compostela", "Cordova", "Moalboal", "Oslob", "Alcoy",
         "Dalaguete", "Others"
     )
+
+    private val galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let {
+            selectedImageUri = it
+            Glide.with(this).load(it).circleCrop().into(ivProfileImage)
+        }
+    }
+
+    private val cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+        if (success) {
+            cameraImageUri?.let {
+                selectedImageUri = it
+                Glide.with(this).load(it).circleCrop().into(ivProfileImage)
+            }
+        }
+    }
+
+    private val cameraPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        if (granted) launchCamera() else Toast.makeText(this, "Camera permission denied.", Toast.LENGTH_SHORT).show()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,8 +109,10 @@ class OwnerProfileActivity : AppCompatActivity() {
         tvFullName = findViewById(R.id.tvFullName)
         tvRole = findViewById(R.id.tvRole)
         tvEmail = findViewById(R.id.tvEmail)
-        tvPhone = findViewById(R.id.tvPhone)
-        tvMemberSince = findViewById(R.id.tvMemberSince)
+        tvDisplayEmail = findViewById(R.id.tvDisplayEmail)
+        tvDisplayPhone = findViewById(R.id.tvDisplayPhone)
+        tvDisplayAddress = findViewById(R.id.tvDisplayAddress)
+        tvDisplayMemberSince = findViewById(R.id.tvDisplayMemberSince)
         btnEdit = findViewById(R.id.btnEdit)
         tvStatAvailable = findViewById(R.id.tvStatAvailable)
         tvStatPending = findViewById(R.id.tvStatPending)
@@ -124,10 +161,15 @@ class OwnerProfileActivity : AppCompatActivity() {
             viewDisplay.visibility = View.GONE
             viewForm.visibility = View.VISIBLE
         }
+
+        ivProfileImage.isClickable = true
+        ivProfileImage.setOnClickListener { showImagePickerDialog() }
+
         btnCancel.setOnClickListener {
             viewForm.visibility = View.GONE
             viewDisplay.visibility = View.VISIBLE
         }
+
         btnSave.setOnClickListener {
             val name = etFullName.text.toString().trim()
             val phone = etPhone.text.toString().trim()
@@ -161,6 +203,34 @@ class OwnerProfileActivity : AppCompatActivity() {
         }
     }
 
+    private fun showImagePickerDialog() {
+        val options = arrayOf("Take Photo", "Choose from Gallery", "Cancel")
+        android.app.AlertDialog.Builder(this)
+            .setTitle("Update Profile Photo")
+            .setItems(options) { _, which ->
+                when (which) {
+                    0 -> {
+                        if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                            launchCamera()
+                        } else {
+                            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                        }
+                    }
+                    1 -> galleryLauncher.launch("image/*")
+                }
+            }.show()
+    }
+
+    private fun launchCamera() {
+        val photoFile = File.createTempFile(
+            "profile_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())}",
+            ".jpg",
+            getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        )
+        cameraImageUri = FileProvider.getUriForFile(this, "${packageName}.fileprovider", photoFile)
+        cameraLauncher.launch(cameraImageUri!!)
+    }
+
     private fun loadProfile() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -171,14 +241,17 @@ class OwnerProfileActivity : AppCompatActivity() {
                         tvFullName.text = p.fullName
                         tvRole.text = p.role.replace("_", " ")
                         tvEmail.text = p.email
-                        tvPhone.text = if (p.phoneNumber.isNullOrEmpty()) "Not set" else p.phoneNumber
+                        tvDisplayEmail.text = p.email
+                        tvDisplayPhone.text = if (p.phoneNumber.isNullOrEmpty()) "Not set" else p.phoneNumber
+                        tvDisplayAddress.text = if (p.address.isNullOrEmpty()) "Not set" else p.address
+                        tvDisplayMemberSince.text = if (p.createdAt.isNullOrEmpty()) "Not available" else formatDate(p.createdAt)
                         etFullName.setText(p.fullName)
                         etPhone.setText(p.phoneNumber ?: "")
                         val locationIndex = locations.indexOf(p.address ?: "")
                         if (locationIndex >= 0) etAddress.setSelection(locationIndex)
                         if (!p.profileImageUrl.isNullOrEmpty()) {
                             val url = if (p.profileImageUrl.startsWith("http")) p.profileImageUrl
-                            else "http://10.0.2.2:8080${p.profileImageUrl}"
+                            else "https://net-vanquish-poise.ngrok-free.dev${p.profileImageUrl}"
                             Glide.with(this@OwnerProfileActivity).load(url).circleCrop().into(ivProfileImage)
                         }
                     }
@@ -243,7 +316,7 @@ class OwnerProfileActivity : AppCompatActivity() {
 
             if (!pet.imageUrl.isNullOrEmpty()) {
                 val url = if (pet.imageUrl.startsWith("http")) pet.imageUrl
-                else "http://10.0.2.2:8080${pet.imageUrl}"
+                else "https://net-vanquish-poise.ngrok-free.dev${pet.imageUrl}"
                 Glide.with(this).load(url).centerCrop().into(iv)
             } else {
                 iv.setImageResource(R.drawable.pawlogo2)
@@ -266,19 +339,27 @@ class OwnerProfileActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val plain = "text/plain".toMediaTypeOrNull()
+                val imagePart = selectedImageUri?.let { uri ->
+                    val stream = contentResolver.openInputStream(uri)
+                    val bytes = stream?.readBytes() ?: return@let null
+                    stream.close()
+                    val requestBody = bytes.toRequestBody("image/jpeg".toMediaTypeOrNull())
+                    MultipartBody.Part.createFormData("image", "profile.jpg", requestBody)
+                }
                 val response = RetrofitClient.instance.updateProfile(
                     token = token,
                     fullName = fullName.toRequestBody(plain),
                     phoneNumber = if (phone.isEmpty()) null else phone.toRequestBody(plain),
                     address = if (address.isEmpty()) null else address.toRequestBody(plain),
                     bio = null,
-                    profileImage = null
+                    profileImage = imagePart
                 )
                 withContext(Dispatchers.Main) {
                     progressBar.visibility = View.GONE
                     btnSave.isEnabled = true
                     if (response.isSuccessful && response.body()?.success == true) {
                         Toast.makeText(this@OwnerProfileActivity, "Profile updated!", Toast.LENGTH_SHORT).show()
+                        selectedImageUri = null
                         viewForm.visibility = View.GONE
                         viewDisplay.visibility = View.VISIBLE
                         loadProfile()
@@ -296,5 +377,12 @@ class OwnerProfileActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+    private fun formatDate(dateStr: String): String {
+        return try {
+            val parts = dateStr.substring(0, 10).split("-")
+            val months = listOf("","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")
+            "${months[parts[1].toInt()]} ${parts[2]}, ${parts[0]}"
+        } catch (e: Exception) { dateStr }
     }
 }

@@ -49,10 +49,18 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Create Account"
+            android:text="Find or give a"
             android:textSize="26sp"
             android:textStyle="bold"
             android:textColor="@color/green"
+            android:layout_marginBottom="2dp"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="forever home."
+            android:textSize="26sp"
+            android:textStyle="bold|italic"
+            android:textColor="@color/orange"
             android:layout_marginBottom="6dp"/>
 
         <!-- Subtitle -->
@@ -127,6 +135,7 @@
                 android:textSize="14sp"
                 android:layout_marginBottom="16dp"/>
 
+            <!-- Password with toggle -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -135,18 +144,34 @@
                 android:textStyle="bold"
                 android:textColor="#555555"
                 android:layout_marginBottom="6dp"/>
-            <EditText
-                android:id="@+id/etPassword"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:hint="Min. 8 characters"
-                android:inputType="textPassword"
-                android:background="@drawable/input_background"
-                android:paddingStart="14dp"
-                android:paddingEnd="14dp"
-                android:textSize="14sp"
-                android:layout_marginBottom="16dp"/>
 
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp">
+
+                <EditText
+                    android:id="@+id/etPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="Min. 8 characters"
+                    android:inputType="textPassword"
+                    android:background="@drawable/input_background"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="48dp"
+                    android:textSize="14sp"/>
+
+                <ImageView
+                    android:id="@+id/ivTogglePassword"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_eye"
+                    android:layout_gravity="end|center_vertical"
+                    android:layout_marginEnd="12dp"/>
+
+            </FrameLayout>
+
+            <!-- Confirm Password with toggle -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -155,17 +180,32 @@
                 android:textStyle="bold"
                 android:textColor="#555555"
                 android:layout_marginBottom="6dp"/>
-            <EditText
-                android:id="@+id/etConfirmPassword"
+
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:hint="Repeat your password"
-                android:inputType="textPassword"
-                android:background="@drawable/input_background"
-                android:paddingStart="14dp"
-                android:paddingEnd="14dp"
-                android:textSize="14sp"
-                android:layout_marginBottom="16dp"/>
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp">
+
+                <EditText
+                    android:id="@+id/etConfirmPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:hint="Repeat your password"
+                    android:inputType="textPassword"
+                    android:background="@drawable/input_background"
+                    android:paddingStart="14dp"
+                    android:paddingEnd="48dp"
+                    android:textSize="14sp"/>
+
+                <ImageView
+                    android:id="@+id/ivToggleConfirmPassword"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_eye"
+                    android:layout_gravity="end|center_vertical"
+                    android:layout_marginEnd="12dp"/>
+
+            </FrameLayout>
 
             <TextView
                 android:layout_width="match_parent"
@@ -286,7 +326,7 @@
 
         </LinearLayout>
 
-        <!-- Footer - always visible below card -->
+        <!-- Footer -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -118,7 +118,6 @@ class VerificationActivity : AppCompatActivity() {
         val btnCancelHome = findViewById<Button>(R.id.btnCancelHome)
         if (btnCancelHome != null) {
             btnCancelHome.setOnClickListener {
-                getSharedPreferences("pawpal_prefs", MODE_PRIVATE).edit().clear().apply()
                 val intent = Intent(this, com.mobile.pawpal.features.auth.LandingActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intent)

@@ -114,10 +114,10 @@ class PetDetailActivity : AppCompatActivity() {
     private fun bindPet(pet: PetDetailData, myRequestStatus: String?, declineReason: String?, declineCount: Int) {
         tvName.text = pet.name
         tvBreed.text = pet.breed
-        tvAge.text = "🕐 ${pet.age}"
-        tvType.text = "🐾 ${pet.type}"
-        tvGender.text = "⚥ ${pet.gender ?: "Unknown"}"
-        tvLocation.text = "📍 ${pet.location}"
+        tvAge.text = pet.age
+        tvType.text = pet.type
+        tvGender.text = pet.gender ?: "Unknown"
+        tvLocation.text = pet.location
         tvLocationDetail.text = pet.location
 
         petOwnerId = pet.owner?.id ?: -1
@@ -198,7 +198,7 @@ class PetDetailActivity : AppCompatActivity() {
                 btnAdopt.visibility = View.GONE
                 tvAlreadyRequested.visibility = View.GONE
                 tvRequestDeclined.visibility = View.VISIBLE
-                tvRequestDeclined.text = "✕  You are no longer eligible to adopt this pet."
+                tvRequestDeclined.text = "You are no longer eligible to adopt this pet."
             }
             myRequestStatus != null -> {
                 when (myRequestStatus.uppercase()) {
@@ -211,16 +211,16 @@ class PetDetailActivity : AppCompatActivity() {
                         btnAdopt.visibility = View.GONE
                         tvAlreadyRequested.visibility = View.GONE
                         tvRequestDeclined.visibility = View.VISIBLE
-                        tvRequestDeclined.text = "✓  Your adoption request was approved!"
+                        tvRequestDeclined.text = "Your adoption request was approved!"
                     }
                     "DECLINED", "REJECTED" -> {
                         btnAdopt.visibility = View.VISIBLE
                         tvAlreadyRequested.visibility = View.GONE
                         tvRequestDeclined.visibility = View.VISIBLE
                         tvRequestDeclined.text = if (!declineReason.isNullOrBlank())
-                            "✕  Declined: $declineReason"
-                        else "✕  Your request was not approved."
-                        btnAdopt.text = "↺  Try Again"
+                            "Declined: $declineReason"
+                        else "Your request was not approved."
+                        btnAdopt.text = "Try Again"
                         btnAdopt.setOnClickListener {
                             val intent = Intent(this, AdoptionRequestActivity::class.java)
                             intent.putExtra("petId", pet.id)
@@ -250,7 +250,7 @@ class PetDetailActivity : AppCompatActivity() {
                 btnAdopt.visibility = View.GONE
                 tvAlreadyRequested.visibility = View.GONE
                 tvRequestDeclined.visibility = View.VISIBLE
-                tvRequestDeclined.text = "✕  This pet is no longer available."
+                tvRequestDeclined.text = "This pet is no longer available."
             }
         }
     }
@@ -358,23 +358,26 @@ class PetDetailActivity : AppCompatActivity() {
         mapWebView.visibility = View.VISIBLE
         val settings: WebSettings = mapWebView.settings
         settings.javaScriptEnabled = true
+        settings.domStorageEnabled = true
+        settings.mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+        mapWebView.webViewClient = android.webkit.WebViewClient()
         val html = """
-            <!DOCTYPE html><html>
-            <head>
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-                <style>body{margin:0;padding:0;}#map{width:100%;height:220px;}</style>
-            </head>
-            <body>
-                <div id="map"></div>
-                <script>
-                    var map = L.map('map').setView([$latitude, $longitude], 13);
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
-                    L.marker([$latitude, $longitude]).addTo(map);
-                </script>
-            </body></html>
-        """.trimIndent()
+        <!DOCTYPE html><html>
+        <head>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+            <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+            <style>body{margin:0;padding:0;}#map{width:100%;height:220px;}</style>
+        </head>
+        <body>
+            <div id="map"></div>
+            <script>
+                var map = L.map('map').setView([$latitude, $longitude], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
+                L.marker([$latitude, $longitude]).addTo(map);
+            </script>
+        </body></html>
+    """.trimIndent()
         mapWebView.loadDataWithBaseURL("https://unpkg.com", html, "text/html", "UTF-8", null)
     }
 }
