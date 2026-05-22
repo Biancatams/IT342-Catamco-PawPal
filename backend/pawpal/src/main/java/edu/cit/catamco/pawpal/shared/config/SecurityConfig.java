@@ -59,7 +59,8 @@ public class SecurityConfig {
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:3000",
                 "http://10.0.2.2:8080",
-                "http://10.0.2.2"
+                "http://10.0.2.2",
+                "https://it-342-catamco-paw-pal.vercel.app"
         ));
         configuration.setAllowedMethods(List.of(
                 "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"
