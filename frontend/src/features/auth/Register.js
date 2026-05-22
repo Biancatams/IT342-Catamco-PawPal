@@ -29,7 +29,7 @@ export default function Register() {
 
   const handleNavigateByRole = async (user, token) => {
   try {
-    const verifRes = await axios.get("http://localhost:8080/api/v1/verification/my", {
+    const verifRes = await axios.get("https://it342-catamco-pawpal-production.up.railway.app/api/v1/verification/my", {
       headers: { Authorization: `Bearer ${token}` },
     });
     const status = verifRes.data.data?.status;
@@ -59,7 +59,7 @@ export default function Register() {
     }
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:8080/api/v1/auth/register", form);
+      const res = await axios.post("https://it342-catamco-pawpal-production.up.railway.app/api/v1/auth/register", form);
       if (res.data.success) {
         localStorage.setItem("token", res.data.data.accessToken);
         localStorage.setItem("user", JSON.stringify(res.data.data.user));
@@ -82,7 +82,7 @@ export default function Register() {
       }
       try {
         const res = await axios.post(
-          "http://localhost:8080/api/v1/auth/google-register",
+          "https://it342-catamco-pawpal-production.up.railway.app/api/v1/auth/google-register",
           { token: tokenResponse.access_token, role: form.role }
         );
         if (res.data.success) {
