@@ -51,10 +51,10 @@ export default function AdopterDashboard() {
   const fetchAll = async () => {
     try {
       const [petsRes, reqRes] = await Promise.all([
-        axios.get("http://localhost:8080/api/v1/pets", {
+        axios.get("https://it342-catamco-pawpal-production.up.railway.app/api/v1/pets", {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        axios.get("http://localhost:8080/api/v1/adoption-requests/my", {
+        axios.get("https://it342-catamco-pawpal-production.up.railway.app/api/v1/adoption-requests/my", {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);
@@ -205,7 +205,7 @@ export default function AdopterDashboard() {
                   >
                   <div className="od-pet-img-wrap">
                     {pet.imageUrl ? (
-                      <img src={`http://localhost:8080${pet.imageUrl}`} alt={pet.name} className="od-pet-img" />
+                      <img src={`https://it342-catamco-pawpal-production.up.railway.app${pet.imageUrl}`} alt={pet.name} className="od-pet-img" />
                     ) : (
                       <div className="od-pet-no-img"><span>🐾</span></div>
                     )}

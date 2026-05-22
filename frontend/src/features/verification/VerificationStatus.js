@@ -16,7 +16,7 @@ export default function VerificationStatus() {
 
   const fetchStatus = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/api/v1/verification/my", {
+      const res = await axios.get("https://it342-catamco-pawpal-production.up.railway.app/api/v1/verification/my", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const status = res.data.data;
