@@ -66,22 +66,25 @@ class VerificationStatusActivity : AppCompatActivity() {
 
                         when (status.uppercase()) {
                             "PENDING" -> {
-                                tvStatus.text = "⏳ Verification Pending"
+                                tvStatus.text = "Verification Pending"
                                 tvStatus.setBackgroundResource(R.drawable.badge_pending)
                                 tvMessage.text = "Your verification request is being reviewed by our admin. Please wait."
                                 tvAdminComment.visibility = View.GONE
                                 btnResubmit.visibility = View.GONE
                             }
                             "APPROVED" -> {
-                                tvStatus.text = "✓ Verified"
+                                tvStatus.text = "Verified"
                                 tvStatus.setBackgroundResource(R.drawable.badge_available)
                                 tvMessage.text = "Your account is verified! You can now use all features."
                                 tvAdminComment.visibility = View.GONE
-                                btnResubmit.visibility = View.GONE
-                                routeToDashboard()
+                                btnResubmit.visibility = View.VISIBLE
+                                btnResubmit.text = "Go to Dashboard"
+                                btnResubmit.setOnClickListener {
+                                    routeToDashboard()
+                                }
                             }
                             "REJECTED" -> {
-                                tvStatus.text = "✕ Verification Rejected"
+                                tvStatus.text = "Verification Rejected"
                                 tvStatus.setBackgroundResource(R.drawable.badge_declined)
                                 tvMessage.text = "Your verification was rejected."
                                 val comment = data?.adminComment

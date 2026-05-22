@@ -250,6 +250,8 @@ class ProfileActivity : AppCompatActivity() {
                         tvRole.text = profile.role.replace("_", " ")
                         tvDisplayPhone.text = if (profile.phoneNumber.isNullOrEmpty()) "Not set" else profile.phoneNumber
                         tvDisplayAddress.text = if (profile.address.isNullOrEmpty()) "Not set" else profile.address
+                        findViewById<TextView>(R.id.tvDisplayEmail)?.text = profile.email
+                        findViewById<TextView>(R.id.tvMemberSince)?.text = if (profile.createdAt.isNullOrEmpty()) "Not available" else formatDate(profile.createdAt)
                         etFullName.setText(profile.fullName)
                         etPhone.setText(profile.phoneNumber ?: "")
                         val locationIndex = locations.indexOf(profile.address ?: "")

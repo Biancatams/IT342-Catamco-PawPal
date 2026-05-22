@@ -179,7 +179,8 @@ data class UserProfile(
     val phoneNumber: String?,
     val address: String?,
     val profileImageUrl: String?,
-    val bio: String?
+    val bio: String?,
+    val createdAt: String? = null
 )
 
 data class ProfileResponse(

@@ -119,7 +119,19 @@ class RegisterActivity : AppCompatActivity() {
         }
 
         btnGoogle.setOnClickListener {
-            startActivity(Intent(this, GoogleAuthActivity::class.java))
+            val role = when (rgRole.checkedRadioButtonId) {
+                R.id.rbAdopter -> "ADOPTER"
+                R.id.rbPetOwner -> "PET_OWNER"
+                else -> ""
+            }
+            if (role.isEmpty()) {
+                showError("Please select a role before signing up with Google.")
+                return@setOnClickListener
+            }
+            val intent = Intent(this, GoogleAuthActivity::class.java)
+            intent.putExtra("mode", "register")
+            intent.putExtra("role", role)
+            startActivity(intent)
         }
 
         tvLogin.setOnClickListener {

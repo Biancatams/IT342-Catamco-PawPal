@@ -180,7 +180,7 @@ export default function Login() {
               <div className="form-group">
                 <div className="form-label-row">
                   <label className="form-label">Password</label>
-                  <button className="forgot-link" type="button">Forgot password?</button>
+                  
                 </div>
                 <div className="input-wrapper">
                   <input

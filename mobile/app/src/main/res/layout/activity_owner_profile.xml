@@ -7,42 +7,23 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/viewDisplay"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@drawable/card_background"
-            android:padding="20dp"
-            android:layout_marginBottom="12dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="33dp"
-                android:text="Profile Information"
-                android:textColor="@color/dark"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Your account details"
-                android:textSize="12sp"
-                android:textColor="@color/muted"
-                android:layout_marginBottom="16dp" />
+            android:background="@color/green"
+            android:padding="16dp"
+            android:paddingBottom="32dp">
 
             <ImageView
                 android:id="@+id/ivProfileImage"
-                android:layout_width="72dp"
-                android:layout_height="72dp"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
                 android:scaleType="centerCrop"
                 android:background="@drawable/chip_inactive"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="12dp"
                 android:clickable="true"
                 android:focusable="true" />
 
@@ -50,73 +31,177 @@
                 android:id="@+id/tvFullName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
+                android:textSize="22sp"
                 android:textStyle="bold"
-                android:textColor="@color/dark"
+                android:textColor="@color/white"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp" />
+
+            <TextView
+                android:id="@+id/tvEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:textColor="@color/peach"
                 android:layout_gravity="center_horizontal" />
 
             <TextView
                 android:id="@+id/tvRole"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="13sp"
-                android:textColor="@color/muted"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="16dp" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/peach"
-                android:layout_marginBottom="12dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="EMAIL ADDRESS"
-                android:textSize="10sp"
-                android:textColor="@color/muted"
-                android:layout_marginBottom="2dp" />
-
-            <TextView
-                android:id="@+id/tvEmail"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="@color/dark"
-                android:layout_marginBottom="12dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="PHONE NUMBER"
-                android:textSize="10sp"
-                android:textColor="@color/muted"
-                android:layout_marginBottom="2dp" />
-
-            <TextView
-                android:id="@+id/tvPhone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textColor="@color/dark"
-                android:layout_marginBottom="12dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="ROLE"
-                android:textSize="10sp"
-                android:textColor="@color/muted"
-                android:layout_marginBottom="4dp" />
-
-            <TextView
-                android:id="@+id/tvMemberSince"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:textSize="12sp"
-                android:textColor="@color/muted"
-                android:layout_marginBottom="16dp" />
+                android:textColor="@color/white"
+                android:background="@drawable/badge_available"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="6dp" />
+
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/viewDisplay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/card_background"
+            android:layout_margin="16dp"
+            android:padding="20dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Profile Information"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/dark"
+                android:layout_marginBottom="12dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="4dp">
+                <TextView
+                    android:layout_width="20dp"
+                    android:layout_height="wrap_content"
+                    android:text="✉"
+                    android:textSize="14sp"
+                    android:textColor="@color/muted" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="EMAIL ADDRESS"
+                    android:textSize="10sp"
+                    android:textColor="@color/muted" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvDisplayEmail"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/dark"
+                android:layout_marginBottom="12dp"
+                android:layout_marginStart="20dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="4dp">
+                <TextView
+                    android:layout_width="20dp"
+                    android:layout_height="wrap_content"
+                    android:text="☏"
+                    android:textSize="14sp"
+                    android:textColor="@color/muted" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="PHONE NUMBER"
+                    android:textSize="10sp"
+                    android:textColor="@color/muted" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvDisplayPhone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/dark"
+                android:layout_marginBottom="12dp"
+                android:layout_marginStart="20dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="4dp">
+                <TextView
+                    android:layout_width="20dp"
+                    android:layout_height="wrap_content"
+                    android:text="⌖"
+                    android:textSize="14sp"
+                    android:textColor="@color/muted" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="LOCATION"
+                    android:textSize="10sp"
+                    android:textColor="@color/muted" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvDisplayAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/dark"
+                android:layout_marginBottom="12dp"
+                android:layout_marginStart="20dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="4dp">
+                <TextView
+                    android:layout_width="20dp"
+                    android:layout_height="wrap_content"
+                    android:text="◷"
+                    android:textSize="14sp"
+                    android:textColor="@color/muted" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="MEMBER SINCE"
+                    android:textSize="10sp"
+                    android:textColor="@color/muted" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvDisplayMemberSince"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/dark"
+                android:layout_marginBottom="16dp"
+                android:layout_marginStart="20dp" />
 
             <Button
                 android:id="@+id/btnEdit"
@@ -134,8 +219,8 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:background="@drawable/card_background"
+            android:layout_margin="16dp"
             android:padding="20dp"
-            android:layout_marginBottom="12dp"
             android:visibility="gone">
 
             <TextView
@@ -210,28 +295,6 @@
                 android:layout_marginBottom="16dp" />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Bio"
-                android:textSize="13sp"
-                android:textColor="@color/dark"
-                android:textStyle="bold"
-                android:layout_marginBottom="6dp" />
-
-            <EditText
-                android:id="@+id/etBio"
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:background="@drawable/chip_inactive"
-                android:padding="16dp"
-                android:textSize="14sp"
-                android:textColor="@color/dark"
-                android:hint="Tell us about yourself..."
-                android:inputType="textMultiLine"
-                android:gravity="top"
-                android:layout_marginBottom="16dp" />
-
-            <TextView
                 android:id="@+id/tvError"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -266,8 +329,10 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:background="@drawable/card_background"
-            android:padding="20dp"
-            android:layout_marginBottom="12dp">
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+            android:padding="20dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -396,8 +461,10 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:background="@drawable/card_background"
-            android:padding="20dp"
-            android:layout_marginBottom="16dp">
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+            android:padding="20dp">
 
             <LinearLayout
                 android:layout_width="match_parent"

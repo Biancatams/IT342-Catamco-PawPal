@@ -23,6 +23,9 @@ interface ApiService {
     @POST("api/v1/auth/google-login")
     suspend fun googleLogin(@Body request: GoogleAuthRequest): Response<AuthResponse>
 
+    @POST("api/v1/auth/google-register")
+    suspend fun googleRegister(@Body request: GoogleAuthRequest): Response<AuthResponse>
+
     @GET("api/v1/pets")
     suspend fun getAllPets(@Header("Authorization") token: String): Response<PetsResponse>
 

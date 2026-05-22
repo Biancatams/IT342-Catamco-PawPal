@@ -1,7 +1,10 @@
 package edu.cit.catamco.pawpal.features.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import edu.cit.catamco.pawpal.dto.*;
+import edu.cit.catamco.pawpal.dto.AuthResponse;
+import edu.cit.catamco.pawpal.dto.RegisterRequest;
+import edu.cit.catamco.pawpal.dto.LoginRequest;
+import edu.cit.catamco.pawpal.dto.GoogleAuthRequest;
 import edu.cit.catamco.pawpal.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;

@@ -24,7 +24,6 @@ import android.os.Environment
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
 import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -36,8 +35,10 @@ class OwnerProfileActivity : AppCompatActivity() {
     private lateinit var tvFullName: TextView
     private lateinit var tvRole: TextView
     private lateinit var tvEmail: TextView
-    private lateinit var tvPhone: TextView
-    private lateinit var tvMemberSince: TextView
+    private lateinit var tvDisplayEmail: TextView
+    private lateinit var tvDisplayPhone: TextView
+    private lateinit var tvDisplayAddress: TextView
+    private lateinit var tvDisplayMemberSince: TextView
     private lateinit var btnEdit: Button
     private lateinit var tvStatAvailable: TextView
     private lateinit var tvStatPending: TextView
@@ -96,6 +97,7 @@ class OwnerProfileActivity : AppCompatActivity() {
     private val cameraPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
         if (granted) launchCamera() else Toast.makeText(this, "Camera permission denied.", Toast.LENGTH_SHORT).show()
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_owner_profile)
@@ -107,8 +109,10 @@ class OwnerProfileActivity : AppCompatActivity() {
         tvFullName = findViewById(R.id.tvFullName)
         tvRole = findViewById(R.id.tvRole)
         tvEmail = findViewById(R.id.tvEmail)
-        tvPhone = findViewById(R.id.tvPhone)
-        tvMemberSince = findViewById(R.id.tvMemberSince)
+        tvDisplayEmail = findViewById(R.id.tvDisplayEmail)
+        tvDisplayPhone = findViewById(R.id.tvDisplayPhone)
+        tvDisplayAddress = findViewById(R.id.tvDisplayAddress)
+        tvDisplayMemberSince = findViewById(R.id.tvDisplayMemberSince)
         btnEdit = findViewById(R.id.btnEdit)
         tvStatAvailable = findViewById(R.id.tvStatAvailable)
         tvStatPending = findViewById(R.id.tvStatPending)
@@ -165,6 +169,7 @@ class OwnerProfileActivity : AppCompatActivity() {
             viewForm.visibility = View.GONE
             viewDisplay.visibility = View.VISIBLE
         }
+
         btnSave.setOnClickListener {
             val name = etFullName.text.toString().trim()
             val phone = etPhone.text.toString().trim()
@@ -225,6 +230,7 @@ class OwnerProfileActivity : AppCompatActivity() {
         cameraImageUri = FileProvider.getUriForFile(this, "${packageName}.fileprovider", photoFile)
         cameraLauncher.launch(cameraImageUri!!)
     }
+
     private fun loadProfile() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -235,7 +241,10 @@ class OwnerProfileActivity : AppCompatActivity() {
                         tvFullName.text = p.fullName
                         tvRole.text = p.role.replace("_", " ")
                         tvEmail.text = p.email
-                        tvPhone.text = if (p.phoneNumber.isNullOrEmpty()) "Not set" else p.phoneNumber
+                        tvDisplayEmail.text = p.email
+                        tvDisplayPhone.text = if (p.phoneNumber.isNullOrEmpty()) "Not set" else p.phoneNumber
+                        tvDisplayAddress.text = if (p.address.isNullOrEmpty()) "Not set" else p.address
+                        tvDisplayMemberSince.text = if (p.createdAt.isNullOrEmpty()) "Not available" else formatDate(p.createdAt)
                         etFullName.setText(p.fullName)
                         etPhone.setText(p.phoneNumber ?: "")
                         val locationIndex = locations.indexOf(p.address ?: "")
@@ -368,5 +377,12 @@ class OwnerProfileActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+    private fun formatDate(dateStr: String): String {
+        return try {
+            val parts = dateStr.substring(0, 10).split("-")
+            val months = listOf("","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")
+            "${months[parts[1].toInt()]} ${parts[2]}, ${parts[0]}"
+        } catch (e: Exception) { dateStr }
     }
 }
