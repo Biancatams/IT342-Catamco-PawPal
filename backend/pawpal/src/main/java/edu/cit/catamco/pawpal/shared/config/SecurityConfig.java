@@ -37,7 +37,6 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/uploads/**").permitAll()
-                        .requestMatchers("/uploads/profiles/**").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/reports/**").authenticated()
                         .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/reports/**").authenticated()
                         .requestMatchers(org.springframework.http.HttpMethod.PUT, "/api/v1/reports/**").authenticated()
