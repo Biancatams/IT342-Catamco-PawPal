@@ -36,7 +36,7 @@ export default function RequestAdoption() {
     setLoading(true);
     try {
       await axios.post(
-        "https://it342-catamco-pawpal-production.up.railway.app/api/v1/adoption-requests",
+        "http://localhost:8080/api/v1/adoption-requests",
         {
           petId: petId || pet?.id,
           adopterName: form.adopterName,
@@ -221,7 +221,7 @@ export default function RequestAdoption() {
                 <h2 className="pp-section-title">Applying For</h2>
                 <div className="ra-pet-img-wrap">
                   {pet.imageUrl ? (
-                    <img src={`https://it342-catamco-pawpal-production.up.railway.app${pet.imageUrl}`} alt={pet.name} className="ra-pet-img" />
+                    <img src={`http://localhost:8080${pet.imageUrl}`} alt={pet.name} className="ra-pet-img" />
                   ) : (
                     <div className="ra-pet-no-img"><span>🐾</span></div>
                   )}
