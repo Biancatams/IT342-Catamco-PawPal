@@ -48,7 +48,7 @@ export default function AdopterProfile() {
   const profileImgRef = useRef(null);
   const [profileImg, setProfileImg] = useState(null);
   const [profileImgPreview, setProfileImgPreview] = useState(
-    user.profileImageUrl ? `http://localhost:8080${user.profileImageUrl}` : null
+    user.profileImageUrl ? `${process.env.REACT_APP_API_URL}${user.profileImageUrl}` : null
   );
 
   useEffect(() => {
@@ -58,7 +58,7 @@ export default function AdopterProfile() {
 
   const fetchProfile = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/api/v1/users/me", {
+      const res = await axios.get("${process.env.REACT_APP_API_URL}/api/v1/users/me", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const p = res.data.data;
@@ -66,13 +66,13 @@ export default function AdopterProfile() {
       const updated = { ...user, ...p };
       setUser(updated);
       localStorage.setItem("user", JSON.stringify(updated));
-      if (p.profileImageUrl) setProfileImgPreview(`http://localhost:8080${p.profileImageUrl}`);
+      if (p.profileImageUrl) setProfileImgPreview(`${process.env.REACT_APP_API_URL}${p.profileImageUrl}`);
     } catch {}
   };
 
   const fetchMyRequests = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/api/v1/adoption-requests/my", {
+      const res = await axios.get("${process.env.REACT_APP_API_URL}/api/v1/adoption-requests/my", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setRequests(res.data.data || []);
@@ -116,7 +116,7 @@ export default function AdopterProfile() {
       formData.append("address", form.location || "");
       if (profileImg) formData.append("image", profileImg);
 
-      const res = await axios.put("http://localhost:8080/api/v1/users/me", formData, {
+      const res = await axios.put("${process.env.REACT_APP_API_URL}/api/v1/users/me", formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const updated = {
@@ -133,7 +133,7 @@ export default function AdopterProfile() {
       setSaveMsg("Profile updated!");
       setEditing(false);
       setProfileImg(null);
-      if (res.data.data.profileImageUrl) setProfileImgPreview(`http://localhost:8080${res.data.data.profileImageUrl}`);
+      if (res.data.data.profileImageUrl) setProfileImgPreview(`${process.env.REACT_APP_API_URL}${res.data.data.profileImageUrl}`);
       setTimeout(() => setSaveMsg(""), 3000);
     } catch {
       setSaveMsg("Failed to update. Try again.");
@@ -318,7 +318,7 @@ export default function AdopterProfile() {
                     <div key={req.id} className="prof-pet-item" style={{ cursor: "default" }}>
                       <div className="prof-pet-thumb-wrap">
                         {req.pet?.imageUrl ? (
-                          <img src={`http://localhost:8080${req.pet.imageUrl}`} alt={req.pet.name} className="prof-pet-thumb" />
+                          <img src={`${process.env.REACT_APP_API_URL}${req.pet.imageUrl}`} alt={req.pet.name} className="prof-pet-thumb" />
                         ) : (
                           <div className="prof-pet-thumb-placeholder">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 24, height: 24, stroke: "#c4b5a5" }}>

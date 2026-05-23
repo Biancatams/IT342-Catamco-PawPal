@@ -47,7 +47,7 @@ export default function ViewRequests() {
 
   const fetchPet = async () => {
     try {
-      const res = await axios.get(`http://localhost:8080/api/v1/pets/${petId}`, {
+      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/v1/pets/${petId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setPet(res.data.data);
@@ -57,7 +57,7 @@ export default function ViewRequests() {
   const fetchRequests = async () => {
     try {
       const res = await axios.get(
-        `http://localhost:8080/api/v1/adoption-requests/pet/${petId}`,
+        `${process.env.REACT_APP_API_URL}/api/v1/adoption-requests/pet/${petId}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setRequests(res.data.data || []);
@@ -79,7 +79,7 @@ export default function ViewRequests() {
     setActionLoading(declineModal + "decline");
     try {
       await axios.put(
-        `http://localhost:8080/api/v1/adoption-requests/${declineModal}/decline`,
+        `${process.env.REACT_APP_API_URL}/api/v1/adoption-requests/${declineModal}/decline`,
         { declineReason: declineReason.trim() },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -96,7 +96,7 @@ export default function ViewRequests() {
     setActionLoading(requestId + "approve");
     try {
       await axios.put(
-        `http://localhost:8080/api/v1/adoption-requests/${requestId}/approve`,
+        `${process.env.REACT_APP_API_URL}/api/v1/adoption-requests/${requestId}/approve`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -125,7 +125,7 @@ export default function ViewRequests() {
   setReportError("");
   try {
     await axios.post(
-      "http://localhost:8080/api/v1/reports",
+      "${process.env.REACT_APP_API_URL}/api/v1/reports",
       { 
         reportedUserId: reportModal.adopterId, 
         reason,
@@ -299,7 +299,7 @@ export default function ViewRequests() {
               <>
                 <div className="vr-pet-img-wrap">
                   {pet.imageUrl ? (
-                    <img src={`http://localhost:8080${pet.imageUrl}`} alt={pet.name} className="vr-pet-img" />
+                    <img src={`${process.env.REACT_APP_API_URL}${pet.imageUrl}`} alt={pet.name} className="vr-pet-img" />
                   ) : (
                     <div className="vr-pet-no-img"><span>🐾</span></div>
                   )}
@@ -359,7 +359,7 @@ export default function ViewRequests() {
                     <div key={req.id} className={`vr-request-card ${req.status !== "PENDING" ? "vr-request-resolved" : ""}`}>
                       <div className="vr-req-top">
                         {adopterImg ? (
-                          <img src={`http://localhost:8080${adopterImg}`} alt={req.adopterName} className="vr-req-avatar-img" />
+                          <img src={`${process.env.REACT_APP_API_URL}${adopterImg}`} alt={req.adopterName} className="vr-req-avatar-img" />
                         ) : (
                           <div className="vr-req-avatar">{initials}</div>
                         )}

@@ -36,7 +36,7 @@ export default function RequestAdoption() {
     setLoading(true);
     try {
       await axios.post(
-        "http://localhost:8080/api/v1/adoption-requests",
+        "${process.env.REACT_APP_API_URL}/api/v1/adoption-requests",
         {
           petId: petId || pet?.id,
           adopterName: form.adopterName,
@@ -221,7 +221,7 @@ export default function RequestAdoption() {
                 <h2 className="pp-section-title">Applying For</h2>
                 <div className="ra-pet-img-wrap">
                   {pet.imageUrl ? (
-                    <img src={`http://localhost:8080${pet.imageUrl}`} alt={pet.name} className="ra-pet-img" />
+                    <img src={`${process.env.REACT_APP_API_URL}${pet.imageUrl}`} alt={pet.name} className="ra-pet-img" />
                   ) : (
                     <div className="ra-pet-no-img"><span>🐾</span></div>
                   )}

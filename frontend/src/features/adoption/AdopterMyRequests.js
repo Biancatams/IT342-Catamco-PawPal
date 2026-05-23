@@ -19,7 +19,7 @@ export default function AdopterMyRequests() {
 
   const fetchRequests = async () => {
     try {
-      const res = await axios.get("http://localhost:8080/api/v1/adoption-requests/my", {
+      const res = await axios.get("${process.env.REACT_APP_API_URL}/api/v1/adoption-requests/my", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setRequests(res.data.data || []);
@@ -168,7 +168,7 @@ export default function AdopterMyRequests() {
                 <div key={req.id} className="amr-card">
                   <div className="amr-pet-img-wrap">
                     {req.pet?.imageUrl ? (
-                      <img src={`http://localhost:8080${req.pet.imageUrl}`} alt={req.pet.name} className="amr-pet-img" />
+                      <img src={`${process.env.REACT_APP_API_URL}${req.pet.imageUrl}`} alt={req.pet.name} className="amr-pet-img" />
                     ) : (
                       <div className="amr-pet-no-img">
                         <svg viewBox="0 0 24 24" fill="none" stroke="#b89e8a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 36, height: 36 }}>
