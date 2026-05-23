@@ -253,7 +253,7 @@ export default function PetDetail() {
           <div className="pd-img-col">
             <div className="pd-img-wrap">
               {pet.imageUrl ? (
-                <img src={`https://it342-catamco-pawpal-production.up.railway.app${pet.imageUrl}`} alt={pet.name} className="pd-img" />
+                <img src={`${process.env.REACT_APP_API_URL || "http://localhost:8080"}${pet.imageUrl}`} alt={pet.name} className="pd-img" />
               ) : (
                 <div className="pd-img-placeholder"><span>🐾</span></div>
               )}

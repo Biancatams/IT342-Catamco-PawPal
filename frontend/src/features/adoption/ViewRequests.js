@@ -299,7 +299,7 @@ export default function ViewRequests() {
               <>
                 <div className="vr-pet-img-wrap">
                   {pet.imageUrl ? (
-                    <img src={`https://it342-catamco-pawpal-production.up.railway.app${pet.imageUrl}`} alt={pet.name} className="vr-pet-img" />
+                    <img src={`${process.env.REACT_APP_API_URL || "http://localhost:8080"}${pet.imageUrl}`} alt={pet.name} className="vr-pet-img" />
                   ) : (
                     <div className="vr-pet-no-img"><span>🐾</span></div>
                   )}

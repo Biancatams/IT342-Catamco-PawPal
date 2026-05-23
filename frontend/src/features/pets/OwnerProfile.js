@@ -341,7 +341,7 @@ export default function OwnerProfile() {
                     <div key={pet.id} className="prof-pet-item" onClick={() => navigate(`/owner/requests/${pet.id}`, { state: { pet } })}>
                       <div className="prof-pet-thumb-wrap">
                         {pet.imageUrl ? (
-                          <img src={`https://it342-catamco-pawpal-production.up.railway.app${pet.imageUrl}`} alt={pet.name} className="prof-pet-thumb" />
+                          <img src={`${process.env.REACT_APP_API_URL || "http://localhost:8080"}${pet.imageUrl}`} alt={pet.name} className="prof-pet-thumb" />
                         ) : (
                           <div className="prof-pet-thumb-placeholder">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 24, height: 24, stroke: "#c4b5a5" }}>

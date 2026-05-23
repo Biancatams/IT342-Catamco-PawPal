@@ -54,7 +54,7 @@ export default function EditPet() {
         microchipped: !!pet.microchipped,
         healthChecked: !!pet.healthChecked,
       });
-      if (pet.imageUrl) setPhotoPreview(`https://it342-catamco-pawpal-production.up.railway.app${pet.imageUrl}`);
+      if (pet.imageUrl) setPhotoPreview(`${process.env.REACT_APP_API_URL || "http://localhost:8080"}${pet.imageUrl}`);
     } catch {
       setError("Failed to load pet details. Please go back and try again.");
     } finally {

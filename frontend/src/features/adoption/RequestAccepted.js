@@ -162,7 +162,7 @@ export default function RequestDetail() {
             <div className="rac-pet-card">
               <div className="rac-pet-img-wrap">
                 {pet.imageUrl ? (
-                  <img src={`https://it342-catamco-pawpal-production.up.railway.app${pet.imageUrl}`} alt={pet.name} className="rac-pet-img" />
+                  <img src={`${process.env.REACT_APP_API_URL || "http://localhost:8080"}${pet.imageUrl}`} alt={pet.name} className="rac-pet-img" />
                 ) : (
                   <div className="rac-pet-no-img">
                     <svg viewBox="0 0 24 24" fill="none" stroke="#b89e8a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 48, height: 48 }}>

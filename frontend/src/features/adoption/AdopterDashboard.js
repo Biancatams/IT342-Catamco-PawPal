@@ -205,7 +205,7 @@ export default function AdopterDashboard() {
                   >
                   <div className="od-pet-img-wrap">
                     {pet.imageUrl ? (
-                      <img src={`https://it342-catamco-pawpal-production.up.railway.app${pet.imageUrl}`} alt={pet.name} className="od-pet-img" />
+                      <img src={`${process.env.REACT_APP_API_URL || "http://localhost:8080"}${pet.imageUrl}`} alt={pet.name} className="od-pet-img" />
                     ) : (
                       <div className="od-pet-no-img"><span>🐾</span></div>
                     )}
