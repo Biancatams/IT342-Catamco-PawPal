@@ -35,14 +35,15 @@ public class AuthService {
         this.jwtUtil = jwtUtil;
     }
 
-    private Map<String, Object> getGoogleUserInfo(String idToken) throws Exception {
-        URL url = new URL("https://oauth2.googleapis.com/tokeninfo?id_token=" + idToken);
+    private Map<String, Object> getGoogleUserInfo(String accessToken) throws Exception {
+        URL url = new URL("https://www.googleapis.com/oauth2/v3/userinfo");
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
+        conn.setRequestProperty("Authorization", "Bearer " + accessToken);
 
         int status = conn.getResponseCode();
         if (status != 200) {
-            throw new RuntimeException("Failed to verify Google ID token, status: " + status);
+            throw new RuntimeException("Failed to verify Google token, status: " + status);
         }
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
