@@ -53,7 +53,7 @@ export default function PetDetail() {
 
   const fetchPet = async () => {
     try {
-      const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/v1/pets/${petId}`, {
+      const res = await axios.get(`https://it342-catamco-pawpal-production.up.railway.app/api/v1/pets/${petId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setPet(res.data.data);
@@ -82,7 +82,7 @@ export default function PetDetail() {
     setReportSubmitting(true);
     try {
       await axios.post(
-        "${process.env.REACT_APP_API_URL}/api/v1/reports",
+        "https://it342-catamco-pawpal-production.up.railway.app/api/v1/reports",
         { reportedUserId: pet.owner.id, reason },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -253,7 +253,7 @@ export default function PetDetail() {
           <div className="pd-img-col">
             <div className="pd-img-wrap">
               {pet.imageUrl ? (
-                <img src={`${process.env.REACT_APP_API_URL}${pet.imageUrl}`} alt={pet.name} className="pd-img" />
+                <img src={`https://it342-catamco-pawpal-production.up.railway.app${pet.imageUrl}`} alt={pet.name} className="pd-img" />
               ) : (
                 <div className="pd-img-placeholder"><span>🐾</span></div>
               )}

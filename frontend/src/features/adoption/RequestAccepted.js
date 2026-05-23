@@ -162,7 +162,7 @@ export default function RequestDetail() {
             <div className="rac-pet-card">
               <div className="rac-pet-img-wrap">
                 {pet.imageUrl ? (
-                  <img src={`${process.env.REACT_APP_API_URL}${pet.imageUrl}`} alt={pet.name} className="rac-pet-img" />
+                  <img src={`https://it342-catamco-pawpal-production.up.railway.app${pet.imageUrl}`} alt={pet.name} className="rac-pet-img" />
                 ) : (
                   <div className="rac-pet-no-img">
                     <svg viewBox="0 0 24 24" fill="none" stroke="#b89e8a" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 48, height: 48 }}>
@@ -281,7 +281,7 @@ export default function RequestDetail() {
                   <div className="rac-owner-avatar" style={{ overflow: "hidden", padding: 0 }}>
                     {owner.profileImageUrl ? (
                       <img
-                        src={`${process.env.REACT_APP_API_URL}${owner.profileImageUrl}`}
+                        src={`https://it342-catamco-pawpal-production.up.railway.app${owner.profileImageUrl}`}
                         alt={owner.fullName}
                         style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }}
                       />

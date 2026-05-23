@@ -26,7 +26,7 @@ export default function Login() {
     return;
   }
   try {
-    const verifRes = await axios.get("${process.env.REACT_APP_API_URL}/api/v1/verification/my", {
+    const verifRes = await axios.get("https://it342-catamco-pawpal-production.up.railway.app/api/v1/verification/my", {
       headers: { Authorization: `Bearer ${token}` },
     });
     const status = verifRes.data.data?.status;
@@ -42,7 +42,7 @@ export default function Login() {
 };
 
   const fetchAndSaveFullUser = async (token) => {
-    const meRes = await axios.get("${process.env.REACT_APP_API_URL}/api/v1/users/me", {
+    const meRes = await axios.get("https://it342-catamco-pawpal-production.up.railway.app/api/v1/users/me", {
       headers: { Authorization: `Bearer ${token}` },
     });
     localStorage.setItem("user", JSON.stringify(meRes.data.data));
@@ -56,7 +56,7 @@ export default function Login() {
     }
     setLoading(true);
     try {
-      const res = await axios.post("${process.env.REACT_APP_API_URL}/api/v1/auth/login", form);
+      const res = await axios.post("https://it342-catamco-pawpal-production.up.railway.app/api/v1/auth/login", form);
       if (res.data.success) {
         const token = res.data.data.accessToken;
         if (res.data.data.user?.isBanned) {
@@ -80,7 +80,7 @@ export default function Login() {
     onSuccess: async (tokenResponse) => {
       try {
         const res = await axios.post(
-          "${process.env.REACT_APP_API_URL}/api/v1/auth/google-login",
+          "https://it342-catamco-pawpal-production.up.railway.app/api/v1/auth/google-login",
           { token: tokenResponse.access_token }
         );
         if (res.data.success) {

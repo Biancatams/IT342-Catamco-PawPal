@@ -103,7 +103,7 @@ export default function PostPet() {
       };
       formData.append("data", new Blob([JSON.stringify(petData)], { type: "application/json" }));
       if (photo) formData.append("image", photo);
-      await axios.post("${process.env.REACT_APP_API_URL}/api/v1/pets", formData, {
+      await axios.post("https://it342-catamco-pawpal-production.up.railway.app/api/v1/pets", formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       navigate("/owner/dashboard");
