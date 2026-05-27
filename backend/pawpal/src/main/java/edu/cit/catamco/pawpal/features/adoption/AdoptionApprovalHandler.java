@@ -17,12 +17,10 @@ public class AdoptionApprovalHandler implements AdoptionEventListener {
             AdoptionRequestRepository requestRepository,
             PetRepository petRepository) {
 
-        // 1. Mark the pet as ADOPTED
         Pet pet = approvedRequest.getPet();
         pet.setStatus(Pet.PetStatus.ADOPTED);
         petRepository.save(pet);
 
-        // 2. Auto-decline all other pending requests for this pet
         List<AdoptionRequest> others = requestRepository.findByPetAndStatus(
                 pet, AdoptionRequest.RequestStatus.PENDING);
 

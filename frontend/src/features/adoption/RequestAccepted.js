@@ -281,7 +281,7 @@ export default function RequestDetail() {
                   <div className="rac-owner-avatar" style={{ overflow: "hidden", padding: 0 }}>
                     {owner.profileImageUrl ? (
                       <img
-                        src={`https://it342-catamco-pawpal-production.up.railway.app${owner.profileImageUrl}`}
+                        src={`http://localhost:8080${owner.profileImageUrl}`}
                         alt={owner.fullName}
                         style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "50%" }}
                       />

@@ -51,10 +51,10 @@ export default function AdopterDashboard() {
   const fetchAll = async () => {
     try {
       const [petsRes, reqRes] = await Promise.all([
-        axios.get("https://it342-catamco-pawpal-production.up.railway.app/api/v1/pets", {
+        axios.get("http://localhost:8080/api/v1/pets", {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        axios.get("https://it342-catamco-pawpal-production.up.railway.app/api/v1/adoption-requests/my", {
+        axios.get("http://localhost:8080/api/v1/adoption-requests/my", {
           headers: { Authorization: `Bearer ${token}` },
         }),
       ]);

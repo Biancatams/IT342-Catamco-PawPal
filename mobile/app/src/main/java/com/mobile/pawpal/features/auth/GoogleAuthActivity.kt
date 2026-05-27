@@ -30,8 +30,10 @@ class GoogleAuthActivity : AppCompatActivity() {
         try {
             val account = task.getResult(ApiException::class.java)
             val idToken = account.idToken
-            if (idToken != null) {
-                sendTokenToBackend(idToken)
+            val authCode = account.serverAuthCode
+            val tokenToSend = idToken ?: authCode
+            if (tokenToSend != null) {
+                sendTokenToBackend(tokenToSend)
             } else {
                 Toast.makeText(this, "Google Sign-In failed: no token.", Toast.LENGTH_SHORT).show()
                 finish()
@@ -47,6 +49,7 @@ class GoogleAuthActivity : AppCompatActivity() {
 
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(WEB_CLIENT_ID)
+            .requestServerAuthCode(WEB_CLIENT_ID)
             .requestEmail()
             .requestProfile()
             .build()

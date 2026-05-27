@@ -73,7 +73,7 @@ export default function AdminDashboard() {
 
   const fetchAll = async () => {
     try {
-      const res = await axios.get("https://it342-catamco-pawpal-production.up.railway.app/api/v1/pets/admin/all", {
+      const res = await axios.get("http://localhost:8080/api/v1/pets/admin/all", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setAllPets(res.data.data?.pets || []);
@@ -87,7 +87,7 @@ export default function AdminDashboard() {
   const fetchVerifications = async () => {
     setVerifLoading(true);
     try {
-      const res = await axios.get("https://it342-catamco-pawpal-production.up.railway.app/api/v1/verification/all", {
+      const res = await axios.get("http://localhost:8080/api/v1/verification/all", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setVerifications(res.data.data || []);
@@ -101,7 +101,7 @@ export default function AdminDashboard() {
   const fetchUsers = async () => {
   setUsersLoading(true);
   try {
-    const res = await axios.get("https://it342-catamco-pawpal-production.up.railway.app/api/v1/users/all", {
+    const res = await axios.get("http://localhost:8080/api/v1/users/all", {
       headers: { Authorization: `Bearer ${token}` },
     });
     setUsers(res.data.data || []);
@@ -112,7 +112,7 @@ export default function AdminDashboard() {
 const fetchReports = async () => {
   setReportsLoading(true);
   try {
-    const res = await axios.get("https://it342-catamco-pawpal-production.up.railway.app/api/v1/reports/all", {
+    const res = await axios.get("http://localhost:8080/api/v1/reports/all", {
       headers: { Authorization: `Bearer ${token}` },
     });
     setReports(res.data.data || []);
@@ -123,7 +123,7 @@ const fetchReports = async () => {
 const handleBanUser = async () => {
   setBanning(true);
   try {
-    await axios.put(`https://it342-catamco-pawpal-production.up.railway.app/api/v1/users/${banModal.userId}/ban`, {}, {
+    await axios.put(`http://localhost:8080/api/v1/users/${banModal.userId}/ban`, {}, {
       headers: { Authorization: `Bearer ${token}` },
     });
     setBanModal({ open: false, userId: null, userName: "" });
@@ -139,7 +139,7 @@ const handleBanUser = async () => {
   const handleApproveVerif = async (id) => {
     setVerifActionLoading(id);
     try {
-      await axios.put(`https://it342-catamco-pawpal-production.up.railway.app/api/v1/verification/${id}/approve`, {}, {
+      await axios.put(`http://localhost:8080/api/v1/verification/${id}/approve`, {}, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setViewVerifModal({ open: false, data: null });
@@ -157,7 +157,7 @@ const handleBanUser = async () => {
     setRejectingVerif(true);
     try {
       await axios.put(
-        `https://it342-catamco-pawpal-production.up.railway.app/api/v1/verification/${rejectVerifModal.id}/reject`,
+        `http://localhost:8080/api/v1/verification/${rejectVerifModal.id}/reject`,
         { adminComment: reasons.join("; ") },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -180,7 +180,7 @@ const handleBanUser = async () => {
     setApproving(true);
     try {
       await axios.put(
-        `https://it342-catamco-pawpal-production.up.railway.app/api/v1/pets/admin/${approveModal.petId}/approve`,
+        `http://localhost:8080/api/v1/pets/admin/${approveModal.petId}/approve`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -202,7 +202,7 @@ const handleBanUser = async () => {
     setRejecting(true);
     try {
       await axios.put(
-        `https://it342-catamco-pawpal-production.up.railway.app/api/v1/pets/admin/${rejectModal.petId}/reject`,
+        `http://localhost:8080/api/v1/pets/admin/${rejectModal.petId}/reject`,
         { reason: reasons.join("; ") },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -265,7 +265,7 @@ const handleBanUser = async () => {
         const color = colors[name ? name.charCodeAt(0) % colors.length : 0];
         return imageUrl && imageUrl !== "" ? (
           <img
-            src={`https://it342-catamco-pawpal-production.up.railway.app${imageUrl}`}
+            src={`http://localhost:8080${imageUrl}`}
             alt={name}
             style={{ width: size, height: size, borderRadius: "50%", objectFit: "cover", flexShrink: 0, border: "2px solid var(--border)" }}
           />
@@ -319,7 +319,7 @@ const handleBanUser = async () => {
                 <div style={{ padding: "22px 28px", maxHeight: "78vh", overflowY: "auto" }}>
                   {petDetailModal.imageUrl ? (
                     <img
-                      src={`https://it342-catamco-pawpal-production.up.railway.app${petDetailModal.imageUrl}`}
+                      src={`http://localhost:8080${petDetailModal.imageUrl}`}
                       alt={petDetailModal.name}
                       style={{ width: "100%", maxHeight: 240, objectFit: "cover", borderRadius: 12, marginBottom: 20 }}
                     />
@@ -528,7 +528,7 @@ const handleBanUser = async () => {
                 
                 {/* Profile Image */}
                 {viewVerifModal.data.user?.profileImageUrl ? (
-                  <img src={`https://it342-catamco-pawpal-production.up.railway.app${viewVerifModal.data.user.profileImageUrl}`} alt="" style={{ width: 80, height: 80, borderRadius: "50%", objectFit: "cover", border: "2px solid var(--border)" }} />
+                  <img src={`http://localhost:8080${viewVerifModal.data.user.profileImageUrl}`} alt="" style={{ width: 80, height: 80, borderRadius: "50%", objectFit: "cover", border: "2px solid var(--border)" }} />
                 ) : (
                   <div style={{ width: 80, height: 80, borderRadius: "50%", background: "var(--cream)", border: "2px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32 }}>👤</div>
                 )}
@@ -571,7 +571,7 @@ const handleBanUser = async () => {
             
             <div style={{ background: "#f8f9fa", border: "1px solid var(--border)", borderRadius: 10, padding: 10, textAlign: "center" }}>
               <img 
-                src={`https://it342-catamco-pawpal-production.up.railway.app${viewVerifModal.data.idImageUrl}`} 
+                src={`http://localhost:8080${viewVerifModal.data.idImageUrl}`} 
                 alt="ID Document" 
                 style={{ width: "100%", maxHeight: "50vh", objectFit: "contain", borderRadius: 6 }} 
               />
@@ -878,7 +878,7 @@ const handleBanUser = async () => {
                         onClick={() => setViewVerifModal({ open: true, data: v })}
                       >
                         {v.user?.profileImageUrl ? (
-                          <img src={`https://it342-catamco-pawpal-production.up.railway.app${v.user.profileImageUrl}`} alt="" style={{ width: 52, height: 52, borderRadius: "50%", objectFit: "cover", border: "2px solid var(--border)", flexShrink: 0 }} />
+                          <img src={`http://localhost:8080${v.user.profileImageUrl}`} alt="" style={{ width: 52, height: 52, borderRadius: "50%", objectFit: "cover", border: "2px solid var(--border)", flexShrink: 0 }} />
                         ) : (
                           <div style={{ width: 52, height: 52, borderRadius: "50%", background: "var(--cream)", border: "2px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, flexShrink: 0 }}>👤</div>
                         )}
@@ -1143,7 +1143,7 @@ const handleBanUser = async () => {
                           <button
                             onClick={async () => {
                               try {
-                                await axios.put(`https://it342-catamco-pawpal-production.up.railway.app/api/v1/reports/${r.id}/resolve`, {}, {
+                                await axios.put(`http://localhost:8080/api/v1/reports/${r.id}/resolve`, {}, {
                                   headers: { Authorization: `Bearer ${token}` }
                                 });
                                 setReportDetailModal(null);

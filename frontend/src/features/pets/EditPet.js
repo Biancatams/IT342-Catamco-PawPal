@@ -37,7 +37,7 @@ export default function EditPet() {
 
   const fetchPet = async () => {
     try {
-      const res = await axios.get(`https://it342-catamco-pawpal-production.up.railway.app/api/v1/pets/${petId}`, {
+      const res = await axios.get(`http://localhost:8080/api/v1/pets/${petId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const pet = res.data.data;
@@ -112,7 +112,7 @@ export default function EditPet() {
       };
       formData.append("data", new Blob([JSON.stringify(petPayload)], { type: "application/json" }));
       if (photo) formData.append("image", photo);
-      await axios.put(`https://it342-catamco-pawpal-production.up.railway.app/api/v1/pets/${petId}`, formData, {
+      await axios.put(`http://localhost:8080/api/v1/pets/${petId}`, formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       navigate("/owner/dashboard");
@@ -332,7 +332,7 @@ export default function EditPet() {
             {photoPreview && petData?.imageUrl && (
               <button
                 style={{ fontSize: 12, color: "var(--muted)", background: "none", border: "none", cursor: "pointer", marginBottom: 12 }}
-                onClick={() => { setPhoto(null); setPhotoPreview(`https://it342-catamco-pawpal-production.up.railway.app${petData.imageUrl}`); }}
+                onClick={() => { setPhoto(null); setPhotoPreview(`http://localhost:8080${petData.imageUrl}`); }}
               >
                 Reset to original photo
               </button>

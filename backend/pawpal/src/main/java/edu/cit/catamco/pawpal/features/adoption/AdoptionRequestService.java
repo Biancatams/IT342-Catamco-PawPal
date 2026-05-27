@@ -33,7 +33,6 @@ public class AdoptionRequestService implements AdoptionFacade {
         this.listeners = listeners;
     }
 
-    // ── Submit Adoption Request ──────────────────────────────────────────────
     @Override
     public AuthResponse submitRequest(String adopterEmail, Map<String, String> body) {
         User adopter = userRepository.findByEmail(adopterEmail).orElse(null);

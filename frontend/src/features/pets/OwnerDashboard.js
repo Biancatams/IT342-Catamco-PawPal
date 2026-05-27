@@ -24,7 +24,7 @@ export default function OwnerDashboard() {
 
   const fetchMyPets = async () => {
     try {
-      const res = await axios.get("https://it342-catamco-pawpal-production.up.railway.app/api/v1/pets/my", {
+      const res = await axios.get("http://localhost:8080/api/v1/pets/my", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setPets(res.data.data?.pets || []);
@@ -42,7 +42,7 @@ export default function OwnerDashboard() {
   const handleDelete = async () => {
     setDeleting(true);
     try {
-      await axios.delete(`https://it342-catamco-pawpal-production.up.railway.app/api/v1/pets/${deleteModal.petId}`, {
+      await axios.delete(`http://localhost:8080/api/v1/pets/${deleteModal.petId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setPets((prev) => prev.filter((p) => p.id !== deleteModal.petId));

@@ -10,11 +10,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Map;
 
 @Service
@@ -35,25 +40,65 @@ public class AuthService {
         this.jwtUtil = jwtUtil;
     }
 
-    private Map<String, Object> getGoogleUserInfo(String accessToken) throws Exception {
-        URL url = new URL("https://www.googleapis.com/oauth2/v3/userinfo");
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+    private Map<String, Object> getGoogleUserInfo(String token) throws Exception {
+        System.out.println("GETTING GOOGLE USER INFO, token starts with: " + token.substring(0, Math.min(30, token.length())));
 
-        int status = conn.getResponseCode();
-        if (status != 200) {
-            throw new RuntimeException("Failed to verify Google token, status: " + status);
+        try {
+            String[] parts = token.split("\\.");
+            if (parts.length == 3) {
+                String padded = parts[1];
+                while (padded.length() % 4 != 0) padded += "=";
+                byte[] decodedBytes = java.util.Base64.getUrlDecoder().decode(padded);
+                String payload = new String(decodedBytes);
+                System.out.println("JWT PAYLOAD: " + payload);
+                Map<String, Object> claims = new ObjectMapper().readValue(payload, Map.class);
+                String email = (String) claims.get("sub");
+                if (email != null && email.contains("@")) {
+                    System.out.println("JWT EMAIL FOUND: " + email);
+                    return Map.of("email", email, "name", email);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println("JWT decode failed: " + e.getMessage());
         }
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) sb.append(line);
-        reader.close();
+        try {
+            URL url = new URL("https://oauth2.googleapis.com/tokeninfo?id_token=" + token);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            int responseCode = conn.getResponseCode();
+            System.out.println("TOKENINFO RESPONSE CODE: " + responseCode);
+            if (responseCode == 200) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) sb.append(line);
+                reader.close();
+                return new ObjectMapper().readValue(sb.toString(), Map.class);
+            }
+        } catch (Exception e) {
+            System.out.println("TOKENINFO FAILED: " + e.getMessage());
+        }
 
-        ObjectMapper mapper = new ObjectMapper();
-        return mapper.readValue(sb.toString(), Map.class);
+        // Fallback: userinfo endpoint (web access tokens)
+        try {
+            URL url = new URL("https://www.googleapis.com/oauth2/v3/userinfo");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Authorization", "Bearer " + token);
+            if (conn.getResponseCode() == 200) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder sb = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) sb.append(line);
+                reader.close();
+                return new ObjectMapper().readValue(sb.toString(), Map.class);
+            }
+        } catch (Exception e) {
+            System.out.println("USERINFO FAILED: " + e.getMessage());
+        }
+
+        throw new RuntimeException("Could not verify Google token");
     }
 
     public AuthResponse register(RegisterRequest request) {
