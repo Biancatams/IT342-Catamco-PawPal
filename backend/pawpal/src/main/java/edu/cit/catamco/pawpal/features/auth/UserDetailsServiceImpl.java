@@ -10,7 +10,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-    // Package-private constructor — prevents external instantiation with `new`
     UserDetailsServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }

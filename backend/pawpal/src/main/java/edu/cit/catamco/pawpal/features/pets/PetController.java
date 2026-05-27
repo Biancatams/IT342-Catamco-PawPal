@@ -20,7 +20,6 @@ public class PetController {
         this.petService = petService;
     }
 
-    // POST /api/v1/pets — Post a pet (multipart form)
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AuthResponse> createPet(
             @AuthenticationPrincipal UserDetails userDetails,
@@ -33,14 +32,12 @@ public class PetController {
                 .body(response);
     }
 
-    // GET /api/v1/pets — Get all available pets
     @GetMapping
     public ResponseEntity<AuthResponse> getAllPets() {
         AuthResponse response = petService.getAllPets();
         return ResponseEntity.ok(response);
     }
 
-    // GET /api/v1/pets/{id} — Get pet by ID
     @GetMapping("/{id}")
     public ResponseEntity<AuthResponse> getPetById(@PathVariable Long id) {
         AuthResponse response = petService.getPetById(id);

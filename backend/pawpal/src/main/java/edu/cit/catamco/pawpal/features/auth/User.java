@@ -27,7 +27,6 @@ public class User {
     private String phoneNumber;
     private String profileImageUrl;
 
-    // THIS IS THE MISSING FIELD THAT FIXES YOUR ERROR
     private String address;
 
     @Column(updatable = false)

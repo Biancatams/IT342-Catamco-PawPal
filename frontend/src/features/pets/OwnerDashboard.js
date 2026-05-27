@@ -24,7 +24,7 @@ export default function OwnerDashboard() {
 
   const fetchMyPets = async () => {
     try {
-      const res = await axios.get("https://it342-catamco-pawpal-production.up.railway.app/api/v1/pets/my", {
+      const res = await axios.get("http://localhost:8080/api/v1/pets/my", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setPets(res.data.data?.pets || []);
@@ -42,7 +42,7 @@ export default function OwnerDashboard() {
   const handleDelete = async () => {
     setDeleting(true);
     try {
-      await axios.delete(`https://it342-catamco-pawpal-production.up.railway.app/api/v1/pets/${deleteModal.petId}`, {
+      await axios.delete(`http://localhost:8080/api/v1/pets/${deleteModal.petId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setPets((prev) => prev.filter((p) => p.id !== deleteModal.petId));
@@ -247,7 +247,7 @@ export default function OwnerDashboard() {
               <div key={pet.id} className="od-pet-card">
                 <div className="od-pet-img-wrap">
                   {pet.imageUrl ? (
-                    <img src={`https://it342-catamco-pawpal-production.up.railway.app${pet.imageUrl}`} alt={pet.name} className="od-pet-img" />
+                    <img src={`${process.env.REACT_APP_API_URL || "http://localhost:8080"}${pet.imageUrl}`} alt={pet.name} className="od-pet-img" />
                   ) : (
                     <div className="od-pet-no-img"><span>🐾</span></div>
                   )}

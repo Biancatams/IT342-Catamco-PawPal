@@ -48,7 +48,7 @@ export default function OwnerProfile() {
   const profileImgRef = useRef(null);
   const [profileImg, setProfileImg] = useState(null);
   const [profileImgPreview, setProfileImgPreview] = useState(
-    user.profileImageUrl ? `https://it342-catamco-pawpal-production.up.railway.app${user.profileImageUrl}` : null
+    user.profileImageUrl ? `http://localhost:8080${user.profileImageUrl}` : null
   );
 
   useEffect(() => {
@@ -58,7 +58,7 @@ export default function OwnerProfile() {
 
   const fetchProfile = async () => {
     try {
-      const res = await axios.get("https://it342-catamco-pawpal-production.up.railway.app/api/v1/users/me", {
+      const res = await axios.get("http://localhost:8080/api/v1/users/me", {
         headers: { Authorization: `Bearer ${token}` },
       });
       const p = res.data.data;
@@ -66,13 +66,13 @@ export default function OwnerProfile() {
       const updated = { ...user, ...p };
       setUser(updated);
       localStorage.setItem("user", JSON.stringify(updated));
-      if (p.profileImageUrl) setProfileImgPreview(`https://it342-catamco-pawpal-production.up.railway.app${p.profileImageUrl}`);
+      if (p.profileImageUrl) setProfileImgPreview(`http://localhost:8080${p.profileImageUrl}`);
     } catch {}
   };
 
   const fetchMyPets = async () => {
     try {
-      const res = await axios.get("https://it342-catamco-pawpal-production.up.railway.app/api/v1/pets/my", {
+      const res = await axios.get("http://localhost:8080/api/v1/pets/my", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setPets(res.data.data?.pets || []);
@@ -116,7 +116,7 @@ export default function OwnerProfile() {
       formData.append("address", form.location || "");
       if (profileImg) formData.append("image", profileImg);
 
-      const res = await axios.put("https://it342-catamco-pawpal-production.up.railway.app/api/v1/users/me", formData, {
+      const res = await axios.put("http://localhost:8080/api/v1/users/me", formData, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const updated = {
@@ -133,7 +133,7 @@ export default function OwnerProfile() {
       setSaveMsg("Profile updated!");
       setEditing(false);
       setProfileImg(null);
-      if (res.data.data.profileImageUrl) setProfileImgPreview(`https://it342-catamco-pawpal-production.up.railway.app${res.data.data.profileImageUrl}`);
+      if (res.data.data.profileImageUrl) setProfileImgPreview(`http://localhost:8080${res.data.data.profileImageUrl}`);
       setTimeout(() => setSaveMsg(""), 3000);
     } catch {
       setSaveMsg("Failed to update. Try again.");
@@ -341,7 +341,7 @@ export default function OwnerProfile() {
                     <div key={pet.id} className="prof-pet-item" onClick={() => navigate(`/owner/requests/${pet.id}`, { state: { pet } })}>
                       <div className="prof-pet-thumb-wrap">
                         {pet.imageUrl ? (
-                          <img src={`https://it342-catamco-pawpal-production.up.railway.app${pet.imageUrl}`} alt={pet.name} className="prof-pet-thumb" />
+                          <img src={`${process.env.REACT_APP_API_URL || "http://localhost:8080"}${pet.imageUrl}`} alt={pet.name} className="prof-pet-thumb" />
                         ) : (
                           <div className="prof-pet-thumb-placeholder">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 24, height: 24, stroke: "#c4b5a5" }}>

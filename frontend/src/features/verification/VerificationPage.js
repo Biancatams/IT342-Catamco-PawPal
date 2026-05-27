@@ -61,7 +61,7 @@ export default function VerificationPage() {
       formData.append("phoneNumber", phone);
       formData.append("location", location);
 
-      await axios.post("https://it342-catamco-pawpal-production.up.railway.app/api/v1/verification/submit", formData, {
+      await axios.post("http://localhost:8080/api/v1/verification/submit", formData, {
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "multipart/form-data" },
       });
       navigate("/verification/status");

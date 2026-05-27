@@ -21,7 +21,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    // GET /api/v1/users/me
     @GetMapping("/me")
     public ResponseEntity<AuthResponse> getMe(
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -29,7 +28,6 @@ public class UserController {
         return ResponseEntity.ok(res);
     }
 
-    // PUT /api/v1/users/me — supports optional profile image upload
     @PutMapping(value = "/me", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AuthResponse> updateMe(
             @AuthenticationPrincipal UserDetails userDetails,
